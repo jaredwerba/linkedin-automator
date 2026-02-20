@@ -1,0 +1,334 @@
+2026-02-20 15:50:12  
+============================================================
+2026-02-20 15:50:12  RUN START  2026-02-20T15:50:12.145274  cap=5 scan=20 speed=1.0
+2026-02-20 15:50:12  ============================================================
+2026-02-20 15:50:12  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-20 15:50:12  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-20 15:50:14  Navigating to connections page
+2026-02-20 15:50:20  Scrape result (10 cards):
+2026-02-20 15:50:20    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Thomas George Thomas | profileUrl=https://www.linkedin.com/in/thomasgeorgethomas/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Dousabel Tay | profileUrl=https://www.linkedin.com/in/dousabel-tay/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Dan Niewoehner | profileUrl=https://www.linkedin.com/in/danniewoehner/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Michael Cohen | profileUrl=https://www.linkedin.com/in/michael-cohen-15b014187/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Vishaal Krishnan | profileUrl=https://www.linkedin.com/in/vishaalkrishnan/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20    name=Tom Keane | profileUrl=https://www.linkedin.com/in/tomwkeane/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 15:50:20  Loaded 1 messaged URLs, 1 messaged names
+2026-02-20 15:50:20    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-20 15:50:20      → SKIP (url match)
+2026-02-20 15:50:20    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Thomas George Thomas | url=https://www.linkedin.com/in/thomasgeorgethomas
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Dousabel Tay | url=https://www.linkedin.com/in/dousabel-tay
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Dan Niewoehner | url=https://www.linkedin.com/in/danniewoehner
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Michael Cohen | url=https://www.linkedin.com/in/michael-cohen-15b014187
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Vishaal Krishnan | url=https://www.linkedin.com/in/vishaalkrishnan
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20    Check: Tom Keane | url=https://www.linkedin.com/in/tomwkeane
+2026-02-20 15:50:20      → QUEUE
+2026-02-20 15:50:20  --- Messaging Victoria Hargreaves ---
+2026-02-20 15:50:20    role: Biophysicist specializing in the measurement of small molecule-protein interactions
+2026-02-20 15:50:20    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&recipient=ACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&interop=msgOverlay
+2026-02-20 15:50:20    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:50:20    Step 1: finding Message button
+2026-02-20 15:50:20    Step 1: button found, scrolling into view
+2026-02-20 15:50:20    Step 1: clicking button
+2026-02-20 15:50:21    Step 2: waiting for visible compose box
+2026-02-20 15:50:22    Step 2 attempt 1: {'found': False}
+2026-02-20 15:50:23    Step 2 attempt 2: {'found': False}
+2026-02-20 15:50:24    Step 2 attempt 3: {'found': False}
+2026-02-20 15:50:25    Step 2 attempt 4: {'found': False}
+2026-02-20 15:50:26    Step 2 attempt 5: {'found': False}
+2026-02-20 15:50:27    Step 2 attempt 6: {'found': False}
+2026-02-20 15:50:28    Step 2 attempt 7: {'found': False}
+2026-02-20 15:50:29    Step 2 attempt 8: {'found': False}
+2026-02-20 15:50:30    Step 2 attempt 9: {'found': False}
+2026-02-20 15:50:31    Step 2 attempt 10: {'found': False}
+2026-02-20 15:50:31    Step 2: FAILED — compose box never became visible
+2026-02-20 15:50:31    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:50:31  --- Messaging Marisa Donnelly, PhD ---
+2026-02-20 15:50:31    role: Head of Epidemiology at Biobot Analytics
+2026-02-20 15:50:31    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&recipient=ACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&interop=msgOverlay
+2026-02-20 15:50:31    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:50:31    Step 1: finding Message button
+2026-02-20 15:50:31    Step 1: button found, scrolling into view
+2026-02-20 15:50:31    Step 1: clicking button
+2026-02-20 15:50:31    Step 2: waiting for visible compose box
+2026-02-20 15:50:32    Step 2 attempt 1: {'found': False}
+2026-02-20 15:50:33    Step 2 attempt 2: {'found': False}
+2026-02-20 15:50:34    Step 2 attempt 3: {'found': False}
+2026-02-20 15:50:35    Step 2 attempt 4: {'found': False}
+2026-02-20 15:50:36    Step 2 attempt 5: {'found': False}
+2026-02-20 15:50:37    Step 2 attempt 6: {'found': False}
+2026-02-20 15:50:38    Step 2 attempt 7: {'found': False}
+2026-02-20 15:50:39    Step 2 attempt 8: {'found': False}
+2026-02-20 15:50:40    Step 2 attempt 9: {'found': False}
+2026-02-20 15:50:41    Step 2 attempt 10: {'found': False}
+2026-02-20 15:50:41    Step 2: FAILED — compose box never became visible
+2026-02-20 15:50:41    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:50:41  --- Messaging Jeff Taylor ---
+2026-02-20 15:50:41    role: Chief Executive Officer @ Orbita | Healthcare Strategist | Agentic AI | Servant Leader |
+2026-02-20 15:50:41    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAIdVasB3hA8vXcjaxQH4Q2ilWM3pydVpOM&recipient=ACoAAAIdVasB3hA8vXcjaxQH4Q2ilWM3pydVpOM&interop=msgOverlay
+2026-02-20 15:50:41    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:50:41    Step 1: finding Message button
+2026-02-20 15:50:41    Step 1: button found, scrolling into view
+2026-02-20 15:50:42    Step 1: clicking button
+2026-02-20 15:50:42    Step 2: waiting for visible compose box
+2026-02-20 15:50:43    Step 2 attempt 1: {'found': False}
+2026-02-20 15:50:44    Step 2 attempt 2: {'found': False}
+2026-02-20 15:50:45    Step 2 attempt 3: {'found': False}
+2026-02-20 15:50:46    Step 2 attempt 4: {'found': False}
+2026-02-20 15:50:47    Step 2 attempt 5: {'found': False}
+2026-02-20 15:50:48    Step 2 attempt 6: {'found': False}
+2026-02-20 15:50:49    Step 2 attempt 7: {'found': False}
+2026-02-20 15:50:50    Step 2 attempt 8: {'found': False}
+2026-02-20 15:50:51    Step 2 attempt 9: {'found': False}
+2026-02-20 15:50:52    Step 2 attempt 10: {'found': False}
+2026-02-20 15:50:52    Step 2: FAILED — compose box never became visible
+2026-02-20 15:50:52    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:50:52  --- Messaging Thomas George Thomas ---
+2026-02-20 15:50:52    role: Senior Data Engineer | ML Platform Engineer at Montai Therapeutics | AWS Certified | Dagster | dbt | SQL | Python | Apache Spark | MLOps | Tableau
+2026-02-20 15:50:52    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABiQBBgB75AR19T6_R_kfg4A7CyWmOp1lzU&recipient=ACoAABiQBBgB75AR19T6_R_kfg4A7CyWmOp1lzU&interop=msgOverlay
+2026-02-20 15:50:52    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:50:52    Step 1: finding Message button
+2026-02-20 15:50:52    Step 1: button found, scrolling into view
+2026-02-20 15:50:53    Step 1: clicking button
+2026-02-20 15:50:53    Step 2: waiting for visible compose box
+2026-02-20 15:50:54    Step 2 attempt 1: {'found': False}
+2026-02-20 15:50:55    Step 2 attempt 2: {'found': False}
+2026-02-20 15:50:56    Step 2 attempt 3: {'found': False}
+2026-02-20 15:50:57    Step 2 attempt 4: {'found': False}
+2026-02-20 15:50:58    Step 2 attempt 5: {'found': False}
+2026-02-20 15:50:59    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:00    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:01    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:02    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:03    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:03    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:03    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:03  --- Messaging Dousabel Tay ---
+2026-02-20 15:51:03    role: Scientist @ Cellular Intelligence | Protein Engineer | Microfluidics Enthusiast | MIT ChemE PhD |
+Integrating technologies and models for more targeted engineering
+2026-02-20 15:51:03    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAACkDKS4BDbAeLoD8IiWcngIEEK-TtTU0_4g&recipient=ACoAACkDKS4BDbAeLoD8IiWcngIEEK-TtTU0_4g&interop=msgOverlay
+2026-02-20 15:51:03    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:51:03    Step 1: finding Message button
+2026-02-20 15:51:03    Step 1: button found, scrolling into view
+2026-02-20 15:51:03    Step 1: clicking button
+2026-02-20 15:51:03    Step 2: waiting for visible compose box
+2026-02-20 15:51:04    Step 2 attempt 1: {'found': False}
+2026-02-20 15:51:05    Step 2 attempt 2: {'found': False}
+2026-02-20 15:51:06    Step 2 attempt 3: {'found': False}
+2026-02-20 15:51:07    Step 2 attempt 4: {'found': False}
+2026-02-20 15:51:08    Step 2 attempt 5: {'found': False}
+2026-02-20 15:51:09    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:10    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:11    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:13    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:14    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:14    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:14    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:14  --- Messaging Dan Niewoehner ---
+2026-02-20 15:51:14    role: Sr. Technical Recruiter @ Anduril
+2026-02-20 15:51:14    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAcAfMQBfH0nk81tdXVgyyhF3SnfOfUNWGo&recipient=ACoAAAcAfMQBfH0nk81tdXVgyyhF3SnfOfUNWGo&interop=msgOverlay
+2026-02-20 15:51:14    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:51:14    Step 1: finding Message button
+2026-02-20 15:51:14    Step 1: button found, scrolling into view
+2026-02-20 15:51:14    Step 1: clicking button
+2026-02-20 15:51:14    Step 2: waiting for visible compose box
+2026-02-20 15:51:15    Step 2 attempt 1: {'found': False}
+2026-02-20 15:51:16    Step 2 attempt 2: {'found': False}
+2026-02-20 15:51:17    Step 2 attempt 3: {'found': False}
+2026-02-20 15:51:18    Step 2 attempt 4: {'found': False}
+2026-02-20 15:51:19    Step 2 attempt 5: {'found': False}
+2026-02-20 15:51:20    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:21    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:22    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:23    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:24    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:24    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:24    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:24  --- Messaging Michael Cohen ---
+2026-02-20 15:51:24    role: Sales & Partnerships Leader | GTM Growth Across US & EMEA | ex-Salesforce | HEC Paris EMBA
+2026-02-20 15:51:24    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAACv2XNcBbHMmBdzS9GBfRHBbGLZK8VkvWZs&recipient=ACoAACv2XNcBbHMmBdzS9GBfRHBbGLZK8VkvWZs&interop=msgOverlay
+2026-02-20 15:51:24    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:51:24    Step 1: finding Message button
+2026-02-20 15:51:24    Step 1: button found, scrolling into view
+2026-02-20 15:51:25    Step 1: clicking button
+2026-02-20 15:51:25    Step 2: waiting for visible compose box
+2026-02-20 15:51:26    Step 2 attempt 1: {'found': False}
+2026-02-20 15:51:27    Step 2 attempt 2: {'found': False}
+2026-02-20 15:51:28    Step 2 attempt 3: {'found': False}
+2026-02-20 15:51:29    Step 2 attempt 4: {'found': False}
+2026-02-20 15:51:30    Step 2 attempt 5: {'found': False}
+2026-02-20 15:51:31    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:32    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:33    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:34    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:35    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:35    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:35    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:35  --- Messaging Vishaal Krishnan ---
+2026-02-20 15:51:35    role: Optimization | Control | Machine Learning | AI for Science
+2026-02-20 15:51:35    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAbhnnABN-ZGL6R-qsMoPLzBqZ_sp3HSV7I&recipient=ACoAAAbhnnABN-ZGL6R-qsMoPLzBqZ_sp3HSV7I&interop=msgOverlay
+2026-02-20 15:51:35    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:51:35    Step 1: finding Message button
+2026-02-20 15:51:35    Step 1: button found, scrolling into view
+2026-02-20 15:51:35    Step 1: clicking button
+2026-02-20 15:51:36    Step 2: waiting for visible compose box
+2026-02-20 15:51:37    Step 2 attempt 1: {'found': False}
+2026-02-20 15:51:38    Step 2 attempt 2: {'found': False}
+2026-02-20 15:51:39    Step 2 attempt 3: {'found': False}
+2026-02-20 15:51:40    Step 2 attempt 4: {'found': False}
+2026-02-20 15:51:41    Step 2 attempt 5: {'found': False}
+2026-02-20 15:51:42    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:43    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:44    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:45    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:46    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:46    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:46    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:46  --- Messaging Tom Keane ---
+2026-02-20 15:51:46    role: Senior Vice President @ Anduril Industries
+2026-02-20 15:51:46    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAADWdCgBjOB2FO9dKZ7HtMnG0F63ZfctpjE&recipient=ACoAAADWdCgBjOB2FO9dKZ7HtMnG0F63ZfctpjE&interop=msgOverlay
+2026-02-20 15:51:46    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 15:51:46    Step 1: finding Message button
+2026-02-20 15:51:46    Step 1: button found, scrolling into view
+2026-02-20 15:51:46    Step 1: clicking button
+2026-02-20 15:51:46    Step 2: waiting for visible compose box
+2026-02-20 15:51:47    Step 2 attempt 1: {'found': False}
+2026-02-20 15:51:48    Step 2 attempt 2: {'found': False}
+2026-02-20 15:51:49    Step 2 attempt 3: {'found': False}
+2026-02-20 15:51:52    Step 2 attempt 4: {'found': False}
+2026-02-20 15:51:53    Step 2 attempt 5: {'found': False}
+2026-02-20 15:51:54    Step 2 attempt 6: {'found': False}
+2026-02-20 15:51:55    Step 2 attempt 7: {'found': False}
+2026-02-20 15:51:56    Step 2 attempt 8: {'found': False}
+2026-02-20 15:51:57    Step 2 attempt 9: {'found': False}
+2026-02-20 15:51:58    Step 2 attempt 10: {'found': False}
+2026-02-20 15:51:58    Step 2: FAILED — compose box never became visible
+2026-02-20 15:51:58    Page HTML snippet:
+<div id="root" data-strictmode="true"><section class="ee0d6ad3 b5d32b7b _7a7daa9e _740a8860"><h2 class="_55a6fef2" data-testid="toasts-title">0 notifications</h2></section><div class="_830c4008 d03d8247 _9253c138 _0a307a43 _60951730 _51383236 dc1eadb8 fb05a633 _263d6866 _7a7daa9e _740a8860 _03600412 _370e36e4"></div><div class="hasLegacyFeedLineHeight hasBreakWordsNoHyphen a88a07ca _6e266193 _0c749fe1 _8f2ac068 _47f0d26d _7b6906fa _94990680 e8204e53 _9bd787f2"><div class=""><div aria-label="Skip navigation menu" aria-hidden="true" class="_019c3424 _52fdc5f1 e8fd1049 _33edb67c f37dfa26 _7b6906fa _7a7daa9e _2f025f10 _205c9415"><div class="_4b9a42bf _323ec6e8 _29251e4b _719db8fd _331b0f3b _2f025f10 da00879f be6de7df _12e91934 cb3e98fc"><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd" type="button"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 fb30031a b154de30 a69ee278 _0584a1f0 _78a31832 _6ab8bcf6"><span class="_38df260a _0fb1f172 a0ebe7c6 _3dd5318f _26a419c7 _6be4c519 _754ca533 _2ef9145d eaaed990 _48266e6b _9b66ae81 fe9c0fa3 cdcea5fd _3607329d b87a21ba">Skip to main content</span></span></button><button class="cbaa75c4 _91fce0ff _21173a9d _37c90019 cdcea5fd _1843f717 _62de7624 _73ef7ee3 fc29c723 _61031593 a6067ae0 _12e91934 _6f2720fd _719db8fd" type="button" aria-label="Close jump menu"><span class="_40858730 _08d4e492 _178654da _12e91934 _21173a9d _37c90019 a6067ae0 _95340353 _39828cf7 _1843f717 _62de7624 _4a805aaa d0a09a91 _90e51bc0 b154de30 _83df6e0a a69ee278 _0584a1f0 _78a31832 _7adc67b0 bba48918"><svg xmlns="http://www.w3.org/2000/svg" id="close-medium" fill="currentColor" data-supported-dps="24x24" viewBox="0 0 24 24" data-token-id="98" width="24" height="24" class="" role="img" style="width: 24px; min-width: 24px; height: 24px; min-height: 24px;"><path d="M13.42 12 20 18.58 1
+2026-02-20 15:51:58  RUN END — 0 sent
+2026-02-20 15:51:58  Browser closed.
+2026-02-20 16:23:44  
+============================================================
+2026-02-20 16:23:44  RUN START  2026-02-20T16:23:44.916876  cap=2 scan=20 speed=1.0
+2026-02-20 16:23:44  ============================================================
+2026-02-20 16:23:44  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-20 16:23:44  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-20 16:23:46  Navigating to connections page
+2026-02-20 16:23:52  Scrape result (20 cards):
+2026-02-20 16:23:52    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Thomas George Thomas | profileUrl=https://www.linkedin.com/in/thomasgeorgethomas/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Dousabel Tay | profileUrl=https://www.linkedin.com/in/dousabel-tay/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Dan Niewoehner | profileUrl=https://www.linkedin.com/in/danniewoehner/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Michael Cohen | profileUrl=https://www.linkedin.com/in/michael-cohen-15b014187/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Vishaal Krishnan | profileUrl=https://www.linkedin.com/in/vishaalkrishnan/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Tom Keane | profileUrl=https://www.linkedin.com/in/tomwkeane/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Michael Choi | profileUrl=https://www.linkedin.com/in/michael-choi-a183121/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Taylor Amarel | profileUrl=https://www.linkedin.com/in/tayloramareltech/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Sam Meinrod | profileUrl=https://www.linkedin.com/in/sammeinrod/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Adam Dzierwa | profileUrl=https://www.linkedin.com/in/adam-dzierwa-b57a9a58/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Allison Paskov | profileUrl=https://www.linkedin.com/in/allisonpaskov/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Michael Kaplowitz | profileUrl=https://www.linkedin.com/in/michael-kaplowitz-7883258/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Ahsan Shaikh | profileUrl=https://www.linkedin.com/in/ahsan-shaikh-031a312/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Allen Leibovitch | profileUrl=https://www.linkedin.com/in/allenleibo/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Matthew McCann | profileUrl=https://www.linkedin.com/in/matthew-mccann-5941032a3/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52    name=Sneha Sundet | profileUrl=https://www.linkedin.com/in/ssun80/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 16:23:52  Loaded 1 messaged URLs, 2 messaged names
+2026-02-20 16:23:52    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-20 16:23:52      → SKIP (url match)
+2026-02-20 16:23:52    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Thomas George Thomas | url=https://www.linkedin.com/in/thomasgeorgethomas
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Dousabel Tay | url=https://www.linkedin.com/in/dousabel-tay
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Dan Niewoehner | url=https://www.linkedin.com/in/danniewoehner
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Michael Cohen | url=https://www.linkedin.com/in/michael-cohen-15b014187
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Vishaal Krishnan | url=https://www.linkedin.com/in/vishaalkrishnan
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Tom Keane | url=https://www.linkedin.com/in/tomwkeane
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Michael Choi | url=https://www.linkedin.com/in/michael-choi-a183121
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Taylor Amarel | url=https://www.linkedin.com/in/tayloramareltech
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Sam Meinrod | url=https://www.linkedin.com/in/sammeinrod
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Adam Dzierwa | url=https://www.linkedin.com/in/adam-dzierwa-b57a9a58
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Allison Paskov | url=https://www.linkedin.com/in/allisonpaskov
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Michael Kaplowitz | url=https://www.linkedin.com/in/michael-kaplowitz-7883258
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Ahsan Shaikh | url=https://www.linkedin.com/in/ahsan-shaikh-031a312
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Allen Leibovitch | url=https://www.linkedin.com/in/allenleibo
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Matthew McCann | url=https://www.linkedin.com/in/matthew-mccann-5941032a3
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52    Check: Sneha Sundet | url=https://www.linkedin.com/in/ssun80
+2026-02-20 16:23:52      → QUEUE
+2026-02-20 16:23:52  --- Messaging Victoria Hargreaves ---
+2026-02-20 16:23:52    role: Biophysicist specializing in the measurement of small molecule-protein interactions
+2026-02-20 16:23:52    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&recipient=ACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&interop=msgOverlay
+2026-02-20 16:23:52    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 16:23:52    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&recipient=ACoAAAzdFzMBt3gZDTtH3KpMQfK6YkZ4gGwRJis&interop=msgOverlay
+2026-02-20 16:23:55    Step 2: waiting for visible compose box
+2026-02-20 16:23:55    Step 2: found via .msg-form__contenteditable
+2026-02-20 16:23:55    Step 3: checking for AI prompt dismiss button
+2026-02-20 16:23:56    Step 4: generating message with Ollama
+2026-02-20 16:24:11    AI full message: Hi Victoria, I noticed you're a Biophysicist specializing in measuring small molecule-protein interactions. That's fascinating work - I'm curious to learn more about your approach and what drives your research interests. How do you stay up-to-date on the latest developments in this field?
+2026-02-20 16:24:11    Step 5: re-querying compose box before typing
+2026-02-20 16:24:11    Step 5: focusing compose box via JS
+2026-02-20 16:24:12    Step 5: typing message (289 chars)
+2026-02-20 16:24:20    Step 5: compose box content after typing: 'Hi Victoria, I noticed you're a Biophysicist specializing in measuring small mol'
+2026-02-20 16:24:25    Step 7: finding Send button
+2026-02-20 16:24:25    Step 7: found Send button via button.msg-form__send-button
+2026-02-20 16:24:25    Step 7: clicked Send button
+2026-02-20 16:24:26    Step 7: done — message sent to Victoria Hargreaves
+2026-02-20 16:24:26  Logged message to CSV for Victoria Hargreaves
+2026-02-20 16:24:34  Returning to connections page (was: https://www.linkedin.com/messaging/thread/2-NDEyYWM3YjgtMmNhMS00NzNjLThlY2ItYjk3ZTM2MDQzZThiXzEwMA==/)
+2026-02-20 16:24:38  --- Messaging Marisa Donnelly, PhD ---
+2026-02-20 16:24:38    role: Head of Epidemiology at Biobot Analytics
+2026-02-20 16:24:38    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&recipient=ACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&interop=msgOverlay
+2026-02-20 16:24:38    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 16:24:38    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&recipient=ACoAABGey6gB_il_GE6aYyXb-NK4t9qHLltfHEQ&interop=msgOverlay
+2026-02-20 16:24:41    Step 2: waiting for visible compose box
+2026-02-20 16:24:41    Step 2: found via .msg-form__contenteditable
+2026-02-20 16:24:41    Step 3: checking for AI prompt dismiss button
+2026-02-20 16:24:42    Step 4: generating message with Ollama
+2026-02-20 16:24:46    AI full message: Hi Marisa, nice to connect as the Head of Epidemiology at Biobot Analytics! I'm a big fan of the work you're doing and would love to learn more about your experiences in epidemiology. How's your week going so far?
+2026-02-20 16:24:46    Step 5: re-querying compose box before typing
+2026-02-20 16:24:46    Step 5: focusing compose box via JS
+2026-02-20 16:24:46    Step 5: typing message (213 chars)
+2026-02-20 16:24:48  Browser closed.
