@@ -239,6 +239,32 @@ function clearLog() {
   logEl.innerHTML = '';
 }
 
+// ── Speed slider ───────────────────────────────────────────────────────────────
+const SPEED_PRESETS = [
+  { key: 'demo',   label: 'DEMO MODE',   cls: 'demo',   hint: '~1s between requests  ⚠ HIGH RISK',   multiplier: 0.1  },
+  { key: 'fast',   label: 'FAST MODE',   cls: 'fast',   hint: '~3–5s between requests',               multiplier: 0.35 },
+  { key: 'normal', label: 'NORMAL MODE', cls: 'normal', hint: '~5–8s between requests',               multiplier: 0.6  },
+  { key: 'safe',   label: 'SAFE MODE',   cls: 'safe',   hint: '8–15s between requests',               multiplier: 1.0  },
+];
+
+function updateSpeedLabel(val) {
+  const preset = SPEED_PRESETS[parseInt(val, 10)];
+  const el = document.getElementById('speed-label');
+  if (!el || !preset) return;
+  el.className = `speed-label ${preset.cls}`;
+  el.textContent = `${preset.label} — ${preset.hint}`;
+}
+
+function getSpeedMultiplier() {
+  const val = document.getElementById('speed-slider')?.value ?? '3';
+  return SPEED_PRESETS[parseInt(val, 10)]?.multiplier ?? 1.0;
+}
+
+function getSpeedPresetName() {
+  const val = document.getElementById('speed-slider')?.value ?? '3';
+  return SPEED_PRESETS[parseInt(val, 10)]?.label ?? 'SAFE MODE';
+}
+
 // ── Status ────────────────────────────────────────────────────────────────────
 function setStatus(state) {
   statusBadge.className = `badge ${state}`;
@@ -314,6 +340,40 @@ function setRunning(running) {
   btnStop.disabled = !running;
 }
 
+// ── Pre-flight typeout ────────────────────────────────────────────────────────
+async function typewriterLog(message, level = 'info', charDelay = 28) {
+  const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  const tsSpan  = document.createElement('span');
+  tsSpan.className = 'log-ts';
+  tsSpan.textContent = ts;
+  const msgSpan = document.createElement('span');
+  msgSpan.className = `log-msg ${level}`;
+  entry.appendChild(tsSpan);
+  entry.appendChild(msgSpan);
+  logEl.appendChild(entry);
+  logEl.scrollTop = logEl.scrollHeight;
+
+  for (const ch of message) {
+    msgSpan.textContent += ch;
+    logEl.scrollTop = logEl.scrollHeight;
+    await new Promise(r => setTimeout(r, charDelay + Math.random() * 20));
+  }
+}
+
+async function runPreflight(companies, presetName) {
+  const companyList = companies.join(', ');
+  await typewriterLog(`> INITIALISING SEQUENCE...`, 'info', 22);
+  await new Promise(r => setTimeout(r, 180));
+  await typewriterLog(`> TARGETS: ${companyList}`, 'info', 18);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> SPEED: ${presetName}`, 'info', 22);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> LAUNCHING CHROME — STAND BY...`, 'warning', 20);
+  await new Promise(r => setTimeout(r, 200));
+}
+
 // ── Run ───────────────────────────────────────────────────────────────────────
 async function startRun() {
   const companiesRaw = document.getElementById('companies').value.trim();
@@ -335,6 +395,11 @@ async function startRun() {
   isPaused = false;
   btnPause.textContent = 'Pause';
 
+  // Pre-flight typeout before Chrome opens
+  await runPreflight(companies, getSpeedPresetName());
+
+  const speedMultiplier = getSpeedMultiplier();
+
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
   ws = new WebSocket(`${proto}://${location.host}/ws`);
 
@@ -342,6 +407,7 @@ async function startRun() {
     ws.send(JSON.stringify({
       action: 'run',
       companies: companies,
+      speed_multiplier: speedMultiplier,
     }));
   };
 

@@ -31,8 +31,26 @@
           ></textarea>
         </div>
 
+        <!-- Speed slider -->
+        <div class="field speed-field">
+          <label for="speed-slider">Action Delay</label>
+          <div class="speed-track-wrap">
+            <input type="range" id="speed-slider" min="0" max="3" step="1" value="3"
+                   oninput="updateSpeedLabel(this.value)" />
+            <div class="speed-markers">
+              <span>DEMO</span>
+              <span>FAST</span>
+              <span>NORMAL</span>
+              <span>SAFE</span>
+            </div>
+          </div>
+          <div class="speed-status">
+            <span id="speed-label" class="speed-label safe">SAFE MODE — 8–15s between requests</span>
+          </div>
+        </div>
+
         <div class="actions">
-          <button id="btn-run" class="btn primary" onclick="startRun()">Run</button>
+          <button id="btn-run" class="btn execute" onclick="startRun()">Execute</button>
           <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
           <button id="btn-stop" class="btn danger" onclick="stopRun()" disabled>Stop</button>
           <button id="btn-test-ai" class="btn ghost" onclick="testAI()">Test AI</button>

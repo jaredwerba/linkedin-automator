@@ -136,6 +136,8 @@ async def websocket_endpoint(websocket: WebSocket):
             return
 
         companies_raw = payload.get("companies", "")
+        speed_multiplier = float(payload.get("speed_multiplier", 1.0))
+        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))  # clamp to sane range
 
         # Parse company list (list or newline/comma string)
         if isinstance(companies_raw, list):
@@ -163,6 +165,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 await automator.run_automation(
                     company_list=company_list,
                     log=log,
+                    speed_multiplier=speed_multiplier,
                 )
                 finish_run(run_id, automator.get_sent_today())
                 await websocket.send_json({"type": "done"})

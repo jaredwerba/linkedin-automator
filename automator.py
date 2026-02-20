@@ -121,8 +121,9 @@ def _compute_delays(total_requests: int, total_hours: float) -> list[float]:
     return delays
 
 
-async def _human_delay(min_ms: int = 800, max_ms: int = 2500):
-    await asyncio.sleep(random.uniform(min_ms / 1000, max_ms / 1000))
+async def _human_delay(min_ms: int = 800, max_ms: int = 2500, multiplier: float = 1.0):
+    base = random.uniform(min_ms / 1000, max_ms / 1000)
+    await asyncio.sleep(max(base * multiplier, 0.05))
 
 
 async def _move_mouse_randomly(page: Page):
@@ -394,7 +395,7 @@ def _score_title(role: str) -> int:
     return score
 
 
-async def _send_connection(page: Page, prospect: dict, company: str, log: Callable) -> bool:
+async def _send_connection(page: Page, prospect: dict, company: str, log: Callable, speed_multiplier: float = 1.0) -> bool:
     """
     Send a connection request, with an AI-generated note where possible.
     Strategy 1: click the Connect button on the People tab card.
@@ -463,7 +464,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
                         pass
 
                 if modal_detected:
-                    return await _handle_connect_modal(page, name, role, company, log)
+                    return await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
 
                 # No modal — check for Pending state (direct send, no note possible)
                 try:
@@ -486,7 +487,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
                         timeout=3000
                     )
                     if btn:
-                        return await _handle_connect_modal(page, name, role, company, log)
+                        return await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
                 except (PlaywrightTimeout, Exception):
                     pass
 
@@ -527,7 +528,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
         return False, ""
 
     await _human_delay(1000, 2000)
-    result = await _handle_connect_modal(page, name, role, company, log)
+    result = await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
 
     # Navigate back to the People tab so the next prospect's Strategy 1 works
     if people_tab_url and people_tab_url not in page.url:
@@ -669,7 +670,7 @@ async def _is_in_aside(page: Page, element) -> bool:
         return False
 
 
-async def _handle_connect_modal(page: Page, name: str, role: str, company: str, log: Callable) -> tuple[bool, str]:
+async def _handle_connect_modal(page: Page, name: str, role: str, company: str, log: Callable, speed_multiplier: float = 1.0) -> tuple[bool, str]:
     """
     After clicking Connect, handle the LinkedIn modal. Two variants exist:
 
@@ -740,7 +741,8 @@ async def _handle_connect_modal(page: Page, name: str, role: str, company: str, 
             await textarea.click()
             await page.keyboard.press("Control+a")
             await _human_delay(200, 400)
-            await textarea.type(note_text, delay=random.randint(30, 80))
+            typing_delay = max(int(random.randint(30, 80) * speed_multiplier), 5)
+            await textarea.type(note_text, delay=typing_delay)
             await _human_delay(600, 1000)
 
             # Click Send — scoped to the dialog to avoid matching page buttons
@@ -796,17 +798,32 @@ async def _handle_connect_modal(page: Page, name: str, role: str, company: str, 
     return False, ""
 
 
-async def run_automation(company_list: list[str], log: Callable):
+async def run_automation(company_list: list[str], log: Callable, speed_multiplier: float = 1.0):
     """
     Main entry point.
     For each company: find it, open People tab, send up to DEMO_CAP connection
     requests to the most relevant people, then move to the next company.
     Hard ceiling: DAILY_CAP per day, WEEKLY_CAP per Mon–Sun week.
+    speed_multiplier: 1.0 = safe (default), 0.6 = normal, 0.35 = fast, 0.1 = demo
     """
     global _sent_today, _sent_this_week, _stop_requested
 
     reset_state()
     clear_title_score_cache()
+
+    # Capture multiplier in a local so all nested helpers see it via closure
+    _spd = max(0.05, float(speed_multiplier))
+
+    # Monkey-patch the module-level _human_delay for this run so every helper
+    # function automatically uses the current speed without signature changes.
+    import automator as _self
+    _orig_human_delay = _self._human_delay
+
+    async def _scaled_delay(min_ms: int = 800, max_ms: int = 2500, multiplier: float = 1.0):
+        base = random.uniform(min_ms / 1000, max_ms / 1000)
+        await asyncio.sleep(max(base * _spd, 0.05))
+
+    _self._human_delay = _scaled_delay
 
     if _sent_this_week >= WEEKLY_CAP:
         await log(f"Weekly cap of {WEEKLY_CAP} already reached. Try again next week.")
@@ -907,7 +924,7 @@ async def run_automation(company_list: list[str], log: Callable):
                     if _stop_requested:
                         break
 
-                    success, note_sent = await _send_connection(page, prospect, company, log)
+                    success, note_sent = await _send_connection(page, prospect, company, log, _spd)
 
                     if success:
                         company_sent  += 1
@@ -924,11 +941,11 @@ async def run_automation(company_list: list[str], log: Callable):
                             note=note_sent,
                         )
 
-                        # Short human-like delay between requests (demo mode)
+                        # Short human-like delay between requests
                         if company_sent < DEMO_CAP and not _stop_requested:
-                            delay = random.uniform(8, 15)
-                            await log(f"Waiting {delay:.0f}s before next request ({_sent_today}/{DAILY_CAP} today · {_sent_this_week}/{WEEKLY_CAP} this week)...")
-                            await asyncio.sleep(delay)
+                            delay = random.uniform(8, 15) * _spd
+                            await log(f"Waiting {delay:.1f}s before next request ({_sent_today}/{DAILY_CAP} today · {_sent_this_week}/{WEEKLY_CAP} this week)...")
+                            await asyncio.sleep(max(delay, 0.5))
 
                 await log(f"Sent {company_sent} connection(s) at {company}.")
 
@@ -945,3 +962,4 @@ async def run_automation(company_list: list[str], log: Callable):
             raise
         finally:
             await context.close()
+            _self._human_delay = _orig_human_delay
