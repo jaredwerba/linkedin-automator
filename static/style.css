@@ -833,3 +833,109 @@ input[type="range"]::-moz-range-thumb {
 .speed-label.safe   { color: var(--text);  text-shadow: var(--glow-green); }
 
 .hidden { display: none !important; }
+
+.cap-hint {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Msg cap section (inside pane) ──────────────────────────────────────── */
+.msg-cap-section {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.msg-cap-label-top {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+/* Slider + bubble wrapper — position:relative so bubble can be placed over it */
+.msg-cap-slider-wrap {
+  position: relative;
+  padding-bottom: 22px; /* room for the bubble below the track */
+}
+
+.msg-cap-slider-wrap input[type='range'] {
+  width: 100%;
+  display: block;
+}
+
+/* Floating number bubble under the thumb.
+   --val-pct is set by JS (0 at min, 1 at max).
+   calc(var(--val-pct) * (100% - 14px) + 7px) places it over the thumb
+   at both ends and everywhere between. translateX(-50%) centres it. */
+.msg-cap-bubble {
+  position: absolute;
+  bottom: 0;
+  left: calc(var(--val-pct, 0.444) * (100% - 14px) + 7px);
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  text-shadow: var(--glow-green);
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+/* ── Msg Prospect tab controls ───────────────────────────────────────────── */
+.msg-controls {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Msg live feed (sits above the table inside the pane) */
+.msg-log {
+  height: 200px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+
+/* Msg table section */
+.msg-table-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.msg-table-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 4px;
+  flex-shrink: 0;
+}
+
+.msg-table-title {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.msg-today-badge {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* Msg pane layout */
+#pane-msg {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}

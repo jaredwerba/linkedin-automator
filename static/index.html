@@ -21,39 +21,43 @@
       <!-- Left: Config Panel -->
       <section class="panel config-panel">
 
-        <div class="field">
-          <label for="companies">Target Companies</label>
-          <small>One per line. The automator finds decision makers at each company automatically.</small>
-          <textarea
-            id="companies"
-            rows="10"
-            placeholder="Montai&#10;Acme Corp&#10;Stripe&#10;OpenAI"
-          ></textarea>
-        </div>
+        <!-- ── Connection Panel ── -->
+        <div id="config-connect">
+          <div class="field">
+            <label for="companies">Target Companies</label>
+            <small>One per line. The automator finds decision makers at each company automatically.</small>
+            <textarea
+              id="companies"
+              rows="10"
+              placeholder="Montai&#10;Acme Corp&#10;Stripe&#10;OpenAI"
+            ></textarea>
+          </div>
 
-        <!-- Speed slider -->
-        <div class="field speed-field">
-          <label for="speed-slider">Action Delay</label>
-          <div class="speed-track-wrap">
-            <input type="range" id="speed-slider" min="0" max="3" step="1" value="3"
-                   oninput="updateSpeedLabel(this.value)" />
-            <div class="speed-markers">
-              <span>DEMO</span>
-              <span>FAST</span>
-              <span>NORMAL</span>
-              <span>SAFE</span>
+          <!-- Action Delay slider -->
+          <div class="field speed-field">
+            <label for="speed-slider">Action Delay</label>
+            <div class="speed-track-wrap">
+              <input type="range" id="speed-slider" min="0" max="3" step="1" value="3"
+                     oninput="updateSpeedLabel(this.value)" />
+              <div class="speed-markers">
+                <span>DEMO</span>
+                <span>FAST</span>
+                <span>NORMAL</span>
+                <span>SAFE</span>
+              </div>
+            </div>
+            <div class="speed-status">
+              <span id="speed-label" class="speed-label safe">SAFE MODE — 8–15s between requests</span>
             </div>
           </div>
-          <div class="speed-status">
-            <span id="speed-label" class="speed-label safe">SAFE MODE — 8–15s between requests</span>
-          </div>
-        </div>
 
-        <div class="actions">
-          <button id="btn-run" class="btn execute" onclick="startRun()">Execute</button>
-          <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
-          <button id="btn-stop" class="btn danger" onclick="stopRun()" disabled>Stop</button>
-          <button id="btn-test-ai" class="btn ghost" onclick="testAI()">Test AI</button>
+
+          <div class="actions">
+            <button id="btn-run" class="btn execute" onclick="startRun()">Execute</button>
+            <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
+            <button id="btn-stop" class="btn danger" onclick="stopRun()" disabled>Stop</button>
+            <button id="btn-test-ai" class="btn ghost" onclick="testAI()">Test AI</button>
+          </div>
         </div>
 
         <!-- Triple-ring progress widget -->
@@ -99,11 +103,15 @@
           <button class="tab-btn" onclick="switchTab('history')" id="tab-history">
             History <span id="history-count" class="tab-count"></span>
           </button>
+          <button class="tab-btn" onclick="switchTab('msg')" id="tab-msg">
+            Msg Prospect <span id="msg-count" class="tab-count"></span>
+          </button>
           <!-- Per-tab actions -->
           <div class="tab-actions">
             <button id="feed-clear-btn" class="btn ghost small" onclick="clearLog()">Clear</button>
             <button id="results-refresh-btn" class="btn ghost small hidden" onclick="loadResults()">Refresh</button>
             <button id="history-refresh-btn" class="btn ghost small hidden" onclick="loadHistory()">Refresh</button>
+            <button id="msg-refresh-btn" class="btn ghost small hidden" onclick="loadMessages()">Refresh</button>
           </div>
         </div>
 
@@ -136,6 +144,53 @@
         <div id="pane-history" class="tab-pane hidden">
           <div id="history-empty" class="results-empty hidden">No runs yet — start an automation run to see history here.</div>
           <div id="history-list" class="history-list"></div>
+        </div>
+
+        <!-- Msg Prospect pane -->
+        <div id="pane-msg" class="tab-pane hidden">
+
+          <!-- Messages per Run slider -->
+          <div class="msg-cap-section">
+            <label class="msg-cap-label-top">Messages per Run <span class="cap-hint">(1–10)</span></label>
+            <div class="msg-cap-slider-wrap">
+              <input type="range" id="msg-cap-slider" min="1" max="10" step="1" value="5"
+                     oninput="updateMsgCapBubble(this)" />
+              <div id="msg-cap-bubble" class="msg-cap-bubble"></div>
+            </div>
+          </div>
+
+          <!-- Msg run controls -->
+          <div class="msg-controls">
+            <button id="btn-msg-run" class="btn execute" onclick="startMsgRun()">Send Messages</button>
+            <button id="btn-msg-pause" class="btn secondary" onclick="toggleMsgPause()" disabled>Pause</button>
+            <button id="btn-msg-stop" class="btn danger" onclick="stopMsgRun()" disabled>Stop</button>
+          </div>
+
+          <!-- Msg live feed -->
+          <div id="msg-feed" class="log msg-log"></div>
+
+          <!-- Msg results table -->
+          <div class="msg-table-section">
+            <div class="msg-table-header">
+              <span class="msg-table-title">Message Log</span>
+              <span id="msg-sent-today" class="msg-today-badge"></span>
+            </div>
+            <div id="msg-empty" class="results-empty hidden">No messages sent yet.</div>
+            <div class="results-table-wrap">
+              <table id="msg-table" class="results-table hidden">
+                <thead>
+                  <tr>
+                    <th>Sent</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Message</th>
+                  </tr>
+                </thead>
+                <tbody id="msg-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
 
       </section>
