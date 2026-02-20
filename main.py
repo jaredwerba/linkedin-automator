@@ -11,14 +11,19 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 import automator
+import messenger
 from ai import test_ai_connection
-from logger import read_connections, count_notes_today, count_sent_this_week
+from logger import (
+    read_connections, count_notes_today, count_sent_this_week,
+    read_messages, count_messages_today,
+)
 from run_logger import start_run, append_entry, finish_run, read_runs
 
 load_dotenv()
 
-# Track active automation task
+# Track active automation tasks
 _automation_task: Optional[asyncio.Task] = None
+_msg_task: Optional[asyncio.Task] = None
 _active_websocket: Optional[WebSocket] = None
 
 
@@ -27,6 +32,8 @@ async def lifespan(app: FastAPI):
     yield
     if _automation_task and not _automation_task.done():
         _automation_task.cancel()
+    if _msg_task and not _msg_task.done():
+        _msg_task.cancel()
 
 
 app = FastAPI(title="LinkedIn Automator", lifespan=lifespan)
@@ -49,6 +56,12 @@ class StatusResponse(BaseModel):
     paused: bool
 
 
+class MsgStatusResponse(BaseModel):
+    running: bool
+    messages_today: int
+    paused: bool
+
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.get("/", response_class=FileResponse)
@@ -66,6 +79,15 @@ async def get_status():
         weekly_cap=int(os.getenv("WEEKLY_CAP", "100")),
         notes_today=count_notes_today(),
         paused=automator._pause_requested,
+    )
+
+
+@app.get("/msg-status", response_model=MsgStatusResponse)
+async def get_msg_status():
+    return MsgStatusResponse(
+        running=_msg_task is not None and not _msg_task.done(),
+        messages_today=count_messages_today(),
+        paused=messenger._msg_pause_requested,
     )
 
 
@@ -102,11 +124,19 @@ async def get_results():
     return {"rows": rows, "total": len(rows)}
 
 
+@app.get("/messages")
+async def get_messages():
+    rows = read_messages()
+    return {"rows": rows, "total": len(rows)}
+
+
 @app.get("/runs")
 async def get_runs():
     runs = read_runs()
     return {"runs": runs, "total": len(runs)}
 
+
+# ── Connection automation WebSocket ───────────────────────────────────────────
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -114,16 +144,13 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     _active_websocket = websocket
 
-    # Will be set once the run starts
     run_id: Optional[str] = None
 
     async def log(message: str):
-        # Send to live feed
         try:
             await websocket.send_json({"type": "log", "message": message})
         except Exception:
             pass
-        # Persist to run history
         if run_id:
             append_entry(run_id, message)
 
@@ -137,9 +164,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
         companies_raw = payload.get("companies", "")
         speed_multiplier = float(payload.get("speed_multiplier", 1.0))
-        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))  # clamp to sane range
+        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))
 
-        # Parse company list (list or newline/comma string)
         if isinstance(companies_raw, list):
             company_list = [c.strip() for c in companies_raw if c.strip()]
         else:
@@ -153,7 +179,6 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({"type": "error", "message": "Please enter at least one company."})
             return
 
-        # Start the run history record
         run_id = start_run(company_list)
 
         await websocket.send_json({"type": "started"})
@@ -180,7 +205,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
         _automation_task = asyncio.create_task(run_with_ws())
 
-        # Keep websocket open to receive pause/stop signals
         while not _automation_task.done():
             try:
                 msg = await asyncio.wait_for(websocket.receive_text(), timeout=2.0)
@@ -214,3 +238,83 @@ async def websocket_endpoint(websocket: WebSocket):
             pass
     finally:
         _active_websocket = None
+
+
+# ── Messaging WebSocket ────────────────────────────────────────────────────────
+
+@app.websocket("/ws/msg")
+async def msg_websocket_endpoint(websocket: WebSocket):
+    global _msg_task
+    await websocket.accept()
+
+    async def log(message: str):
+        try:
+            await websocket.send_json({"type": "log", "message": message})
+        except Exception:
+            pass
+
+    try:
+        data = await websocket.receive_text()
+        payload = json.loads(data)
+
+        if payload.get("action") != "msg_run":
+            await websocket.send_json({"type": "error", "message": "Expected action: msg_run"})
+            return
+
+        msg_cap         = max(1, min(10, int(payload.get("msg_cap", 5))))
+        scan_limit      = max(msg_cap, int(payload.get("scan_limit", 20)))
+        speed_multiplier = float(payload.get("speed_multiplier", 1.0))
+        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))
+
+        await websocket.send_json({"type": "started"})
+        await log(f"Starting messaging run — cap: {msg_cap} | scan: {scan_limit}")
+
+        async def run_msg():
+            try:
+                await messenger.run_messaging(
+                    msg_cap=msg_cap,
+                    scan_limit=scan_limit,
+                    log=log,
+                    speed_multiplier=speed_multiplier,
+                )
+                await websocket.send_json({"type": "done"})
+            except asyncio.CancelledError:
+                await log("Messaging cancelled.")
+                await websocket.send_json({"type": "done"})
+            except Exception as e:
+                await log(f"Fatal error: {e}")
+                await websocket.send_json({"type": "error", "message": str(e)})
+
+        _msg_task = asyncio.create_task(run_msg())
+
+        while not _msg_task.done():
+            try:
+                msg = await asyncio.wait_for(websocket.receive_text(), timeout=2.0)
+                cmd = json.loads(msg)
+                action = cmd.get("action")
+                if action == "pause":
+                    messenger.request_msg_pause()
+                    await log("Paused by user.")
+                elif action == "resume":
+                    messenger.request_msg_resume()
+                    await log("Resumed by user.")
+                elif action == "stop":
+                    messenger.request_msg_stop()
+                    _msg_task.cancel()
+                    await log("Stop requested by user.")
+                    break
+            except asyncio.TimeoutError:
+                continue
+            except WebSocketDisconnect:
+                messenger.request_msg_stop()
+                break
+
+        await _msg_task
+
+    except WebSocketDisconnect:
+        messenger.request_msg_stop()
+    except Exception as e:
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except Exception:
+            pass

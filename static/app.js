@@ -1,13 +1,15 @@
 // State
 let ws = null;
+let msgWs = null;
 let isPaused = false;
+let isMsgPaused = false;
 let isRunning = false;
+let isMsgRunning = false;
 let activeTab = 'feed';
 
 // DOM refs
 const logEl = document.getElementById('log');
 const statusBadge = document.getElementById('status-badge');
-// cap counter replaced by dual-ring SVG widget — see updateRings()
 const btnRun = document.getElementById('btn-run');
 const btnPause = document.getElementById('btn-pause');
 const btnStop = document.getElementById('btn-stop');
@@ -25,9 +27,11 @@ function switchTab(tab) {
   document.getElementById('feed-clear-btn').classList.toggle('hidden', tab !== 'feed');
   document.getElementById('results-refresh-btn').classList.toggle('hidden', tab !== 'results');
   document.getElementById('history-refresh-btn').classList.toggle('hidden', tab !== 'history');
+  document.getElementById('msg-refresh-btn').classList.toggle('hidden', tab !== 'msg');
 
   if (tab === 'results') loadResults();
   if (tab === 'history') loadHistory();
+  if (tab === 'msg') { loadMessages(); refreshMsgStatus(); updateMsgCapBubble(null); }
 }
 
 // ── Results table ─────────────────────────────────────────────────────────────
@@ -86,14 +90,12 @@ function renderResults(rows, total) {
   });
 }
 
-// Auto-refresh results count badge when a run completes
 function refreshResultsBadge() {
   fetch('/results')
     .then(r => r.json())
     .then(d => {
       const countEl = document.getElementById('results-count');
       countEl.textContent = d.total > 0 ? d.total : '';
-      // If results tab is active, re-render
       if (activeTab === 'results') renderResults(d.rows, d.total);
     })
     .catch(() => {});
@@ -127,13 +129,11 @@ function renderHistory(runs, total) {
   listEl.innerHTML = '';
 
   runs.forEach(run => {
-    // Build summary line
     const companies = (run.companies || []).join(', ') || '—';
     const sent      = run.total_sent != null ? run.total_sent : '?';
     const startedAt = run.started_at || run.run_id || '';
     const finishedAt = run.finished_at || null;
 
-    // Duration
     let duration = '';
     if (startedAt && finishedAt) {
       const start = new Date(startedAt);
@@ -146,10 +146,7 @@ function renderHistory(runs, total) {
       }
     }
 
-    const meta = [
-      `${sent} sent`,
-      duration,
-    ].filter(Boolean).join(' · ');
+    const meta = [`${sent} sent`, duration].filter(Boolean).join(' · ');
 
     const item = document.createElement('div');
     item.className = 'run-item';
@@ -166,7 +163,6 @@ function renderHistory(runs, total) {
     const body = document.createElement('div');
     body.className = 'run-body hidden';
 
-    // Render log entries (same style as Live Feed)
     const entries = run.entries || [];
     if (entries.length === 0) {
       body.innerHTML = '<div class="run-no-entries">No log entries recorded.</div>';
@@ -179,7 +175,6 @@ function renderHistory(runs, total) {
       });
     }
 
-    // Toggle expand/collapse
     header.addEventListener('click', () => {
       const expanded = !body.classList.contains('hidden');
       body.classList.toggle('hidden', expanded);
@@ -192,7 +187,6 @@ function renderHistory(runs, total) {
   });
 }
 
-// Refresh history count badge when a run completes
 function refreshHistoryBadge() {
   fetch('/runs')
     .then(r => r.json())
@@ -204,8 +198,84 @@ function refreshHistoryBadge() {
     .catch(() => {});
 }
 
+// ── Messages (Msg Prospect tab) ───────────────────────────────────────────────
+async function loadMessages() {
+  try {
+    const res = await fetch('/messages');
+    const data = await res.json();
+    renderMessages(data.rows, data.total);
+  } catch (e) {
+    console.error('Failed to load messages:', e);
+  }
+}
+
+function renderMessages(rows, total) {
+  const countEl  = document.getElementById('msg-count');
+  const emptyEl  = document.getElementById('msg-empty');
+  const tableEl  = document.getElementById('msg-table');
+  const tbody    = document.getElementById('msg-tbody');
+
+  countEl.textContent = total > 0 ? total : '';
+
+  if (!rows || rows.length === 0) {
+    emptyEl.classList.remove('hidden');
+    tableEl.classList.add('hidden');
+    return;
+  }
+
+  emptyEl.classList.add('hidden');
+  tableEl.classList.remove('hidden');
+  tbody.innerHTML = '';
+
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+
+    const nameHtml = row.profile_url
+      ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener">${escapeHtml(row.name)}</a>`
+      : escapeHtml(row.name);
+
+    const msgText = row.message || '';
+    const msgHtml = msgText
+      ? `<button class="col-note-text" onclick="this.classList.toggle('expanded')" title="Click to expand">${escapeHtml(msgText)}</button>`
+      : `<span class="col-note-empty">—</span>`;
+
+    tr.innerHTML = `
+      <td class="col-date">${escapeHtml(row.sent_at)}</td>
+      <td class="col-name">${nameHtml}</td>
+      <td class="col-role">${escapeHtml(row.role)}</td>
+      <td class="col-note">${msgHtml}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function refreshMsgStatus() {
+  try {
+    const res  = await fetch('/msg-status');
+    const data = await res.json();
+    const todayEl = document.getElementById('msg-sent-today');
+    if (todayEl) {
+      todayEl.textContent = data.messages_today > 0
+        ? `${data.messages_today} sent today`
+        : '';
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function refreshMsgBadge() {
+  fetch('/messages')
+    .then(r => r.json())
+    .then(d => {
+      const countEl = document.getElementById('msg-count');
+      countEl.textContent = d.total > 0 ? d.total : '';
+      if (activeTab === 'msg') renderMessages(d.rows, d.total);
+    })
+    .catch(() => {});
+}
+
 // ── Logging ───────────────────────────────────────────────────────────────────
-function addLog(message, level = 'info') {
+function addLog(message, level = 'info', targetEl = null) {
+  const el = targetEl || logEl;
   const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   if (level === 'info') {
@@ -222,8 +292,8 @@ function addLog(message, level = 'info') {
   const entry = document.createElement('div');
   entry.className = 'log-entry';
   entry.innerHTML = `<span class="log-ts">${ts}</span><span class="log-msg ${level}">${escapeHtml(message)}</span>`;
-  logEl.appendChild(entry);
-  logEl.scrollTop = logEl.scrollHeight;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
 }
 
 function escapeHtml(str) {
@@ -239,7 +309,7 @@ function clearLog() {
   logEl.innerHTML = '';
 }
 
-// ── Speed slider ───────────────────────────────────────────────────────────────
+// ── Speed slider ──────────────────────────────────────────────────────────────
 const SPEED_PRESETS = [
   { key: 'demo',   label: 'DEMO MODE',   cls: 'demo',   hint: '~1s between requests  ⚠ HIGH RISK',   multiplier: 0.1  },
   { key: 'fast',   label: 'FAST MODE',   cls: 'fast',   hint: '~3–5s between requests',               multiplier: 0.35 },
@@ -264,6 +334,30 @@ function getSpeedPresetName() {
   const val = document.getElementById('speed-slider')?.value ?? '3';
   return SPEED_PRESETS[parseInt(val, 10)]?.label ?? 'SAFE MODE';
 }
+
+// ── Message cap slider ────────────────────────────────────────────────────────
+function updateMsgCapBubble(input) {
+  const slider = input || document.getElementById('msg-cap-slider');
+  if (!slider) return;
+  const bubble = document.getElementById('msg-cap-bubble');
+  if (!bubble) return;
+  const val = parseInt(slider.value, 10);
+  const min = parseInt(slider.min, 10);   // 1
+  const max = parseInt(slider.max, 10);   // 10
+  // pct: 0 at min, 1 at max
+  const pct = (val - min) / (max - min);
+  // Set --val-pct on the WRAPPER so the bubble (sibling of slider) can inherit it
+  const wrap = slider.closest('.msg-cap-slider-wrap');
+  if (wrap) wrap.style.setProperty('--val-pct', pct);
+  bubble.textContent = val;
+}
+
+function getMsgCap() {
+  return parseInt(document.getElementById('msg-cap-slider')?.value ?? '5', 10);
+}
+
+// Init on load AND whenever the msg tab is shown
+window.addEventListener('load', () => updateMsgCapBubble(null));
 
 // ── Status ────────────────────────────────────────────────────────────────────
 function setStatus(state) {
@@ -294,7 +388,6 @@ function updateRings(sentToday, dailyCap, sentWeek, weeklyCap, notesToday) {
 
   if (!connArc) return;
 
-  // Radii match the SVG (centre 100,100)
   const rWeek  = 88;
   const rConn  = 66;
   const rNotes = 44;
@@ -318,11 +411,9 @@ function updateRings(sentToday, dailyCap, sentWeek, weeklyCap, notesToday) {
   if (weekNum) weekNum.textContent = `${sentWeek}/${weeklyCap}`;
   if (connNum) connNum.textContent = `${sentToday}/${dailyCap}`;
 
-  // Update legend to show live message count
   const notesLegend = document.querySelector('.ring-legend-notes');
   if (notesLegend) notesLegend.textContent = `w/ Message (${notesToday})`;
 
-  // Tooltip
   if (widget) widget.title =
     `Today: ${sentToday}/${dailyCap} · This week: ${sentWeek}/${weeklyCap} · w/ message: ${notesToday}`;
 }
@@ -331,6 +422,7 @@ setInterval(() => { if (isRunning) refreshCapCounter(); }, 10000);
 refreshCapCounter();
 refreshResultsBadge();
 refreshHistoryBadge();
+refreshMsgBadge();
 
 // ── Button state ──────────────────────────────────────────────────────────────
 function setRunning(running) {
@@ -340,8 +432,19 @@ function setRunning(running) {
   btnStop.disabled = !running;
 }
 
+function setMsgRunning(running) {
+  isMsgRunning = running;
+  const btnMsgRun   = document.getElementById('btn-msg-run');
+  const btnMsgPause = document.getElementById('btn-msg-pause');
+  const btnMsgStop  = document.getElementById('btn-msg-stop');
+  if (btnMsgRun)   btnMsgRun.disabled   = running;
+  if (btnMsgPause) btnMsgPause.disabled = !running;
+  if (btnMsgStop)  btnMsgStop.disabled  = !running;
+}
+
 // ── Pre-flight typeout ────────────────────────────────────────────────────────
-async function typewriterLog(message, level = 'info', charDelay = 28) {
+async function typewriterLog(message, level = 'info', charDelay = 28, targetEl = null) {
+  const el = targetEl || logEl;
   const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const entry = document.createElement('div');
   entry.className = 'log-entry';
@@ -352,12 +455,12 @@ async function typewriterLog(message, level = 'info', charDelay = 28) {
   msgSpan.className = `log-msg ${level}`;
   entry.appendChild(tsSpan);
   entry.appendChild(msgSpan);
-  logEl.appendChild(entry);
-  logEl.scrollTop = logEl.scrollHeight;
+  el.appendChild(entry);
+  el.scrollTop = el.scrollHeight;
 
   for (const ch of message) {
     msgSpan.textContent += ch;
-    logEl.scrollTop = logEl.scrollHeight;
+    el.scrollTop = el.scrollHeight;
     await new Promise(r => setTimeout(r, charDelay + Math.random() * 20));
   }
 }
@@ -374,7 +477,20 @@ async function runPreflight(companies, presetName) {
   await new Promise(r => setTimeout(r, 200));
 }
 
-// ── Run ───────────────────────────────────────────────────────────────────────
+async function msgPreflight(cap, presetName) {
+  const msgFeed = document.getElementById('msg-feed');
+  msgFeed.innerHTML = '';
+  await typewriterLog(`> INITIALISING MESSAGING SEQUENCE...`, 'info', 22, msgFeed);
+  await new Promise(r => setTimeout(r, 180));
+  await typewriterLog(`> MESSAGE CAP: ${cap}`, 'info', 18, msgFeed);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> SPEED: ${presetName}`, 'info', 22, msgFeed);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> LAUNCHING CHROME — STAND BY...`, 'warning', 20, msgFeed);
+  await new Promise(r => setTimeout(r, 200));
+}
+
+// ── Connection Run ─────────────────────────────────────────────────────────────
 async function startRun() {
   const companiesRaw = document.getElementById('companies').value.trim();
 
@@ -395,7 +511,6 @@ async function startRun() {
   isPaused = false;
   btnPause.textContent = 'Pause';
 
-  // Pre-flight typeout before Chrome opens
   await runPreflight(companies, getSpeedPresetName());
 
   const speedMultiplier = getSpeedMultiplier();
@@ -448,7 +563,7 @@ async function startRun() {
   };
 }
 
-// ── Pause / Resume ────────────────────────────────────────────────────────────
+// ── Pause / Resume (connections) ──────────────────────────────────────────────
 function togglePause() {
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
@@ -467,11 +582,104 @@ function togglePause() {
   }
 }
 
-// ── Stop ──────────────────────────────────────────────────────────────────────
+// ── Stop (connections) ────────────────────────────────────────────────────────
 function stopRun() {
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
   ws.send(JSON.stringify({ action: 'stop' }));
   addLog('Stop requested...', 'warning');
+}
+
+// ── Messaging Run ─────────────────────────────────────────────────────────────
+async function startMsgRun() {
+  const msgFeed   = document.getElementById('msg-feed');
+  const cap       = getMsgCap();
+  const scanLimit = Math.max(cap * 3, 20);
+
+  setMsgRunning(true);
+  isMsgPaused = false;
+  const pauseBtn = document.getElementById('btn-msg-pause');
+  if (pauseBtn) pauseBtn.textContent = 'Pause';
+
+  // Make sure the live feed inside the pane is visible
+  msgFeed.innerHTML = '';
+
+  await msgPreflight(cap, getSpeedPresetName());
+
+  const speedMultiplier = getSpeedMultiplier();
+
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  msgWs = new WebSocket(`${proto}://${location.host}/ws/msg`);
+
+  const addMsgLog = (message, level = 'info') => addLog(message, level, msgFeed);
+
+  msgWs.onopen = () => {
+    msgWs.send(JSON.stringify({
+      action: 'msg_run',
+      msg_cap: cap,
+      scan_limit: scanLimit,
+      speed_multiplier: speedMultiplier,
+    }));
+  };
+
+  msgWs.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+
+    if (msg.type === 'log') {
+      addMsgLog(msg.message);
+    } else if (msg.type === 'started') {
+      addMsgLog('Messaging run started.', 'info');
+    } else if (msg.type === 'done') {
+      setMsgRunning(false);
+      refreshMsgBadge();
+      refreshMsgStatus();
+      addMsgLog('Messaging run finished.', 'success');
+      msgWs.close();
+    } else if (msg.type === 'error') {
+      addMsgLog(`Error: ${msg.message}`, 'error');
+      setMsgRunning(false);
+      msgWs.close();
+    }
+  };
+
+  msgWs.onerror = () => {
+    addLog('WebSocket error — is the server running? Restart uvicorn and try again.', 'error', msgFeed);
+    setMsgRunning(false);
+  };
+
+  msgWs.onclose = (evt) => {
+    if (isMsgRunning) {
+      addLog(`WebSocket closed unexpectedly (code ${evt.code}). Restart the server if needed.`, 'warning', msgFeed);
+      setMsgRunning(false);
+    }
+  };
+}
+
+// ── Pause / Resume (messaging) ────────────────────────────────────────────────
+function toggleMsgPause() {
+  if (!msgWs || msgWs.readyState !== WebSocket.OPEN) return;
+  const msgFeed = document.getElementById('msg-feed');
+
+  if (isMsgPaused) {
+    msgWs.send(JSON.stringify({ action: 'resume' }));
+    isMsgPaused = false;
+    const btn = document.getElementById('btn-msg-pause');
+    if (btn) btn.textContent = 'Pause';
+    addLog('Resumed.', 'info', msgFeed);
+  } else {
+    msgWs.send(JSON.stringify({ action: 'pause' }));
+    isMsgPaused = true;
+    const btn = document.getElementById('btn-msg-pause');
+    if (btn) btn.textContent = 'Resume';
+    addLog('Paused. Click Resume to continue.', 'warning', msgFeed);
+  }
+}
+
+// ── Stop (messaging) ──────────────────────────────────────────────────────────
+function stopMsgRun() {
+  if (!msgWs || msgWs.readyState !== WebSocket.OPEN) return;
+  const msgFeed = document.getElementById('msg-feed');
+  msgWs.send(JSON.stringify({ action: 'stop' }));
+  addLog('Stop requested...', 'warning', msgFeed);
 }
 
 // ── Test AI ───────────────────────────────────────────────────────────────────
