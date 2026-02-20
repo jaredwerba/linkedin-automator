@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+*.env
+
+# Data files — keep schema in git but not your personal data
+connections.csv
+runs.jsonl
+
+# Chrome profile data
+ChromeLinkedIn/
+chrome-profile/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

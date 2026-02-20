@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkedIn Automator</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>LinkedIn Automator</h1>
+      <div class="status-bar">
+        <span id="status-badge" class="badge idle">Idle</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Left: Config Panel -->
+      <section class="panel config-panel">
+
+        <div class="field">
+          <label for="companies">Target Companies</label>
+          <small>One per line. The automator finds decision makers at each company automatically.</small>
+          <textarea
+            id="companies"
+            rows="10"
+            placeholder="Montai&#10;Acme Corp&#10;Stripe&#10;OpenAI"
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="btn-run" class="btn primary" onclick="startRun()">Run</button>
+          <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
+          <button id="btn-stop" class="btn danger" onclick="stopRun()" disabled>Stop</button>
+          <button id="btn-test-ai" class="btn ghost" onclick="testAI()">Test AI</button>
+        </div>
+
+        <!-- Triple-ring progress widget -->
+        <div class="ring-widget" title="">
+          <svg id="ring-svg" viewBox="0 0 200 200" width="200" height="200">
+            <!-- Outermost track (weekly) -->
+            <circle class="ring-track" cx="100" cy="100" r="88"/>
+            <!-- Outermost arc (weekly progress) -->
+            <circle id="ring-week" class="ring-arc ring-arc-week" cx="100" cy="100" r="88"/>
+            <!-- Middle track (daily connections) -->
+            <circle class="ring-track" cx="100" cy="100" r="66"/>
+            <!-- Middle arc (daily connections progress) -->
+            <circle id="ring-conn" class="ring-arc ring-arc-conn" cx="100" cy="100" r="66"/>
+            <!-- Inner track (notes) -->
+            <circle class="ring-track" cx="100" cy="100" r="44"/>
+            <!-- Inner arc (notes progress) -->
+            <circle id="ring-notes" class="ring-arc ring-arc-notes" cx="100" cy="100" r="44"/>
+            <!-- Centre labels -->
+            <text class="ring-label-tag ring-tag-week"  x="100" y="72"  text-anchor="middle" dominant-baseline="middle">WEEK</text>
+            <text id="ring-label-week"  class="ring-num ring-num-week"   x="100" y="87"  text-anchor="middle" dominant-baseline="middle">0/100</text>
+            <line class="ring-divider" x1="72" y1="100" x2="128" y2="100"/>
+            <text class="ring-label-tag ring-tag-conn"  x="100" y="113" text-anchor="middle" dominant-baseline="middle">TODAY</text>
+            <text id="ring-label-conn"  class="ring-num ring-num-conn"   x="100" y="128" text-anchor="middle" dominant-baseline="middle">0/30</text>
+          </svg>
+          <div class="ring-legend">
+            <span class="ring-legend-week">This week</span>
+            <span class="ring-legend-conn">Today</span>
+            <span class="ring-legend-notes">w/ Message</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right: Tabbed panel -->
+      <section class="panel right-panel">
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('feed')" id="tab-feed">Live Feed</button>
+          <button class="tab-btn" onclick="switchTab('results')" id="tab-results">
+            Results <span id="results-count" class="tab-count"></span>
+          </button>
+          <button class="tab-btn" onclick="switchTab('history')" id="tab-history">
+            History <span id="history-count" class="tab-count"></span>
+          </button>
+          <!-- Per-tab actions -->
+          <div class="tab-actions">
+            <button id="feed-clear-btn" class="btn ghost small" onclick="clearLog()">Clear</button>
+            <button id="results-refresh-btn" class="btn ghost small hidden" onclick="loadResults()">Refresh</button>
+            <button id="history-refresh-btn" class="btn ghost small hidden" onclick="loadHistory()">Refresh</button>
+          </div>
+        </div>
+
+        <!-- Live Feed pane -->
+        <div id="pane-feed" class="tab-pane">
+          <div id="log" class="log"></div>
+        </div>
+
+        <!-- Results pane -->
+        <div id="pane-results" class="tab-pane hidden">
+          <div id="results-empty" class="results-empty hidden">No connections logged yet.</div>
+          <div class="results-table-wrap">
+            <table id="results-table" class="results-table hidden">
+              <thead>
+                <tr>
+                  <th>Sent</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Company</th>
+                  <th>Score</th>
+                  <th>Message Sent</th>
+                </tr>
+              </thead>
+              <tbody id="results-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- History pane -->
+        <div id="pane-history" class="tab-pane hidden">
+          <div id="history-empty" class="results-empty hidden">No runs yet — start an automation run to see history here.</div>
+          <div id="history-list" class="history-list"></div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
