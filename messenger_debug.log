@@ -332,3 +332,106 @@ Integrating technologies and models for more targeted engineering
 2026-02-20 16:24:46    Step 5: focusing compose box via JS
 2026-02-20 16:24:46    Step 5: typing message (213 chars)
 2026-02-20 16:24:48  Browser closed.
+2026-02-20 19:19:28  
+============================================================
+2026-02-20 19:19:28  RUN START  2026-02-20T19:19:28.411968  cap=2 scan=20 speed=0.1
+2026-02-20 19:19:28  ============================================================
+2026-02-20 19:19:28  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-20 19:19:28  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-20 19:19:29  Navigating to connections page
+2026-02-20 19:19:36  Scrape result (20 cards):
+2026-02-20 19:19:36    name=Akin Alawode | profileUrl=https://www.linkedin.com/in/akin-alawode-9218873a8/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Sarah McDonald | profileUrl=https://www.linkedin.com/in/sarahpatriciamcdonald/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Ana Silveira | profileUrl=https://www.linkedin.com/in/ana-silveira-35273220b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Dinesh Singh | profileUrl=https://www.linkedin.com/in/dineshsingh02030/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Thomas George Thomas | profileUrl=https://www.linkedin.com/in/thomasgeorgethomas/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Dousabel Tay | profileUrl=https://www.linkedin.com/in/dousabel-tay/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Dan Niewoehner | profileUrl=https://www.linkedin.com/in/danniewoehner/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Michael Cohen | profileUrl=https://www.linkedin.com/in/michael-cohen-15b014187/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Vishaal Krishnan | profileUrl=https://www.linkedin.com/in/vishaalkrishnan/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Tom Keane | profileUrl=https://www.linkedin.com/in/tomwkeane/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Michael Choi | profileUrl=https://www.linkedin.com/in/michael-choi-a183121/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Taylor Amarel | profileUrl=https://www.linkedin.com/in/tayloramareltech/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Sam Meinrod | profileUrl=https://www.linkedin.com/in/sammeinrod/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Adam Dzierwa | profileUrl=https://www.linkedin.com/in/adam-dzierwa-b57a9a58/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Allison Paskov | profileUrl=https://www.linkedin.com/in/allisonpaskov/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36    name=Michael Kaplowitz | profileUrl=https://www.linkedin.com/in/michael-kaplowitz-7883258/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-20 19:19:36  Loaded 2 messaged URLs, 3 messaged names
+2026-02-20 19:19:36    Check: Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Sarah McDonald | url=https://www.linkedin.com/in/sarahpatriciamcdonald
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Ana Silveira | url=https://www.linkedin.com/in/ana-silveira-35273220b
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Dinesh Singh | url=https://www.linkedin.com/in/dineshsingh02030
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-20 19:19:36      → SKIP (url match)
+2026-02-20 19:19:36    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-20 19:19:36      → SKIP (url match)
+2026-02-20 19:19:36    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Thomas George Thomas | url=https://www.linkedin.com/in/thomasgeorgethomas
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Dousabel Tay | url=https://www.linkedin.com/in/dousabel-tay
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Dan Niewoehner | url=https://www.linkedin.com/in/danniewoehner
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Michael Cohen | url=https://www.linkedin.com/in/michael-cohen-15b014187
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Vishaal Krishnan | url=https://www.linkedin.com/in/vishaalkrishnan
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Tom Keane | url=https://www.linkedin.com/in/tomwkeane
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Michael Choi | url=https://www.linkedin.com/in/michael-choi-a183121
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Taylor Amarel | url=https://www.linkedin.com/in/tayloramareltech
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Sam Meinrod | url=https://www.linkedin.com/in/sammeinrod
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Adam Dzierwa | url=https://www.linkedin.com/in/adam-dzierwa-b57a9a58
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Allison Paskov | url=https://www.linkedin.com/in/allisonpaskov
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36    Check: Michael Kaplowitz | url=https://www.linkedin.com/in/michael-kaplowitz-7883258
+2026-02-20 19:19:36      → QUEUE
+2026-02-20 19:19:36  --- Messaging Akin Alawode ---
+2026-02-20 19:19:36    role: Manager Oracle / Database Platform Architect at Digit konsult
+2026-02-20 19:19:36    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAGPMHGkBrsDwwvg9Gi1JLgZIZdMmhAzkjPo&recipient=ACoAAGPMHGkBrsDwwvg9Gi1JLgZIZdMmhAzkjPo&interop=msgOverlay
+2026-02-20 19:19:36    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 19:19:36    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAGPMHGkBrsDwwvg9Gi1JLgZIZdMmhAzkjPo&recipient=ACoAAGPMHGkBrsDwwvg9Gi1JLgZIZdMmhAzkjPo&interop=msgOverlay
+2026-02-20 19:19:39    Step 2: waiting for visible compose box
+2026-02-20 19:19:39    Step 2: found via .msg-form__contenteditable
+2026-02-20 19:19:39    Step 3: checking for AI prompt dismiss button
+2026-02-20 19:19:40    Step 4: generating message with Ollama
+2026-02-20 19:19:43    AI full message: Hi Akin, nice to connect! I noticed you're a Manager Oracle / Database Platform Architect at Digit konsult - great work in shaping the tech landscape. Looking forward to seeing what you're working on and learning from your experiences.
+2026-02-20 19:19:43    Step 5: re-querying compose box before typing
+2026-02-20 19:19:43    Step 5: focusing compose box via JS
+2026-02-20 19:19:44    Step 5: typing message (235 chars)
+2026-02-20 19:19:50    Step 5: compose box content after typing: 'Hi Akin, nice to connect! I noticed you're a Manager Oracle / Database Platform '
+2026-02-20 19:19:55    Step 7: finding Send button
+2026-02-20 19:19:55    Step 7: found Send button via button.msg-form__send-button
+2026-02-20 19:19:55    Step 7: clicked Send button
+2026-02-20 19:19:57    Step 7: done — message sent to Akin Alawode
+2026-02-20 19:19:57  Logged message to CSV for Akin Alawode
+2026-02-20 19:19:58  Returning to connections page (was: https://www.linkedin.com/messaging/thread/2-ZmUyOTQyYzAtYzgwMi00ZWJmLTlmZDktNjcwYjhhOTBkMGI5XzEwMA==/)
+2026-02-20 19:20:01  --- Messaging Sarah McDonald ---
+2026-02-20 19:20:01    role: Machine Learning Engineer @ Cohere Health
+2026-02-20 19:20:01    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAADnPWLkBf1_9Jl-EvgMdKd-RpsIrXyK6Pos&recipient=ACoAADnPWLkBf1_9Jl-EvgMdKd-RpsIrXyK6Pos&interop=msgOverlay
+2026-02-20 19:20:01    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-20 19:20:01    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAADnPWLkBf1_9Jl-EvgMdKd-RpsIrXyK6Pos&recipient=ACoAADnPWLkBf1_9Jl-EvgMdKd-RpsIrXyK6Pos&interop=msgOverlay
+2026-02-20 19:20:04    Step 2: waiting for visible compose box
+2026-02-20 19:20:04    Step 2: found via .msg-form__contenteditable
+2026-02-20 19:20:04    Step 3: checking for AI prompt dismiss button
+2026-02-20 19:20:05    Step 4: generating message with Ollama
+2026-02-20 19:20:08    AI full message: Hi Sarah, I noticed you work on ML at Cohere Health - that's really cool! What are some of your favorite projects to tackle in your role? Looking forward to seeing more about what you're working on.
+2026-02-20 19:20:08    Step 5: re-querying compose box before typing
+2026-02-20 19:20:08    Step 5: focusing compose box via JS
+2026-02-20 19:20:08    Step 5: typing message (198 chars)
+2026-02-20 19:20:14  Browser closed.
