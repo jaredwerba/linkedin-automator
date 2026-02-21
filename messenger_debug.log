@@ -435,3 +435,157 @@ Integrating technologies and models for more targeted engineering
 2026-02-20 19:20:08    Step 5: focusing compose box via JS
 2026-02-20 19:20:08    Step 5: typing message (198 chars)
 2026-02-20 19:20:14  Browser closed.
+2026-02-21 13:10:19  
+============================================================
+2026-02-21 13:10:19  FOLLOWUP RUN START  2026-02-21T13:10:19.305807  cap=5 wait_days=1 speed=1.0
+2026-02-21 13:10:19  ============================================================
+2026-02-21 13:10:19  Seeded 3 rows from messages.csv into followups.csv
+2026-02-21 13:10:19  Candidates: 0
+2026-02-21 13:13:17  
+============================================================
+2026-02-21 13:13:17  FOLLOWUP RUN START  2026-02-21T13:13:17.442361  cap=1 wait_days=0 speed=1.0
+2026-02-21 13:13:17  ============================================================
+2026-02-21 13:13:17  Candidates: 3
+2026-02-21 13:13:17  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 13:13:17  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 13:13:19  Processing Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:13:19    Reply check: navigating to profile https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:13:23    Reply check: could not find thread href on profile page
+2026-02-21 13:13:27    AI follow-up full: Hi Tomer, Hope you're doing well! I wanted to follow up on our connection and see if there's a good time for us to catch up further.
+2026-02-21 13:13:31    No msgHref for Tomer Fuss Sanderovich — skipping
+2026-02-21 13:13:31  Processing Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960/
+2026-02-21 13:13:31    Reply check: navigating to profile https://www.linkedin.com/in/victoria-hargreaves-61733960/
+2026-02-21 13:13:34    Reply check: could not find thread href on profile page
+2026-02-21 13:13:37    AI follow-up full: Hi Victoria, I was wondering if you're available to chat about your work in biophysics. No pressure at all, just thought it might be interesting to connect!
+2026-02-21 13:13:40    No msgHref for Victoria Hargreaves — skipping
+2026-02-21 13:13:40  Processing Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8/
+2026-02-21 13:13:40    Reply check: navigating to profile https://www.linkedin.com/in/akin-alawode-9218873a8/
+2026-02-21 13:13:44    Reply check: could not find thread href on profile page
+2026-02-21 13:13:47    AI follow-up full: Hi Akin, hope you're doing well! I wanted to follow up on our connection and see if there's anything newsworthy happening at Digit konsult that I can learn about.
+2026-02-21 13:13:50    No msgHref for Akin Alawode — skipping
+2026-02-21 13:13:50  FOLLOWUP RUN END — 0 sent
+2026-02-21 13:13:50  Browser closed.
+2026-02-21 13:29:31  
+============================================================
+2026-02-21 13:29:31  FOLLOWUP RUN START  2026-02-21T13:29:31.797157  cap=1 wait_days=0 speed=1.0
+2026-02-21 13:29:31  ============================================================
+2026-02-21 13:29:31  Candidates: 3
+2026-02-21 13:29:31  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 13:29:31  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 13:29:33  Processing Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:29:33    Reply check: https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:29:33    _get_profile_urn: navigating to https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:29:36    _get_profile_urn: found ID ACoAAB1-xwIBlqslKy8V...
+2026-02-21 13:29:36    Reply check: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAB1-xwIBlqslKy8V
+2026-02-21 13:29:40    Reply check: last_sender=unknown
+2026-02-21 13:29:51    AI follow-up full: Hi Tomer,
+
+Hope you're doing well! I wanted to follow up on our connection and see if there's a good time for us to discuss your work at Natural Intelligence in more detail.
+2026-02-21 13:29:51    Sending follow-up via https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAB1-xwIBlqslKy8V
+2026-02-21 13:29:58  FOLLOWUP EXCEPTION: Keyboard.type: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 885, in run_followups
+    await page.keyboard.type(followup_text, delay=20)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1383, in type
+    await self._impl_obj.type(text=text, delay=delay)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 35, in type
+    await self._channel.send("keyboardType", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
+
+2026-02-21 13:52:19  
+============================================================
+2026-02-21 13:52:19  FOLLOWUP RUN START  2026-02-21T13:52:19.603826  cap=1 wait_days=0 speed=1.0
+2026-02-21 13:52:19  ============================================================
+2026-02-21 13:52:19  Candidates: 3
+2026-02-21 13:52:19  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 13:52:19  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 13:52:20  Processing Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:52:20    Reply check: navigating to https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:52:24    Clicking Message button on profile page...
+2026-02-21 13:52:24    Found Message button via: main button:has-text('Message')
+2026-02-21 13:52:24    Clicked Message button — waiting for compose overlay...
+2026-02-21 13:52:26    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-21 13:52:27    Reply check: last_sender=unknown
+2026-02-21 13:52:27    Compose box found via .msg-form__contenteditable
+2026-02-21 13:52:40    AI follow-up full: "Hi Tomer, Hope you're doing well! Just wanted to follow up on our connection and see if there's a good time for us to catch up soon."
+2026-02-21 13:52:44  FOLLOWUP EXCEPTION: Keyboard.type: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 929, in run_followups
+    await page.keyboard.type(followup_text, delay=20)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1383, in type
+    await self._impl_obj.type(text=text, delay=delay)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 35, in type
+    await self._channel.send("keyboardType", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
+
+2026-02-21 13:52:44  Browser closed.
+2026-02-21 13:56:28  
+============================================================
+2026-02-21 13:56:28  FOLLOWUP RUN START  2026-02-21T13:56:28.741560  cap=1 wait_days=0 speed=1.0
+2026-02-21 13:56:28  ============================================================
+2026-02-21 13:56:28  Candidates: 3
+2026-02-21 13:56:28  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 13:56:28  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 13:56:30  Processing Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:56:30    Reply check: navigating to https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:56:34    Clicking Message button on profile page...
+2026-02-21 13:56:34    Found Message button via: main button:has-text('Message')
+2026-02-21 13:56:34    Clicked Message button — waiting for compose overlay...
+2026-02-21 13:56:36    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-21 13:56:37    Reply check: last_sender=unknown
+2026-02-21 13:56:37    Compose box found via .msg-form__contenteditable
+2026-02-21 13:56:40    AI follow-up full: "Hi Tomer, I hope you're doing well! Just wanted to follow up on our connection and see if there's a good time to discuss your work at Natural Intelligence further."
+2026-02-21 13:56:43  FOLLOWUP EXCEPTION: Keyboard.type: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 929, in run_followups
+    await page.keyboard.type(followup_text, delay=20)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1383, in type
+    await self._impl_obj.type(text=text, delay=delay)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 35, in type
+    await self._channel.send("keyboardType", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
+
+2026-02-21 13:56:43  Browser closed.
+2026-02-21 13:57:07  
+============================================================
+2026-02-21 13:57:07  FOLLOWUP RUN START  2026-02-21T13:57:07.078567  cap=5 wait_days=0 speed=1.0
+2026-02-21 13:57:07  ============================================================
+2026-02-21 13:57:07  Candidates: 3
+2026-02-21 13:57:07  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 13:57:07  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 13:57:08  Processing Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:57:08    Reply check: navigating to https://www.linkedin.com/in/tomer-fuss-sanderovich/
+2026-02-21 13:57:12    Clicking Message button on profile page...
+2026-02-21 13:57:12    Found Message button via: main button:has-text('Message')
+2026-02-21 13:57:12    Clicked Message button — waiting for compose overlay...
+2026-02-21 13:57:14    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-21 13:57:15    Reply check: last_sender=unknown
+2026-02-21 13:57:15    Compose box found via .msg-form__contenteditable
+2026-02-21 13:57:18    AI follow-up full: Hi Tomer, I hope you're doing well! Just wanted to follow up on our connection and see if there's a good time for us to chat about your work at Natural Intelligence.
+2026-02-21 13:57:29    Clicked Send button
+2026-02-21 13:57:30    Follow-up sent and logged for Tomer Fuss Sanderovich
+2026-02-21 13:57:34  Browser closed.

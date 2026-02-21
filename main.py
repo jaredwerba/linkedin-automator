@@ -16,6 +16,7 @@ from ai import test_ai_connection
 from logger import (
     read_connections, count_notes_today, count_sent_this_week,
     read_messages, count_messages_today,
+    read_followups, count_followups_pending, count_followups_today,
 )
 from run_logger import start_run, append_entry, finish_run, read_runs
 
@@ -24,6 +25,7 @@ load_dotenv()
 # Track active automation tasks
 _automation_task: Optional[asyncio.Task] = None
 _msg_task: Optional[asyncio.Task] = None
+_followup_task: Optional[asyncio.Task] = None
 _active_websocket: Optional[WebSocket] = None
 
 
@@ -34,6 +36,8 @@ async def lifespan(app: FastAPI):
         _automation_task.cancel()
     if _msg_task and not _msg_task.done():
         _msg_task.cancel()
+    if _followup_task and not _followup_task.done():
+        _followup_task.cancel()
 
 
 app = FastAPI(title="LinkedIn Automator", lifespan=lifespan)
@@ -59,6 +63,13 @@ class StatusResponse(BaseModel):
 class MsgStatusResponse(BaseModel):
     running: bool
     messages_today: int
+    paused: bool
+
+
+class FollowupStatusResponse(BaseModel):
+    running: bool
+    pending_count: int
+    followed_up_today: int
     paused: bool
 
 
@@ -89,6 +100,22 @@ async def get_msg_status():
         messages_today=count_messages_today(),
         paused=messenger._msg_pause_requested,
     )
+
+
+@app.get("/followup-status", response_model=FollowupStatusResponse)
+async def get_followup_status():
+    return FollowupStatusResponse(
+        running=_followup_task is not None and not _followup_task.done(),
+        pending_count=count_followups_pending(),
+        followed_up_today=count_followups_today(),
+        paused=messenger._followup_pause_requested,
+    )
+
+
+@app.get("/followups")
+async def get_followups():
+    rows = read_followups()
+    return {"rows": rows, "total": len(rows)}
 
 
 @app.post("/pause")
@@ -313,6 +340,86 @@ async def msg_websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         messenger.request_msg_stop()
+    except Exception as e:
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except Exception:
+            pass
+
+
+# ── Follow-up WebSocket ────────────────────────────────────────────────────────
+
+@app.websocket("/ws/followup")
+async def followup_websocket_endpoint(websocket: WebSocket):
+    global _followup_task
+    await websocket.accept()
+
+    async def log(message: str):
+        try:
+            await websocket.send_json({"type": "log", "message": message})
+        except Exception:
+            pass
+
+    try:
+        data = await websocket.receive_text()
+        payload = json.loads(data)
+
+        if payload.get("action") != "followup_run":
+            await websocket.send_json({"type": "error", "message": "Expected action: followup_run"})
+            return
+
+        followup_cap     = max(1, min(10, int(payload.get("followup_cap", 5))))
+        wait_days        = max(0, min(30, int(payload.get("wait_days", 3))))  # 0 = no wait
+        speed_multiplier = float(payload.get("speed_multiplier", 1.0))
+        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))
+
+        await websocket.send_json({"type": "started"})
+        await log(f"Starting follow-up run — cap: {followup_cap} | wait: {wait_days}d")
+
+        async def run_fu():
+            try:
+                await messenger.run_followups(
+                    followup_cap=followup_cap,
+                    wait_days=wait_days,
+                    log=log,
+                    speed_multiplier=speed_multiplier,
+                )
+                await websocket.send_json({"type": "done"})
+            except asyncio.CancelledError:
+                await log("Follow-up run cancelled.")
+                await websocket.send_json({"type": "done"})
+            except Exception as e:
+                await log(f"Fatal error: {e}")
+                await websocket.send_json({"type": "error", "message": str(e)})
+
+        _followup_task = asyncio.create_task(run_fu())
+
+        while not _followup_task.done():
+            try:
+                msg = await asyncio.wait_for(websocket.receive_text(), timeout=2.0)
+                cmd = json.loads(msg)
+                action = cmd.get("action")
+                if action == "pause":
+                    messenger.request_followup_pause()
+                    await log("Paused by user.")
+                elif action == "resume":
+                    messenger.request_followup_resume()
+                    await log("Resumed by user.")
+                elif action == "stop":
+                    messenger.request_followup_stop()
+                    _followup_task.cancel()
+                    await log("Stop requested by user.")
+                    break
+            except asyncio.TimeoutError:
+                continue
+            except WebSocketDisconnect:
+                messenger.request_followup_stop()
+                break
+
+        await _followup_task
+
+    except WebSocketDisconnect:
+        messenger.request_followup_stop()
     except Exception as e:
         try:
             await websocket.send_json({"type": "error", "message": str(e)})

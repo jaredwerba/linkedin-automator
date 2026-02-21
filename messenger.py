@@ -8,6 +8,7 @@ import asyncio
 import logging
 import os
 import traceback
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
@@ -20,7 +21,11 @@ from automator import (
     _detect_chrome_executable,
     _check_for_captcha,
 )
-from logger import log_message, read_messages
+from logger import (
+    log_message, read_messages,
+    seed_followups_from_messages, read_followups, upsert_followup,
+    count_followups_pending,
+)
 from ai import _generate_ollama, _generate_gemini, AI_PROVIDER
 
 load_dotenv()
@@ -72,6 +77,32 @@ def reset_msg_state():
     _msg_pause_requested = False
 
 
+# ── Follow-up global state ────────────────────────────────────────────────────
+_followup_stop_requested  = False
+_followup_pause_requested = False
+
+
+def request_followup_stop():
+    global _followup_stop_requested
+    _followup_stop_requested = True
+
+
+def request_followup_pause():
+    global _followup_pause_requested
+    _followup_pause_requested = True
+
+
+def request_followup_resume():
+    global _followup_pause_requested
+    _followup_pause_requested = False
+
+
+def reset_followup_state():
+    global _followup_stop_requested, _followup_pause_requested
+    _followup_stop_requested  = False
+    _followup_pause_requested = False
+
+
 # ── Already-messaged guard ────────────────────────────────────────────────────
 
 def _normalize_url(url: str) -> str:
@@ -112,7 +143,7 @@ async def _generate_message(name: str, role: str, log: Callable) -> str:
             text = await _generate_gemini(prompt, max_tokens=120, temperature=0.8)
         else:
             text = await _generate_ollama(prompt, max_tokens=120, temperature=0.8)
-        text = text.strip()
+        text = text.strip().strip('"').strip("'").strip()
         await log(f"  AI wrote: \"{text[:100]}{'...' if len(text) > 100 else ''}\"")
         _fl(f"  AI full message: {text}")
         return text
@@ -496,6 +527,462 @@ async def run_messaging(
 
         except Exception as e:
             _fl(f"EXCEPTION: {e}\n{traceback.format_exc()}")
+            await log(f"Error: {e}")
+            raise
+        finally:
+            await context.close()
+            _fl("Browser closed.")
+
+
+# ── Follow-up: profile URN extraction ────────────────────────────────────────
+
+async def _get_profile_urn(page: Page, profile_url: str, log: Callable) -> str:
+    """
+    Navigate to a LinkedIn profile page and extract the fsd_profile URN ID
+    (e.g. 'ACoAADnPWLk...') from embedded page data.
+
+    LinkedIn embeds entity data in <code> tags as JSON blobs that contain
+    the fsd_profile ID. This is the same ID used in compose URLs.
+
+    Returns the ID string, or "" on failure.
+    """
+    _fl(f"  _get_profile_urn: navigating to {profile_url}")
+    await page.goto(profile_url, wait_until="domcontentloaded")
+    await asyncio.sleep(2.5)
+
+    if await _check_for_captcha(page):
+        _fl("  _get_profile_urn: CAPTCHA detected")
+        await log("  ✗ CAPTCHA on profile page.")
+        return ""
+
+    profile_id = await page.evaluate(r"""
+        () => {
+            // LinkedIn embeds entity data in <code> tags as JSON
+            const codes = Array.from(document.querySelectorAll('code'));
+            for (const c of codes) {
+                const m = c.textContent.match(/"fsd_profile:([\w-]+)"/);
+                if (m) return m[1];
+            }
+            // Broader fallback: scan full page HTML for URN pattern
+            const m2 = document.documentElement.innerHTML.match(/urn:li:fsd_profile:([\w-]+)/);
+            if (m2) return m2[1];
+            return null;
+        }
+    """)
+
+    if profile_id:
+        _fl(f"  _get_profile_urn: found ID {profile_id[:20]}...")
+    else:
+        _fl(f"  _get_profile_urn: not found on {profile_url}")
+
+    return profile_id or ""
+
+
+def _build_compose_url(profile_id: str) -> str:
+    """Build a direct LinkedIn compose URL from a fsd_profile ID."""
+    encoded = urllib.parse.quote(f"urn:li:fsd_profile:{profile_id}", safe="")
+    return (
+        f"https://www.linkedin.com/messaging/compose/"
+        f"?profileUrn={encoded}&recipient={profile_id}&interop=msgOverlay"
+    )
+
+
+# ── Follow-up: reply detection ────────────────────────────────────────────────
+
+async def _click_message_button_on_profile(page: Page, log: Callable) -> bool:
+    """
+    Click the Message button on a LinkedIn profile page (it's a <button>, not <a>).
+    Waits for the compose overlay to appear.
+    Returns True if the compose box became visible, False otherwise.
+    """
+    _fl("  Clicking Message button on profile page...")
+
+    # Try multiple selectors — LinkedIn uses different markup depending on connection status
+    msg_btn = None
+    for sel in [
+        "button[aria-label^='Message']",            # "Message Tomer" etc.
+        "button.message-anywhere-button",
+        "button[data-control-name='message']",
+        "div.pvs-profile-actions button:has-text('Message')",
+        "main button:has-text('Message')",
+    ]:
+        try:
+            el = await page.query_selector(sel)
+            if el and await el.is_visible():
+                msg_btn = el
+                _fl(f"  Found Message button via: {sel}")
+                break
+        except Exception:
+            pass
+
+    # Broader fallback: find any visible button whose text is exactly "Message"
+    if not msg_btn:
+        try:
+            buttons = await page.query_selector_all("button")
+            for btn in buttons:
+                try:
+                    txt = (await btn.inner_text()).strip()
+                    vis = await btn.is_visible()
+                    if vis and txt == "Message":
+                        msg_btn = btn
+                        _fl("  Found Message button via text scan")
+                        break
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    if not msg_btn:
+        _fl("  Message button not found on profile page")
+        await log("  ⚠ Message button not found on profile page.")
+        return False
+
+    await msg_btn.click()
+    _fl("  Clicked Message button — waiting for compose overlay...")
+    await asyncio.sleep(2.0)
+
+    # Wait for the compose box to appear
+    for sel in [
+        ".msg-form__contenteditable",
+        "div[role='textbox']",
+        "div[contenteditable='true']",
+    ]:
+        try:
+            el = await page.wait_for_selector(sel, state="visible", timeout=6000)
+            if el:
+                _fl(f"  Compose overlay appeared (selector: {sel})")
+                return True
+        except PlaywrightTimeout:
+            continue
+
+    _fl("  Compose overlay did not appear after clicking Message button")
+    return False
+
+
+async def _check_replied(page: Page, profile_url: str, log: Callable) -> bool:
+    """
+    Navigate to the profile page, click Message to open the thread overlay,
+    then check if the last message bubble is from them (replied) or us (no reply).
+
+    Returns True if they replied, False otherwise (including on error).
+    Page is left on the profile with the compose overlay open if not replied,
+    ready for follow-up text to be typed straight in.
+    """
+    _fl(f"  Reply check: navigating to {profile_url}")
+    try:
+        await page.goto(profile_url, wait_until="domcontentloaded")
+        await asyncio.sleep(2.5)
+
+        if await _check_for_captcha(page):
+            _fl("  Reply check: CAPTCHA on profile page")
+            await log("  ✗ CAPTCHA on profile — skipping.")
+            return False
+
+        # Click the Message button and wait for overlay
+        overlay_open = await _click_message_button_on_profile(page, log)
+        if not overlay_open:
+            return False
+
+        await asyncio.sleep(1.0)
+
+        # Check last message sender in the thread overlay:
+        # .msg-s-event-listitem--other = they sent last → replied
+        # .msg-s-event-listitem--self  = we sent last   → no reply
+        last_sender = await page.evaluate("""
+            () => {
+                const items = Array.from(document.querySelectorAll(
+                    '.msg-s-event-listitem--other, .msg-s-event-listitem--self'
+                ));
+                if (items.length === 0) return 'unknown';
+                const last = items[items.length - 1];
+                return last.classList.contains('msg-s-event-listitem--other') ? 'other' : 'self';
+            }
+        """)
+
+        _fl(f"  Reply check: last_sender={last_sender}")
+        return last_sender == "other"
+
+    except Exception as e:
+        _fl(f"  Reply check exception: {e}\n{traceback.format_exc()}")
+        await log(f"  ⚠ Reply check error: {e} — assuming no reply.")
+        return False
+
+
+# ── Follow-up: message generation ─────────────────────────────────────────────
+
+async def _generate_followup_message(
+    name: str, role: str, first_msg: str, log: Callable
+) -> str:
+    """Ask Ollama to write a gentle single follow-up nudge."""
+    first = name.split()[0]
+    snippet = first_msg[:120].strip()
+    prompt = (
+        f"Write a short, gentle follow-up LinkedIn message to {first}, "
+        f"a {role or 'professional'}, who hasn't replied yet.\n"
+        f"My original message was: \"{snippet}\"\n"
+        f"Rules:\n"
+        f"- 1-2 sentences max\n"
+        f"- Warm, not pushy\n"
+        f"- Do NOT mention jobs, recruiting, or opportunities\n"
+        f"- Do NOT repeat the original message verbatim\n"
+        f"- Start with 'Hi {first}'\n"
+        f"- Return ONLY the message text, nothing else"
+    )
+    try:
+        if AI_PROVIDER == "gemini":
+            text = await _generate_gemini(prompt, max_tokens=80, temperature=0.7)
+        else:
+            text = await _generate_ollama(prompt, max_tokens=80, temperature=0.7)
+        text = text.strip().strip('"').strip("'").strip()
+        await log(f"  AI follow-up: \"{text[:100]}{'...' if len(text) > 100 else ''}\"")
+        _fl(f"  AI follow-up full: {text}")
+        return text
+    except Exception as e:
+        _fl(f"  AI follow-up error: {e}")
+        await log(f"  AI error: {e} — using fallback")
+        return f"Hi {first}, just wanted to check in — hope all is well!"
+
+
+# ── Follow-up: main entry point ───────────────────────────────────────────────
+
+async def run_followups(
+    followup_cap: int,
+    wait_days: int,
+    log: Callable,
+    speed_multiplier: float = 1.0,
+):
+    """
+    1. Seed followups.csv from messages.csv (idempotent).
+    2. Find pending connections whose first message is older than wait_days.
+    3. For each: check if they replied; if not, send a follow-up.
+    """
+    reset_followup_state()
+    followup_cap = max(1, min(10, followup_cap))
+    wait_days    = max(0, min(30, wait_days))  # 0 = no wait (test mode)
+
+    _fl(f"\n{'='*60}")
+    _fl(f"FOLLOWUP RUN START  {datetime.now().isoformat()}  cap={followup_cap} wait_days={wait_days} speed={speed_multiplier}")
+    _fl(f"{'='*60}")
+
+    await log(f"Starting follow-up run — cap: {followup_cap} | wait: {wait_days} day(s)")
+
+    # ── 1. Seed from messages.csv ──────────────────────────────────────────────
+    seeded = seed_followups_from_messages()
+    if seeded:
+        await log(f"Seeded {seeded} new connection(s) into follow-up tracker.")
+        _fl(f"Seeded {seeded} rows from messages.csv into followups.csv")
+
+    # ── 2. Filter candidates ───────────────────────────────────────────────────
+    from datetime import timedelta as _timedelta
+    cutoff_dt = datetime.now() - _timedelta(days=wait_days)
+    cutoff    = cutoff_dt.strftime("%Y-%m-%d %H:%M")
+
+    all_rows  = read_followups()
+    candidates = []
+    for row in reversed(all_rows):  # chronological
+        if row.get("status") != "pending":
+            continue
+        sent_at = row.get("first_msg_sent_at", "")
+        if not sent_at:
+            continue
+        # Include if first message was sent AT or BEFORE the cutoff time
+        # (i.e. old enough to follow up on). When wait_days=0 cutoff=now,
+        # so all pending rows qualify.
+        if sent_at <= cutoff:
+            candidates.append(row)
+
+    await log(f"Found {len(candidates)} pending connection(s) older than {wait_days} day(s).")
+    _fl(f"Candidates: {len(candidates)}")
+
+    if not candidates:
+        await log("Nothing to follow up on yet — check back later.")
+        return
+
+    await log("Opening Chrome...")
+
+    profile_path = _detect_chrome_profile()
+    executable   = _detect_chrome_executable()
+    _fl(f"profile_path: {profile_path}")
+    _fl(f"executable:   {executable}")
+
+    async with async_playwright() as pw:
+        context: BrowserContext = await pw.chromium.launch_persistent_context(
+            user_data_dir=profile_path,
+            executable_path=executable,
+            headless=False,
+            args=[
+                "--no-sandbox",
+                "--disable-blink-features=AutomationControlled",
+            ],
+            ignore_default_args=["--enable-automation"],
+            viewport={"width": 1280, "height": 800},
+        )
+
+        page = context.pages[0] if context.pages else await context.new_page()
+        await page.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });"
+        )
+
+        try:
+            total_sent = 0
+            for row in candidates:
+                if _followup_stop_requested:
+                    break
+                if total_sent >= followup_cap:
+                    await log(f"Cap of {followup_cap} reached.")
+                    break
+
+                while _followup_pause_requested and not _followup_stop_requested:
+                    await log("Paused...")
+                    await asyncio.sleep(5)
+
+                if _followup_stop_requested:
+                    break
+
+                name        = row.get("name", "Unknown")
+                role        = row.get("role", "")
+                profile_url = row.get("profile_url", "")
+                first_msg   = row.get("first_msg_sent_at", "")
+
+                await log(f"── {name} ({role or 'no role'})")
+                _fl(f"Processing {name} | url={profile_url}")
+
+                now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+                # ── 3a. Navigate to profile and click Message ──────────────
+                # _check_replied goes to the profile, clicks Message, opens
+                # the thread overlay, and checks if they replied.
+                # If not replied, the compose overlay is already open and ready.
+                replied = await _check_replied(page, profile_url, log)
+
+                if replied:
+                    await log(f"  ✓ {name} already replied — marking done.")
+                    _fl(f"  {name} replied — updating status")
+                    upsert_followup(profile_url, replied_at=now_str, status="replied")
+                    # Close the overlay and move on
+                    await page.keyboard.press("Escape")
+                    continue
+
+                # ── 3b. Compose overlay is open — find the compose box ─────
+                compose_box = None
+                compose_sel = None
+                for sel in [
+                    ".msg-form__contenteditable",
+                    "div[role='textbox']",
+                    "div[contenteditable='true']",
+                ]:
+                    el = await page.query_selector(sel)
+                    if el and await el.is_visible():
+                        compose_box = el
+                        compose_sel = sel
+                        _fl(f"  Compose box found via {sel}")
+                        break
+
+                if not compose_box:
+                    await log(f"  ✗ Compose overlay didn't open for {name} — skipping.")
+                    _fl(f"  Compose box not found for {name}")
+                    continue
+
+                # ── 3c. Dismiss AI prompt if it appeared ───────────────────
+                await asyncio.sleep(0.5)
+                for dismiss_sel in [
+                    "button[aria-label='Dismiss']", "button[aria-label='Close']",
+                    "button[aria-label*='close' i]", "button[aria-label*='dismiss' i]",
+                ]:
+                    try:
+                        el = await page.query_selector(dismiss_sel)
+                        if el and await el.is_visible():
+                            await el.click()
+                            await asyncio.sleep(0.4)
+                            break
+                    except Exception:
+                        pass
+
+                # ── 3d. Generate follow-up message ─────────────────────────
+                from logger import read_messages as _read_msgs
+                orig_msgs = _read_msgs()
+                orig_text = ""
+                norm_url  = _normalize_url(profile_url)
+                for m in orig_msgs:
+                    if _normalize_url(m.get("profile_url", "")) == norm_url:
+                        orig_text = m.get("message", "")
+                        break
+
+                followup_text = await _generate_followup_message(name, role, orig_text, log)
+
+                # ── 3e. Type into the compose box ──────────────────────────
+                # Re-query fresh after Ollama call
+                compose_box = await page.query_selector(compose_sel)
+                if not compose_box:
+                    for fb in [".msg-form__contenteditable", "div[role='textbox']", "div[contenteditable='true']"]:
+                        compose_box = await page.query_selector(fb)
+                        if compose_box:
+                            compose_sel = fb
+                            break
+
+                if not compose_box:
+                    await log(f"  ✗ Compose box gone after AI — skipping {name}.")
+                    continue
+
+                await page.evaluate("el => { el.focus(); el.click(); }", compose_box)
+                await asyncio.sleep(0.3)
+                await page.keyboard.type(followup_text, delay=20)
+                await asyncio.sleep(0.5)
+
+                # ── 3f. 5-second preview countdown ────────────────────────
+                await log("  Sending in 5s — click Stop to cancel...")
+                for _ in range(5):
+                    if _followup_stop_requested:
+                        await page.keyboard.press("Escape")
+                        break
+                    await asyncio.sleep(1.0)
+
+                if _followup_stop_requested:
+                    await page.keyboard.press("Escape")
+                    break
+
+                # ── 3g. Click Send ─────────────────────────────────────────
+                send_btn = None
+                for sel in [
+                    "button.msg-form__send-button",
+                    "button[aria-label='Send']",
+                    "button[aria-label*='Send' i]",
+                    ".msg-overlay-conversation-bubble button[type='submit']",
+                    "button[type='submit']",
+                ]:
+                    try:
+                        el = await page.query_selector(sel)
+                        if el and await el.is_visible():
+                            send_btn = el
+                            break
+                    except Exception:
+                        pass
+
+                if send_btn:
+                    await send_btn.click()
+                    _fl("  Clicked Send button")
+                else:
+                    _fl("  Send button not found — using Ctrl+Enter")
+                    await page.keyboard.press("Control+Enter")
+
+                await asyncio.sleep(1.5)
+                total_sent += 1
+
+                # ── 3h. Log to followups.csv ───────────────────────────────
+                upsert_followup(profile_url, follow_up_sent_at=now_str, status="followed_up")
+                _fl(f"  Follow-up sent and logged for {name}")
+                await log(f"  ✓ Follow-up sent to {name}.")
+
+                if total_sent < followup_cap and not _followup_stop_requested:
+                    delay = max(8 * speed_multiplier, 1.0)
+                    await log(f"  Waiting {delay:.0f}s before next...")
+                    await asyncio.sleep(delay)
+
+            _fl(f"FOLLOWUP RUN END — {total_sent} sent")
+            await log(f"━━ Done. {total_sent} follow-up(s) sent. ━━")
+
+        except Exception as e:
+            _fl(f"FOLLOWUP EXCEPTION: {e}\n{traceback.format_exc()}")
             await log(f"Error: {e}")
             raise
         finally:

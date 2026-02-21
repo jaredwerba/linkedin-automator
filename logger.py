@@ -222,3 +222,167 @@ def read_messages() -> list[dict]:
                 row[field] = ""
     rows.reverse()
     return rows
+
+
+# ── Follow-up log (followups.csv) ─────────────────────────────────────────────
+
+FOLLOWUP_LOG_PATH = Path(os.getenv("FOLLOWUP_LOG_PATH", "followups.csv"))
+FOLLOWUP_FIELDS = [
+    "profile_url", "name", "role",
+    "first_msg_sent_at", "follow_up_sent_at", "replied_at", "status",
+]
+
+
+def _normalize_url_for_log(url: str) -> str:
+    return url.split("?")[0].rstrip("/").lower()
+
+
+def _ensure_followup_header():
+    """Create followups.csv with correct header if it doesn't exist."""
+    if not FOLLOWUP_LOG_PATH.exists() or FOLLOWUP_LOG_PATH.stat().st_size == 0:
+        with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+            writer.writeheader()
+        return
+
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        existing_fields = next(csv.reader(f), [])
+
+    if existing_fields == FOLLOWUP_FIELDS:
+        return
+
+    # Migrate if schema changed
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        old_rows = list(csv.DictReader(f))
+
+    migrated = [{field: row.get(field, "") for field in FOLLOWUP_FIELDS} for row in old_rows]
+
+    with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+        writer.writeheader()
+        writer.writerows(migrated)
+
+
+def read_followups() -> list[dict]:
+    """Return all follow-up rows as a list of dicts, newest first."""
+    if not FOLLOWUP_LOG_PATH.exists():
+        return []
+    _ensure_followup_header()
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    for row in rows:
+        for field in FOLLOWUP_FIELDS:
+            if field not in row:
+                row[field] = ""
+    rows.reverse()
+    return rows
+
+
+def upsert_followup(profile_url: str, **kwargs):
+    """
+    Insert or update a row in followups.csv by normalized profile_url.
+    kwargs are the fields to set/update (e.g. status='replied', replied_at=now).
+    """
+    _ensure_followup_header()
+    norm = _normalize_url_for_log(profile_url)
+
+    rows: list[dict] = []
+    found = False
+
+    if FOLLOWUP_LOG_PATH.exists() and FOLLOWUP_LOG_PATH.stat().st_size > 0:
+        with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            rows = [{field: row.get(field, "") for field in FOLLOWUP_FIELDS} for row in reader]
+
+    for row in rows:
+        if _normalize_url_for_log(row.get("profile_url", "")) == norm:
+            for k, v in kwargs.items():
+                if k in FOLLOWUP_FIELDS and v:
+                    row[k] = v
+            found = True
+            break
+
+    if not found:
+        new_row = {field: "" for field in FOLLOWUP_FIELDS}
+        new_row["profile_url"] = profile_url
+        for k, v in kwargs.items():
+            if k in FOLLOWUP_FIELDS:
+                new_row[k] = v
+        rows.append(new_row)
+
+    with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def seed_followups_from_messages():
+    """
+    On first run: copy any messages.csv rows that aren't already in followups.csv
+    into followups.csv with status='pending'.
+    """
+    _ensure_followup_header()
+
+    # Build set of already-tracked profile URLs
+    existing_urls: set[str] = set()
+    if FOLLOWUP_LOG_PATH.exists() and FOLLOWUP_LOG_PATH.stat().st_size > 0:
+        with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                u = row.get("profile_url", "")
+                if u:
+                    existing_urls.add(_normalize_url_for_log(u))
+
+    # Read messages and seed missing ones
+    msg_rows = read_messages()  # newest first; we want all of them
+    new_rows = []
+    for msg in reversed(msg_rows):  # chronological order for append
+        url = msg.get("profile_url", "")
+        if not url:
+            continue
+        if _normalize_url_for_log(url) in existing_urls:
+            continue
+        new_rows.append({
+            "profile_url":       url,
+            "name":              msg.get("name", ""),
+            "role":              msg.get("role", ""),
+            "first_msg_sent_at": msg.get("sent_at", ""),
+            "follow_up_sent_at": "",
+            "replied_at":        "",
+            "status":            "pending",
+        })
+        existing_urls.add(_normalize_url_for_log(url))
+
+    if new_rows:
+        with open(FOLLOWUP_LOG_PATH, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+            writer.writerows(new_rows)
+
+    return len(new_rows)
+
+
+def count_followups_pending() -> int:
+    """Count rows with status='pending'."""
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("status", "") == "pending":
+                count += 1
+    return count
+
+
+def count_followups_today() -> int:
+    """Count rows where follow_up_sent_at starts with today's date."""
+    today = date.today().isoformat()
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("follow_up_sent_at", "").startswith(today):
+                count += 1
+    return count

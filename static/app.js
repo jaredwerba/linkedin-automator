@@ -1,10 +1,13 @@
 // State
 let ws = null;
 let msgWs = null;
+let followupWs = null;
 let isPaused = false;
 let isMsgPaused = false;
+let isFollowupPaused = false;
 let isRunning = false;
 let isMsgRunning = false;
+let isFollowupRunning = false;
 let activeTab = 'feed';
 
 // DOM refs
@@ -28,10 +31,17 @@ function switchTab(tab) {
   document.getElementById('results-refresh-btn').classList.toggle('hidden', tab !== 'results');
   document.getElementById('history-refresh-btn').classList.toggle('hidden', tab !== 'history');
   document.getElementById('msg-refresh-btn').classList.toggle('hidden', tab !== 'msg');
+  document.getElementById('followup-refresh-btn').classList.toggle('hidden', tab !== 'followup');
 
   if (tab === 'results') loadResults();
   if (tab === 'history') loadHistory();
   if (tab === 'msg') { loadMessages(); refreshMsgStatus(); updateMsgCapBubble(null); }
+  if (tab === 'followup') {
+    loadFollowups();
+    refreshFollowupStatus();
+    updateFollowupDaysBubble(null);
+    updateFollowupCapBubble(null);
+  }
 }
 
 // ── Results table ─────────────────────────────────────────────────────────────
@@ -697,3 +707,241 @@ async function testAI() {
     addLog(`AI test request failed: ${e}`, 'error');
   }
 }
+
+// ── Follow-up sliders ─────────────────────────────────────────────────────────
+function updateFollowupDaysBubble(input) {
+  const slider = input || document.getElementById('followup-days-slider');
+  if (!slider) return;
+  const bubble = document.getElementById('followup-days-bubble');
+  if (!bubble) return;
+  const val = parseInt(slider.value, 10);
+  const min = parseInt(slider.min, 10);
+  const max = parseInt(slider.max, 10);
+  const pct = max > min ? (val - min) / (max - min) : 0;
+  const wrap = slider.closest('.msg-cap-slider-wrap');
+  if (wrap) wrap.style.setProperty('--val-pct', pct);
+  bubble.textContent = val === 0 ? 'TEST' : val;
+}
+
+function updateFollowupCapBubble(input) {
+  const slider = input || document.getElementById('followup-cap-slider');
+  if (!slider) return;
+  const bubble = document.getElementById('followup-cap-bubble');
+  if (!bubble) return;
+  const val = parseInt(slider.value, 10);
+  const min = parseInt(slider.min, 10);
+  const max = parseInt(slider.max, 10);
+  const pct = (val - min) / (max - min);
+  const wrap = slider.closest('.msg-cap-slider-wrap');
+  if (wrap) wrap.style.setProperty('--val-pct', pct);
+  bubble.textContent = val;
+}
+
+function getFollowupCap()  { return parseInt(document.getElementById('followup-cap-slider')?.value  ?? '5', 10); }
+function getFollowupDays() { return parseInt(document.getElementById('followup-days-slider')?.value ?? '0', 10); }
+
+// ── Follow-up button state ────────────────────────────────────────────────────
+function setFollowupRunning(running) {
+  isFollowupRunning = running;
+  const btnRun   = document.getElementById('btn-followup-run');
+  const btnPause = document.getElementById('btn-followup-pause');
+  const btnStop  = document.getElementById('btn-followup-stop');
+  if (btnRun)   btnRun.disabled   = running;
+  if (btnPause) btnPause.disabled = !running;
+  if (btnStop)  btnStop.disabled  = !running;
+}
+
+// ── Follow-up data ────────────────────────────────────────────────────────────
+async function loadFollowups() {
+  try {
+    const res  = await fetch('/followups');
+    const data = await res.json();
+    renderFollowups(data.rows, data.total);
+  } catch (e) {
+    console.error('Failed to load followups:', e);
+  }
+}
+
+const STATUS_PILL = {
+  pending:      { cls: 'pill-pending',     label: 'Pending'      },
+  replied:      { cls: 'pill-replied',     label: 'Replied ✓'    },
+  followed_up:  { cls: 'pill-followed-up', label: 'Followed Up'  },
+  done:         { cls: 'pill-done',        label: 'Done'         },
+};
+
+function renderFollowups(rows, total) {
+  const countEl  = document.getElementById('followup-count');
+  const emptyEl  = document.getElementById('followup-empty');
+  const tableEl  = document.getElementById('followup-table');
+  const tbody    = document.getElementById('followup-tbody');
+
+  if (countEl) countEl.textContent = total > 0 ? total : '';
+
+  if (!rows || rows.length === 0) {
+    if (emptyEl) emptyEl.classList.remove('hidden');
+    if (tableEl) tableEl.classList.add('hidden');
+    return;
+  }
+
+  if (emptyEl) emptyEl.classList.add('hidden');
+  if (tableEl) tableEl.classList.remove('hidden');
+  tbody.innerHTML = '';
+
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+
+    const nameHtml = row.profile_url
+      ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener">${escapeHtml(row.name)}</a>`
+      : escapeHtml(row.name);
+
+    const status  = row.status || 'pending';
+    const pill    = STATUS_PILL[status] || { cls: 'pill-pending', label: status };
+    const pillHtml = `<span class="status-pill ${pill.cls}">${pill.label}</span>`;
+
+    const fuSent  = row.follow_up_sent_at || '—';
+
+    tr.innerHTML = `
+      <td class="col-date">${escapeHtml(row.first_msg_sent_at)}</td>
+      <td class="col-name">${nameHtml}</td>
+      <td class="col-role">${escapeHtml(row.role)}</td>
+      <td class="col-status">${pillHtml}</td>
+      <td class="col-date">${escapeHtml(fuSent)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function refreshFollowupStatus() {
+  try {
+    const res  = await fetch('/followup-status');
+    const data = await res.json();
+    const todayEl   = document.getElementById('followup-sent-today');
+    const countEl   = document.getElementById('followup-count');
+    if (todayEl) {
+      const parts = [];
+      if (data.followed_up_today > 0) parts.push(`${data.followed_up_today} sent today`);
+      if (data.pending_count > 0)     parts.push(`${data.pending_count} pending`);
+      todayEl.textContent = parts.join(' · ');
+    }
+  } catch (e) { /* ignore */ }
+}
+
+function refreshFollowupBadge() {
+  fetch('/followups')
+    .then(r => r.json())
+    .then(d => {
+      const countEl = document.getElementById('followup-count');
+      if (countEl) countEl.textContent = d.total > 0 ? d.total : '';
+      if (activeTab === 'followup') renderFollowups(d.rows, d.total);
+    })
+    .catch(() => {});
+}
+
+// ── Follow-up preflight typeout ───────────────────────────────────────────────
+async function followupPreflight(cap, days, presetName) {
+  const feed = document.getElementById('followup-feed');
+  feed.innerHTML = '';
+  await typewriterLog(`> INITIALISING FOLLOW-UP SEQUENCE...`, 'info', 22, feed);
+  await new Promise(r => setTimeout(r, 180));
+  await typewriterLog(`> FOLLOW-UP CAP: ${cap} | WAIT: ${days} DAY(S)`, 'info', 18, feed);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> SPEED: ${presetName}`, 'info', 22, feed);
+  await new Promise(r => setTimeout(r, 140));
+  await typewriterLog(`> LAUNCHING CHROME — STAND BY...`, 'warning', 20, feed);
+  await new Promise(r => setTimeout(r, 200));
+}
+
+// ── Follow-up Run ─────────────────────────────────────────────────────────────
+async function startFollowupRun() {
+  const feed = document.getElementById('followup-feed');
+  const cap  = getFollowupCap();
+  const days = getFollowupDays();
+
+  setFollowupRunning(true);
+  isFollowupPaused = false;
+  const pauseBtn = document.getElementById('btn-followup-pause');
+  if (pauseBtn) pauseBtn.textContent = 'Pause';
+
+  await followupPreflight(cap, days, getSpeedPresetName());
+
+  const speedMultiplier = getSpeedMultiplier();
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  followupWs = new WebSocket(`${proto}://${location.host}/ws/followup`);
+
+  const addFollowupLog = (message, level = 'info') => addLog(message, level, feed);
+
+  followupWs.onopen = () => {
+    followupWs.send(JSON.stringify({
+      action: 'followup_run',
+      followup_cap: cap,
+      wait_days: days,
+      speed_multiplier: speedMultiplier,
+    }));
+  };
+
+  followupWs.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    if (msg.type === 'log') {
+      addFollowupLog(msg.message);
+    } else if (msg.type === 'started') {
+      addFollowupLog('Follow-up run started.', 'info');
+    } else if (msg.type === 'done') {
+      setFollowupRunning(false);
+      refreshFollowupBadge();
+      refreshFollowupStatus();
+      addFollowupLog('Follow-up run finished.', 'success');
+      followupWs.close();
+    } else if (msg.type === 'error') {
+      addFollowupLog(`Error: ${msg.message}`, 'error');
+      setFollowupRunning(false);
+      followupWs.close();
+    }
+  };
+
+  followupWs.onerror = () => {
+    addFollowupLog('WebSocket error — is the server running? Restart uvicorn and try again.', 'error');
+    setFollowupRunning(false);
+  };
+
+  followupWs.onclose = (evt) => {
+    if (isFollowupRunning) {
+      addFollowupLog(`WebSocket closed unexpectedly (code ${evt.code}).`, 'warning');
+      setFollowupRunning(false);
+    }
+  };
+}
+
+// ── Pause / Resume (follow-up) ────────────────────────────────────────────────
+function toggleFollowupPause() {
+  if (!followupWs || followupWs.readyState !== WebSocket.OPEN) return;
+  const feed = document.getElementById('followup-feed');
+  if (isFollowupPaused) {
+    followupWs.send(JSON.stringify({ action: 'resume' }));
+    isFollowupPaused = false;
+    const btn = document.getElementById('btn-followup-pause');
+    if (btn) btn.textContent = 'Pause';
+    addLog('Resumed.', 'info', feed);
+  } else {
+    followupWs.send(JSON.stringify({ action: 'pause' }));
+    isFollowupPaused = true;
+    const btn = document.getElementById('btn-followup-pause');
+    if (btn) btn.textContent = 'Resume';
+    addLog('Paused. Click Resume to continue.', 'warning', feed);
+  }
+}
+
+// ── Stop (follow-up) ──────────────────────────────────────────────────────────
+function stopFollowupRun() {
+  if (!followupWs || followupWs.readyState !== WebSocket.OPEN) return;
+  const feed = document.getElementById('followup-feed');
+  followupWs.send(JSON.stringify({ action: 'stop' }));
+  addLog('Stop requested...', 'warning', feed);
+}
+
+// ── Init follow-up sliders on load ────────────────────────────────────────────
+refreshFollowupBadge();
+setInterval(() => { if (isFollowupRunning) refreshFollowupStatus(); }, 10000);
+window.addEventListener('load', () => {
+  updateFollowupDaysBubble(null);
+  updateFollowupCapBubble(null);
+});

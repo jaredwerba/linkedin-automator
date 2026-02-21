@@ -106,12 +106,16 @@
           <button class="tab-btn" onclick="switchTab('msg')" id="tab-msg">
             Msg Prospect <span id="msg-count" class="tab-count"></span>
           </button>
+          <button class="tab-btn" onclick="switchTab('followup')" id="tab-followup">
+            Follow Up <span id="followup-count" class="tab-count"></span>
+          </button>
           <!-- Per-tab actions -->
           <div class="tab-actions">
             <button id="feed-clear-btn" class="btn ghost small" onclick="clearLog()">Clear</button>
             <button id="results-refresh-btn" class="btn ghost small hidden" onclick="loadResults()">Refresh</button>
             <button id="history-refresh-btn" class="btn ghost small hidden" onclick="loadHistory()">Refresh</button>
             <button id="msg-refresh-btn" class="btn ghost small hidden" onclick="loadMessages()">Refresh</button>
+            <button id="followup-refresh-btn" class="btn ghost small hidden" onclick="loadFollowups()">Refresh</button>
           </div>
         </div>
 
@@ -187,6 +191,64 @@
                   </tr>
                 </thead>
                 <tbody id="msg-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Follow Up pane -->
+        <div id="pane-followup" class="tab-pane hidden">
+
+          <!-- Wait days slider -->
+          <div class="msg-cap-section">
+            <label class="msg-cap-label-top">Wait before follow-up <span class="cap-hint">(days)</span></label>
+            <div class="msg-cap-slider-wrap">
+              <input type="range" id="followup-days-slider" min="0" max="14" step="1" value="0"
+                     oninput="updateFollowupDaysBubble(this)" />
+              <div id="followup-days-bubble" class="msg-cap-bubble"></div>
+            </div>
+          </div>
+
+          <!-- Cap slider -->
+          <div class="msg-cap-section">
+            <label class="msg-cap-label-top">Follow-ups per Run <span class="cap-hint">(1–10)</span></label>
+            <div class="msg-cap-slider-wrap">
+              <input type="range" id="followup-cap-slider" min="1" max="10" step="1" value="5"
+                     oninput="updateFollowupCapBubble(this)" />
+              <div id="followup-cap-bubble" class="msg-cap-bubble"></div>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="msg-controls">
+            <button id="btn-followup-run" class="btn execute" onclick="startFollowupRun()">Send Follow-Ups</button>
+            <button id="btn-followup-pause" class="btn secondary" onclick="toggleFollowupPause()" disabled>Pause</button>
+            <button id="btn-followup-stop" class="btn danger" onclick="stopFollowupRun()" disabled>Stop</button>
+          </div>
+
+          <!-- Live feed -->
+          <div id="followup-feed" class="log msg-log"></div>
+
+          <!-- Status table -->
+          <div class="msg-table-section">
+            <div class="msg-table-header">
+              <span class="msg-table-title">Follow-Up Log</span>
+              <span id="followup-sent-today" class="msg-today-badge"></span>
+            </div>
+            <div id="followup-empty" class="results-empty hidden">No follow-ups sent yet.</div>
+            <div class="results-table-wrap">
+              <table id="followup-table" class="results-table hidden">
+                <thead>
+                  <tr>
+                    <th>First Message</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Follow-Up Sent</th>
+                  </tr>
+                </thead>
+                <tbody id="followup-tbody"></tbody>
               </table>
             </div>
           </div>

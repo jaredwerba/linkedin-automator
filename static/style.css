@@ -939,3 +939,29 @@ input[type="range"]::-moz-range-thumb {
   height: 100%;
   overflow: hidden;
 }
+
+/* Follow-up pane layout */
+#pane-followup {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Follow-up status pills */
+.status-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.pill-pending     { background: rgba(234, 179, 8, 0.18);  color: #ca8a04; }
+.pill-replied     { background: rgba(34, 197, 94, 0.18);  color: #16a34a; }
+.pill-followed-up { background: rgba(99, 102, 241, 0.18); color: #6366f1; }
+.pill-done        { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+
+.col-status { white-space: nowrap; }
