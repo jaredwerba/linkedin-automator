@@ -146,3 +146,389 @@ def read_connections() -> list[dict]:
                 row[field] = ""
     rows.reverse()
     return rows
+<<<<<<< Updated upstream
+=======
+
+
+# ── Message log (messages.csv) ────────────────────────────────────────────────
+
+def _ensure_msg_header():
+    """Create messages.csv with correct header if it doesn't exist."""
+    if not MSG_LOG_PATH.exists() or MSG_LOG_PATH.stat().st_size == 0:
+        with open(MSG_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=MSG_FIELDS)
+            writer.writeheader()
+        return
+
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        existing_fields = next(csv.reader(f), [])
+
+    if existing_fields == MSG_FIELDS:
+        return
+
+    # Migrate if schema changed
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        old_rows = list(csv.DictReader(f))
+
+    migrated = [{field: row.get(field, "") for field in MSG_FIELDS} for row in old_rows]
+
+    with open(MSG_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=MSG_FIELDS)
+        writer.writeheader()
+        writer.writerows(migrated)
+
+
+def log_message(name: str, role: str, profile_url: str, message: str):
+    """Append one row to messages.csv."""
+    _ensure_msg_header()
+    row = {
+        "sent_at":     datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "name":        name,
+        "role":        role,
+        "profile_url": profile_url,
+        "message":     message,
+    }
+    with open(MSG_LOG_PATH, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=MSG_FIELDS)
+        writer.writerow(row)
+
+
+def count_messages_today() -> int:
+    """Count messages.csv rows where sent_at starts with today's date."""
+    today = date.today().isoformat()
+    if not MSG_LOG_PATH.exists():
+        return 0
+    _ensure_msg_header()
+    count = 0
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("sent_at", "").startswith(today):
+                count += 1
+    return count
+
+
+def read_messages() -> list[dict]:
+    """Return all logged messages as a list of dicts, newest first."""
+    if not MSG_LOG_PATH.exists():
+        return []
+    _ensure_msg_header()
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    for row in rows:
+        for field in MSG_FIELDS:
+            if field not in row:
+                row[field] = ""
+    rows.reverse()
+    return rows
+
+
+# ── Follow-up log (followups.csv) ─────────────────────────────────────────────
+
+FOLLOWUP_LOG_PATH = Path(os.getenv("FOLLOWUP_LOG_PATH", "followups.csv"))
+FOLLOWUP_FIELDS = [
+    "profile_url", "name", "role",
+    "first_msg_sent_at", "follow_up_sent_at", "replied_at", "status",
+]
+
+
+def _normalize_url_for_log(url: str) -> str:
+    return url.split("?")[0].rstrip("/").lower()
+
+
+def _ensure_followup_header():
+    """Create followups.csv with correct header if it doesn't exist."""
+    if not FOLLOWUP_LOG_PATH.exists() or FOLLOWUP_LOG_PATH.stat().st_size == 0:
+        with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+            writer.writeheader()
+        return
+
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        existing_fields = next(csv.reader(f), [])
+
+    if existing_fields == FOLLOWUP_FIELDS:
+        return
+
+    # Migrate if schema changed
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        old_rows = list(csv.DictReader(f))
+
+    migrated = [{field: row.get(field, "") for field in FOLLOWUP_FIELDS} for row in old_rows]
+
+    with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+        writer.writeheader()
+        writer.writerows(migrated)
+
+
+def read_followups() -> list[dict]:
+    """Return all follow-up rows as a list of dicts, newest first."""
+    if not FOLLOWUP_LOG_PATH.exists():
+        return []
+    _ensure_followup_header()
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+    for row in rows:
+        for field in FOLLOWUP_FIELDS:
+            if field not in row:
+                row[field] = ""
+    rows.reverse()
+    return rows
+
+
+def upsert_followup(profile_url: str, **kwargs):
+    """
+    Insert or update a row in followups.csv by normalized profile_url.
+    kwargs are the fields to set/update (e.g. status='replied', replied_at=now).
+    """
+    _ensure_followup_header()
+    norm = _normalize_url_for_log(profile_url)
+
+    rows: list[dict] = []
+    found = False
+
+    if FOLLOWUP_LOG_PATH.exists() and FOLLOWUP_LOG_PATH.stat().st_size > 0:
+        with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            rows = [{field: row.get(field, "") for field in FOLLOWUP_FIELDS} for row in reader]
+
+    for row in rows:
+        if _normalize_url_for_log(row.get("profile_url", "")) == norm:
+            for k, v in kwargs.items():
+                if k in FOLLOWUP_FIELDS and v:
+                    row[k] = v
+            found = True
+            break
+
+    if not found:
+        new_row = {field: "" for field in FOLLOWUP_FIELDS}
+        new_row["profile_url"] = profile_url
+        for k, v in kwargs.items():
+            if k in FOLLOWUP_FIELDS:
+                new_row[k] = v
+        rows.append(new_row)
+
+    with open(FOLLOWUP_LOG_PATH, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def seed_followups_from_messages():
+    """
+    On first run: copy any messages.csv rows that aren't already in followups.csv
+    into followups.csv with status='pending'.
+    """
+    _ensure_followup_header()
+
+    # Build set of already-tracked profile URLs
+    existing_urls: set[str] = set()
+    if FOLLOWUP_LOG_PATH.exists() and FOLLOWUP_LOG_PATH.stat().st_size > 0:
+        with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                u = row.get("profile_url", "")
+                if u:
+                    existing_urls.add(_normalize_url_for_log(u))
+
+    # Read messages and seed missing ones
+    msg_rows = read_messages()  # newest first; we want all of them
+    new_rows = []
+    for msg in reversed(msg_rows):  # chronological order for append
+        url = msg.get("profile_url", "")
+        if not url:
+            continue
+        if _normalize_url_for_log(url) in existing_urls:
+            continue
+        new_rows.append({
+            "profile_url":       url,
+            "name":              msg.get("name", ""),
+            "role":              msg.get("role", ""),
+            "first_msg_sent_at": msg.get("sent_at", ""),
+            "follow_up_sent_at": "",
+            "replied_at":        "",
+            "status":            "pending",
+        })
+        existing_urls.add(_normalize_url_for_log(url))
+
+    if new_rows:
+        with open(FOLLOWUP_LOG_PATH, "a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
+            writer.writerows(new_rows)
+
+    return len(new_rows)
+
+
+def count_followups_pending() -> int:
+    """Count rows with status='pending'."""
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("status", "") == "pending":
+                count += 1
+    return count
+
+
+def count_followups_today() -> int:
+    """Count rows where follow_up_sent_at starts with today's date."""
+    today = date.today().isoformat()
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if row.get("follow_up_sent_at", "").startswith(today):
+                count += 1
+    return count
+
+
+# ── Analytics: weekly breakdown (Mon–Sun) ─────────────────────────────────────
+
+def _week_day_strings() -> list[str]:
+    """Return ISO date strings for Mon–Sun of the current calendar week."""
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    return [(monday + timedelta(days=i)).isoformat() for i in range(7)]
+
+
+def weekly_connections_by_day() -> list[int]:
+    """Return list[7] of connection request counts for Mon–Sun this week."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not LOG_PATH.exists():
+        return counts
+    _ensure_header()
+    with open(LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+def weekly_messages_by_day() -> list[int]:
+    """Return list[7] of first-message counts for Mon–Sun this week."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not MSG_LOG_PATH.exists():
+        return counts
+    _ensure_msg_header()
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+def weekly_followups_by_day() -> list[int]:
+    """Return list[7] of follow-up counts for Mon–Sun this week."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not FOLLOWUP_LOG_PATH.exists():
+        return counts
+    _ensure_followup_header()
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("follow_up_sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+# ── Analytics: quarterly totals ───────────────────────────────────────────────
+
+def _quarter_bounds() -> tuple[str, str]:
+    """Return (start_date, end_date) ISO strings for the current calendar quarter."""
+    today = date.today()
+    q_start_month = ((today.month - 1) // 3) * 3 + 1   # 1, 4, 7, or 10
+    q_start = date(today.year, q_start_month, 1)
+    # End = first day of NEXT quarter
+    if q_start_month + 3 > 12:
+        q_end = date(today.year + 1, 1, 1)
+    else:
+        q_end = date(today.year, q_start_month + 3, 1)
+    return q_start.isoformat(), q_end.isoformat()
+
+
+def quarterly_connections_sent() -> int:
+    """Count connection requests sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not LOG_PATH.exists():
+        return 0
+    _ensure_header()
+    count = 0
+    with open(LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if q_start <= d < q_end:
+                count += 1
+    return count
+
+
+def quarterly_messages_sent() -> int:
+    """Count first messages sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not MSG_LOG_PATH.exists():
+        return 0
+    _ensure_msg_header()
+    count = 0
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if q_start <= d < q_end:
+                count += 1
+    return count
+
+
+def quarterly_followups_sent() -> int:
+    """Count follow-ups sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("follow_up_sent_at", "")[:10]
+            if q_start <= d < q_end and row.get("follow_up_sent_at", ""):
+                count += 1
+    return count
+
+
+def quarterly_connections_accepted() -> int:
+    """
+    Estimate accepted connections this quarter.
+    A connection is considered accepted when we sent them a first message
+    (i.e. they appear in both connections.csv and messages.csv this quarter).
+    """
+    q_start, q_end = _quarter_bounds()
+    # Collect normalized profile URLs of connections sent this quarter
+    conn_urls: set[str] = set()
+    if LOG_PATH.exists():
+        _ensure_header()
+        with open(LOG_PATH, "r", newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                d = row.get("sent_at", "")[:10]
+                url = row.get("profile_url", "").split("?")[0].rstrip("/").lower()
+                if q_start <= d < q_end and url:
+                    conn_urls.add(url)
+
+    # Count how many of those also appear in messages.csv (accepted + messaged)
+    if not conn_urls or not MSG_LOG_PATH.exists():
+        return 0
+    _ensure_msg_header()
+    accepted = 0
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            url = row.get("profile_url", "").split("?")[0].rstrip("/").lower()
+            if url in conn_urls:
+                accepted += 1
+    return accepted
+>>>>>>> Stashed changes

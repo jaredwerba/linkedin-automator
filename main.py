@@ -12,7 +12,18 @@ from dotenv import load_dotenv
 
 import automator
 from ai import test_ai_connection
+<<<<<<< Updated upstream
 from logger import read_connections, count_notes_today, count_sent_this_week
+=======
+from logger import (
+    read_connections, count_notes_today, count_sent_this_week,
+    read_messages, count_messages_today,
+    read_followups, count_followups_pending, count_followups_today,
+    weekly_connections_by_day, weekly_messages_by_day, weekly_followups_by_day,
+    quarterly_connections_sent, quarterly_messages_sent, quarterly_followups_sent,
+    quarterly_connections_accepted,
+)
+>>>>>>> Stashed changes
 from run_logger import start_run, append_entry, finish_run, read_runs
 
 load_dotenv()
@@ -69,6 +80,64 @@ async def get_status():
     )
 
 
+<<<<<<< Updated upstream
+=======
+@app.get("/msg-status", response_model=MsgStatusResponse)
+async def get_msg_status():
+    return MsgStatusResponse(
+        running=_msg_task is not None and not _msg_task.done(),
+        messages_today=count_messages_today(),
+        paused=messenger._msg_pause_requested,
+    )
+
+
+@app.get("/followup-status", response_model=FollowupStatusResponse)
+async def get_followup_status():
+    return FollowupStatusResponse(
+        running=_followup_task is not None and not _followup_task.done(),
+        pending_count=count_followups_pending(),
+        followed_up_today=count_followups_today(),
+        paused=messenger._followup_pause_requested,
+    )
+
+
+@app.get("/followups")
+async def get_followups():
+    rows = read_followups()
+    return {"rows": rows, "total": len(rows)}
+
+
+@app.get("/analytics")
+async def get_analytics():
+    """
+    Returns all data needed for the weekly bar chart and quarterly scorecard.
+    Weekly arrays are index 0=Mon … 6=Sun for the current calendar week.
+    Quarterly figures cover the current calendar quarter (Q1/Q2/Q3/Q4).
+    """
+    q_conn   = quarterly_connections_sent()
+    q_msg    = quarterly_messages_sent()
+    q_fu     = quarterly_followups_sent()
+    q_accept = quarterly_connections_accepted()
+    # msg-to-connection conversion: of all connections sent, how many became messages?
+    conv_pct = round(q_msg / q_conn * 100, 1) if q_conn > 0 else 0.0
+
+    return {
+        "weekly": {
+            "connections": weekly_connections_by_day(),   # [7]
+            "messages":    weekly_messages_by_day(),       # [7]
+            "followups":   weekly_followups_by_day(),      # [7]
+        },
+        "quarterly": {
+            "connections_sent":     q_conn,
+            "messages_sent":        q_msg,
+            "followups_sent":       q_fu,
+            "connections_accepted": q_accept,
+            "conversion_pct":       conv_pct,
+        },
+    }
+
+
+>>>>>>> Stashed changes
 @app.post("/pause")
 async def pause():
     automator.request_pause()
