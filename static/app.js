@@ -45,17 +45,48 @@ function switchTab(tab) {
 }
 
 // ── Results table ─────────────────────────────────────────────────────────────
+let _resultsRows = [];          // cached rows for re-sort without re-fetch
+let _scoreSort   = null;        // null | 'desc' | 'asc'
+
 async function loadResults() {
   try {
     const res = await fetch('/results');
     const data = await res.json();
-    renderResults(data.rows, data.total);
+    _resultsRows = data.rows || [];
+    renderResults(_resultsRows, data.total);
   } catch (e) {
     console.error('Failed to load results:', e);
   }
 }
 
-function renderResults(rows, total) {
+function _buildRow(row) {
+  const tr = document.createElement('tr');
+  tr.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+
+  const scorerClass = row.scorer === 'AI' ? 'scorer-ai' : 'scorer-kw';
+  const scoreHtml = `<span class="score-pill ${scorerClass}">${row.score} <span class="scorer-label">${row.scorer}</span></span>`;
+
+  const nameHtml = row.profile_url
+    ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener">${escapeHtml(row.name)}</a>`
+    : escapeHtml(row.name);
+
+  const noteText = row.note || '';
+  const noteHtml = noteText
+    ? `<button class="col-note-text" onclick="this.classList.toggle('expanded')" title="Click to expand">${escapeHtml(noteText)}</button>`
+    : `<span class="col-note-empty">—</span>`;
+
+  tr.innerHTML = `
+    <td class="col-date">${escapeHtml(row.sent_at)}</td>
+    <td class="col-name">${nameHtml}</td>
+    <td class="col-role">${escapeHtml(row.role)}</td>
+    <td class="col-company">${escapeHtml(row.company)}</td>
+    <td class="col-score">${scoreHtml}</td>
+    <td class="col-note">${noteHtml}</td>
+  `;
+  return tr;
+}
+
+function renderResults(rows, total, animate = false) {
   const countEl = document.getElementById('results-count');
   const emptyEl = document.getElementById('results-empty');
   const tableEl = document.getElementById('results-table');
@@ -71,42 +102,62 @@ function renderResults(rows, total) {
 
   emptyEl.classList.add('hidden');
   tableEl.classList.remove('hidden');
-  tbody.innerHTML = '';
 
-  rows.forEach(row => {
-    const tr = document.createElement('tr');
+  // Apply current sort order
+  let sorted = [...rows];
+  if (_scoreSort === 'desc') sorted.sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0));
+  if (_scoreSort === 'asc')  sorted.sort((a, b) => (Number(a.score) || 0) - (Number(b.score) || 0));
 
-    const scorerClass = row.scorer === 'AI' ? 'scorer-ai' : 'scorer-kw';
-    const scoreHtml = `<span class="score-pill ${scorerClass}">${row.score} <span class="scorer-label">${row.scorer}</span></span>`;
+  if (animate && tbody.children.length > 0) {
+    // Fade + slide existing rows out
+    Array.from(tbody.children).forEach(tr => {
+      tr.style.opacity   = '0';
+      tr.style.transform = 'translateY(-6px)';
+    });
+    setTimeout(() => {
+      tbody.innerHTML = '';
+      sorted.forEach((row, i) => {
+        const tr = _buildRow(row);
+        // Start invisible, stagger in
+        tr.style.opacity   = '0';
+        tr.style.transform = 'translateY(8px)';
+        tbody.appendChild(tr);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            tr.style.transitionDelay = `${i * 18}ms`;
+            tr.style.opacity   = '1';
+            tr.style.transform = 'translateY(0)';
+          });
+        });
+      });
+    }, 200);
+  } else {
+    tbody.innerHTML = '';
+    sorted.forEach(row => tbody.appendChild(_buildRow(row)));
+  }
+}
 
-    const nameHtml = row.profile_url
-      ? `<a href="${escapeHtml(row.profile_url)}" target="_blank" rel="noopener">${escapeHtml(row.name)}</a>`
-      : escapeHtml(row.name);
+function sortByScore() {
+  // Cycle: none → desc → asc → desc …
+  _scoreSort = _scoreSort === 'desc' ? 'asc' : 'desc';
 
-    const noteText = row.note || '';
-    const noteHtml = noteText
-      ? `<button class="col-note-text" onclick="this.classList.toggle('expanded')" title="Click to expand">${escapeHtml(noteText)}</button>`
-      : `<span class="col-note-empty">—</span>`;
+  // Update header indicator
+  const indicator = document.getElementById('sort-indicator');
+  const th = document.getElementById('th-score');
+  if (indicator) indicator.textContent = _scoreSort === 'desc' ? ' ▼' : ' ▲';
+  if (th) th.classList.add('th-sorted');
 
-    tr.innerHTML = `
-      <td class="col-date">${escapeHtml(row.sent_at)}</td>
-      <td class="col-name">${nameHtml}</td>
-      <td class="col-role">${escapeHtml(row.role)}</td>
-      <td class="col-company">${escapeHtml(row.company)}</td>
-      <td class="col-score">${scoreHtml}</td>
-      <td class="col-note">${noteHtml}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+  renderResults(_resultsRows, _resultsRows.length, true);
 }
 
 function refreshResultsBadge() {
   fetch('/results')
     .then(r => r.json())
     .then(d => {
+      _resultsRows = d.rows || [];
       const countEl = document.getElementById('results-count');
       countEl.textContent = d.total > 0 ? d.total : '';
-      if (activeTab === 'results') renderResults(d.rows, d.total);
+      if (activeTab === 'results') renderResults(_resultsRows, d.total);
     })
     .catch(() => {});
 }
@@ -395,28 +446,36 @@ function updateRings(sentToday, dailyCap, sentWeek, weeklyCap, notesToday) {
   const weekNum  = document.getElementById('ring-label-week');
   const connNum  = document.getElementById('ring-label-conn');
   const widget   = document.querySelector('.ring-widget');
-
   if (!connArc) return;
 
-  const rWeek  = 88;
-  const rConn  = 66;
-  const rNotes = 44;
-  const circWeek  = 2 * Math.PI * rWeek;
-  const circConn  = 2 * Math.PI * rConn;
-  const circNotes = 2 * Math.PI * rNotes;
-
+  const rWeek=88, rConn=66, rNotes=44;
+  const circWeek=2*Math.PI*rWeek, circConn=2*Math.PI*rConn, circNotes=2*Math.PI*rNotes;
   const weekPct  = weeklyCap > 0 ? Math.min(sentWeek   / weeklyCap, 1) : 0;
   const connPct  = dailyCap  > 0 ? Math.min(sentToday  / dailyCap,  1) : 0;
   const notesPct = dailyCap  > 0 ? Math.min(notesToday / dailyCap,  1) : 0;
 
-  if (weekArc) {
-    weekArc.style.strokeDasharray  = `${circWeek}`;
-    weekArc.style.strokeDashoffset = `${circWeek * (1 - weekPct)}`;
-  }
-  connArc.style.strokeDasharray  = `${circConn}`;
-  connArc.style.strokeDashoffset = `${circConn * (1 - connPct)}`;
-  notesArc.style.strokeDasharray  = `${circNotes}`;
-  notesArc.style.strokeDashoffset = `${circNotes * (1 - notesPct)}`;
+  const arcs = [
+    { el: weekArc,  circ: circWeek,  pct: weekPct  },
+    { el: connArc,  circ: circConn,  pct: connPct  },
+    { el: notesArc, circ: circNotes, pct: notesPct },
+  ];
+  // Step 1: snap all arcs to empty (no transition)
+  arcs.forEach(({ el, circ }) => {
+    if (!el) return;
+    el.style.transition       = 'stroke-dashoffset 0s';
+    el.style.strokeDasharray  = `${circ}`;
+    el.style.strokeDashoffset = `${circ}`;
+  });
+  // Step 2: double-rAF so browser commits the empty state first, then animates
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      arcs.forEach(({ el, circ, pct }, i) => {
+        if (!el) return;
+        el.style.transition       = `stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1) ${i * 120}ms`;
+        el.style.strokeDashoffset = `${circ * (1 - pct)}`;
+      });
+    });
+  });
 
   if (weekNum) weekNum.textContent = `${sentWeek}/${weeklyCap}`;
   if (connNum) connNum.textContent = `${sentToday}/${dailyCap}`;
@@ -549,6 +608,7 @@ async function startRun() {
       refreshCapCounter();
       refreshResultsBadge();
       refreshHistoryBadge();
+      loadAnalytics();
       addLog('Session finished.', 'success');
       ws.close();
     } else if (msg.type === 'error') {
@@ -642,6 +702,7 @@ async function startMsgRun() {
       setMsgRunning(false);
       refreshMsgBadge();
       refreshMsgStatus();
+      loadAnalytics();
       addMsgLog('Messaging run finished.', 'success');
       msgWs.close();
     } else if (msg.type === 'error') {
@@ -889,6 +950,7 @@ async function startFollowupRun() {
       setFollowupRunning(false);
       refreshFollowupBadge();
       refreshFollowupStatus();
+      loadAnalytics();
       addFollowupLog('Follow-up run finished.', 'success');
       followupWs.close();
     } else if (msg.type === 'error') {
@@ -945,3 +1007,61 @@ window.addEventListener('load', () => {
   updateFollowupDaysBubble(null);
   updateFollowupCapBubble(null);
 });
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+
+async function loadAnalytics() {
+  try {
+    const res  = await fetch('/analytics');
+    const data = await res.json();
+    renderQuarterlyScorecard(data.quarterly);
+  } catch (e) { console.error('Analytics fetch failed:', e); }
+}
+
+function renderQuarterlyScorecard(q) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('q-conn-sent',     q.connections_sent);
+  set('q-conn-accepted', q.connections_accepted);
+  set('q-msg-sent',      q.messages_sent);
+  set('q-fu-sent',       q.followups_sent);
+  set('q-conv-pct',      `${q.conversion_pct}%`);
+  const now = new Date();
+  const el  = document.getElementById('quarter-label');
+  if (el) el.textContent = `Q${Math.floor(now.getMonth() / 3) + 1} ${now.getFullYear()}`;
+}
+
+loadAnalytics();
+setInterval(loadAnalytics, 60000);
+
+// ── Accepted-connections refresh ───────────────────────────────────────────────
+function refreshAccepted() {
+  const btn = document.getElementById('btn-refresh-accepted');
+  if (!btn || btn.disabled) return;
+  btn.classList.add('spinning');
+  btn.disabled = true;
+
+  const ws = new WebSocket(`ws://${location.host}/ws/refresh-accepted`);
+
+  ws.onmessage = ({ data }) => {
+    try {
+      const msg = JSON.parse(data);
+      if (msg.type === 'done') {
+        const el = document.getElementById('q-conn-accepted');
+        if (el) el.textContent = msg.accepted;
+        btn.classList.remove('spinning');
+        btn.disabled = false;
+        ws.close();
+      } else if (msg.type === 'error') {
+        console.error('refresh-accepted error:', msg.message);
+        btn.classList.remove('spinning');
+        btn.disabled = false;
+        ws.close();
+      }
+    } catch (e) { /* ignore parse errors */ }
+  };
+
+  ws.onerror = () => {
+    btn.classList.remove('spinning');
+    btn.disabled = false;
+  };
+}

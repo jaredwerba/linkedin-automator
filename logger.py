@@ -11,6 +11,11 @@ from pathlib import Path
 LOG_PATH = Path(os.getenv("LOG_PATH", "connections.csv"))
 MSG_LOG_PATH = Path(os.getenv("MSG_LOG_PATH", "messages.csv"))
 
+# ── Accepted-connections tracking ─────────────────────────────────────────────
+ACCEPTED_BASELINE      = 15          # confirmed accepted count before automated tracking
+ACCEPTED_BASELINE_DATE = "2026-02-21"  # scrape counts connections on/after this date
+_ACCEPTED_COUNT_PATH   = Path("accepted_count.txt")
+
 FIELDS = ["sent_at", "name", "role", "company", "profile_url", "score", "scorer", "note"]
 MSG_FIELDS = ["sent_at", "name", "role", "profile_url", "message"]
 
@@ -386,3 +391,135 @@ def count_followups_today() -> int:
             if row.get("follow_up_sent_at", "").startswith(today):
                 count += 1
     return count
+
+
+# ── Analytics: weekly breakdown (Mon–Sun) ────────────────────────────────────
+
+def _week_day_strings() -> list:
+    """Return list of 7 ISO date strings for Mon–Sun of the current week."""
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    return [(monday + timedelta(days=i)).isoformat() for i in range(7)]
+
+
+def weekly_connections_by_day() -> list:
+    """Return list of 7 ints: connection requests sent each day Mon–Sun."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not LOG_PATH.exists():
+        return counts
+    _ensure_header()
+    with open(LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+def weekly_messages_by_day() -> list:
+    """Return list of 7 ints: first messages sent each day Mon–Sun."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not MSG_LOG_PATH.exists():
+        return counts
+    _ensure_msg_header()
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+def weekly_followups_by_day() -> list:
+    """Return list of 7 ints: follow-ups sent each day Mon–Sun."""
+    days = _week_day_strings()
+    counts = [0] * 7
+    if not FOLLOWUP_LOG_PATH.exists():
+        return counts
+    _ensure_followup_header()
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("follow_up_sent_at", "")[:10]
+            if d in days:
+                counts[days.index(d)] += 1
+    return counts
+
+
+# ── Analytics: quarterly totals ───────────────────────────────────────────────
+
+def _quarter_bounds() -> tuple:
+    """Return (start_iso, end_iso) for the current calendar quarter."""
+    today = date.today()
+    q_start_month = ((today.month - 1) // 3) * 3 + 1
+    q_start = date(today.year, q_start_month, 1)
+    if q_start_month + 3 > 12:
+        q_end = date(today.year + 1, 1, 1)
+    else:
+        q_end = date(today.year, q_start_month + 3, 1)
+    return q_start.isoformat(), q_end.isoformat()
+
+
+def quarterly_connections_sent() -> int:
+    """Count connection requests sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not LOG_PATH.exists():
+        return 0
+    _ensure_header()
+    count = 0
+    with open(LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if q_start <= d < q_end:
+                count += 1
+    return count
+
+
+def quarterly_messages_sent() -> int:
+    """Count first messages sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not MSG_LOG_PATH.exists():
+        return 0
+    _ensure_msg_header()
+    count = 0
+    with open(MSG_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("sent_at", "")[:10]
+            if q_start <= d < q_end:
+                count += 1
+    return count
+
+
+def quarterly_followups_sent() -> int:
+    """Count follow-ups sent this quarter."""
+    q_start, q_end = _quarter_bounds()
+    if not FOLLOWUP_LOG_PATH.exists():
+        return 0
+    _ensure_followup_header()
+    count = 0
+    with open(FOLLOWUP_LOG_PATH, "r", newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            d = row.get("follow_up_sent_at", "")[:10]
+            if q_start <= d < q_end and row.get("follow_up_sent_at", ""):
+                count += 1
+    return count
+
+
+def quarterly_connections_accepted() -> int:
+    """
+    Return the persisted accepted-connections count.
+    Starts at ACCEPTED_BASELINE (15) until the user triggers a LinkedIn scrape,
+    which writes the real count to accepted_count.txt via set_accepted_count().
+    """
+    if _ACCEPTED_COUNT_PATH.exists():
+        try:
+            return int(_ACCEPTED_COUNT_PATH.read_text().strip())
+        except ValueError:
+            pass
+    return ACCEPTED_BASELINE
+
+
+def set_accepted_count(count: int) -> None:
+    """Persist the accepted-connections count returned by a LinkedIn scrape."""
+    _ACCEPTED_COUNT_PATH.write_text(str(count))

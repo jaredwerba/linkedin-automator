@@ -51,7 +51,6 @@
             </div>
           </div>
 
-
           <div class="actions">
             <button id="btn-run" class="btn execute" onclick="startRun()">Execute</button>
             <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
@@ -63,19 +62,12 @@
         <!-- Triple-ring progress widget -->
         <div class="ring-widget" title="">
           <svg id="ring-svg" viewBox="0 0 200 200" width="200" height="200">
-            <!-- Outermost track (weekly) -->
             <circle class="ring-track" cx="100" cy="100" r="88"/>
-            <!-- Outermost arc (weekly progress) -->
             <circle id="ring-week" class="ring-arc ring-arc-week" cx="100" cy="100" r="88"/>
-            <!-- Middle track (daily connections) -->
             <circle class="ring-track" cx="100" cy="100" r="66"/>
-            <!-- Middle arc (daily connections progress) -->
             <circle id="ring-conn" class="ring-arc ring-arc-conn" cx="100" cy="100" r="66"/>
-            <!-- Inner track (notes) -->
             <circle class="ring-track" cx="100" cy="100" r="44"/>
-            <!-- Inner arc (notes progress) -->
             <circle id="ring-notes" class="ring-arc ring-arc-notes" cx="100" cy="100" r="44"/>
-            <!-- Centre labels -->
             <text class="ring-label-tag ring-tag-week"  x="100" y="72"  text-anchor="middle" dominant-baseline="middle">WEEK</text>
             <text id="ring-label-week"  class="ring-num ring-num-week"   x="100" y="87"  text-anchor="middle" dominant-baseline="middle">0/100</text>
             <line class="ring-divider" x1="72" y1="100" x2="128" y2="100"/>
@@ -86,6 +78,39 @@
             <span class="ring-legend-week">This week</span>
             <span class="ring-legend-conn">Today</span>
             <span class="ring-legend-notes">w/ Message</span>
+          </div>
+        </div>
+
+<!-- ── Quarterly Scorecard ── -->
+        <div class="analytics-section">
+          <div class="analytics-header">
+            <span class="analytics-title">THIS QUARTER</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span id="quarter-label" class="analytics-subtitle"></span>
+              <button id="btn-refresh-accepted" class="btn-refresh-accepted" title="Refresh accepted count from LinkedIn" onclick="refreshAccepted()">↻</button>
+            </div>
+          </div>
+          <div class="quarterly-grid">
+            <div class="q-stat">
+              <span class="q-num" id="q-conn-sent">—</span>
+              <span class="q-label">Requests Sent</span>
+            </div>
+            <div class="q-stat">
+              <span class="q-num" id="q-conn-accepted">—</span>
+              <span class="q-label">Accepted</span>
+            </div>
+            <div class="q-stat">
+              <span class="q-num" id="q-msg-sent">—</span>
+              <span class="q-label">Messages Sent</span>
+            </div>
+            <div class="q-stat">
+              <span class="q-num" id="q-fu-sent">—</span>
+              <span class="q-label">Follow-ups Sent</span>
+            </div>
+            <div class="q-stat q-stat-wide">
+              <span class="q-num q-conv" id="q-conv-pct">—%</span>
+              <span class="q-label">Connect → Message Rate</span>
+            </div>
           </div>
         </div>
 
@@ -135,7 +160,7 @@
                   <th>Name</th>
                   <th>Role</th>
                   <th>Company</th>
-                  <th>Score</th>
+                  <th id="th-score" class="th-sortable" onclick="sortByScore()" title="Sort by score">Score <span id="sort-indicator" class="sort-indicator"></span></th>
                   <th>Message Sent</th>
                 </tr>
               </thead>
@@ -153,7 +178,6 @@
         <!-- Msg Prospect pane -->
         <div id="pane-msg" class="tab-pane hidden">
 
-          <!-- Messages per Run slider -->
           <div class="msg-cap-section">
             <label class="msg-cap-label-top">Messages per Run <span class="cap-hint">(1–10)</span></label>
             <div class="msg-cap-slider-wrap">
@@ -163,17 +187,14 @@
             </div>
           </div>
 
-          <!-- Msg run controls -->
           <div class="msg-controls">
             <button id="btn-msg-run" class="btn execute" onclick="startMsgRun()">Send Messages</button>
             <button id="btn-msg-pause" class="btn secondary" onclick="toggleMsgPause()" disabled>Pause</button>
             <button id="btn-msg-stop" class="btn danger" onclick="stopMsgRun()" disabled>Stop</button>
           </div>
 
-          <!-- Msg live feed -->
           <div id="msg-feed" class="log msg-log"></div>
 
-          <!-- Msg results table -->
           <div class="msg-table-section">
             <div class="msg-table-header">
               <span class="msg-table-title">Message Log</span>
@@ -200,7 +221,6 @@
         <!-- Follow Up pane -->
         <div id="pane-followup" class="tab-pane hidden">
 
-          <!-- Wait days slider -->
           <div class="msg-cap-section">
             <label class="msg-cap-label-top">Wait before follow-up <span class="cap-hint">(days)</span></label>
             <div class="msg-cap-slider-wrap">
@@ -210,7 +230,6 @@
             </div>
           </div>
 
-          <!-- Cap slider -->
           <div class="msg-cap-section">
             <label class="msg-cap-label-top">Follow-ups per Run <span class="cap-hint">(1–10)</span></label>
             <div class="msg-cap-slider-wrap">
@@ -220,17 +239,14 @@
             </div>
           </div>
 
-          <!-- Controls -->
           <div class="msg-controls">
             <button id="btn-followup-run" class="btn execute" onclick="startFollowupRun()">Send Follow-Ups</button>
             <button id="btn-followup-pause" class="btn secondary" onclick="toggleFollowupPause()" disabled>Pause</button>
             <button id="btn-followup-stop" class="btn danger" onclick="stopFollowupRun()" disabled>Stop</button>
           </div>
 
-          <!-- Live feed -->
           <div id="followup-feed" class="log msg-log"></div>
 
-          <!-- Status table -->
           <div class="msg-table-section">
             <div class="msg-table-header">
               <span class="msg-table-title">Follow-Up Log</span>

@@ -17,6 +17,10 @@ from logger import (
     read_connections, count_notes_today, count_sent_this_week,
     read_messages, count_messages_today,
     read_followups, count_followups_pending, count_followups_today,
+    weekly_connections_by_day, weekly_messages_by_day, weekly_followups_by_day,
+    quarterly_connections_sent, quarterly_messages_sent, quarterly_followups_sent,
+    quarterly_connections_accepted, set_accepted_count,
+    ACCEPTED_BASELINE, ACCEPTED_BASELINE_DATE,
 )
 from run_logger import start_run, append_entry, finish_run, read_runs
 
@@ -116,6 +120,29 @@ async def get_followup_status():
 async def get_followups():
     rows = read_followups()
     return {"rows": rows, "total": len(rows)}
+
+
+@app.get("/analytics")
+async def get_analytics():
+    q_conn   = quarterly_connections_sent()
+    q_msg    = quarterly_messages_sent()
+    q_fu     = quarterly_followups_sent()
+    q_accept = quarterly_connections_accepted()
+    conv_pct = round(q_msg / q_conn * 100, 1) if q_conn > 0 else 0.0
+    return {
+        "weekly": {
+            "connections": weekly_connections_by_day(),
+            "messages":    weekly_messages_by_day(),
+            "followups":   weekly_followups_by_day(),
+        },
+        "quarterly": {
+            "connections_sent":     q_conn,
+            "messages_sent":        q_msg,
+            "followups_sent":       q_fu,
+            "connections_accepted": q_accept,
+            "conversion_pct":       conv_pct,
+        },
+    }
 
 
 @app.post("/pause")
@@ -420,6 +447,105 @@ async def followup_websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         messenger.request_followup_stop()
+    except Exception as e:
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except Exception:
+            pass
+
+
+# ── Accepted-connections refresh ───────────────────────────────────────────────
+
+@app.get("/accepted-count")
+async def get_accepted_count():
+    """Lightweight endpoint — returns persisted accepted count without launching a browser."""
+    return {"accepted": quarterly_connections_accepted()}
+
+
+@app.websocket("/ws/refresh-accepted")
+async def refresh_accepted_ws(websocket: WebSocket):
+    """
+    Opens a Playwright session, navigates to the LinkedIn connections page,
+    counts connections since ACCEPTED_BASELINE_DATE, adds ACCEPTED_BASELINE,
+    persists the result, and streams progress back to the client.
+    """
+    from playwright.async_api import async_playwright, BrowserContext
+    from automator import _detect_chrome_profile, _detect_chrome_executable
+
+    await websocket.accept()
+
+    async def send(msg: str):
+        try:
+            await websocket.send_json({"type": "log", "message": msg})
+        except Exception:
+            pass
+
+    try:
+        await send("🔍 Launching browser...")
+        profile_path = _detect_chrome_profile()
+        executable   = _detect_chrome_executable()
+
+        async with async_playwright() as pw:
+            context: BrowserContext = await pw.chromium.launch_persistent_context(
+                user_data_dir=profile_path,
+                executable_path=executable,
+                headless=False,
+                args=["--no-sandbox", "--disable-blink-features=AutomationControlled"],
+                ignore_default_args=["--enable-automation"],
+                viewport={"width": 1280, "height": 800},
+            )
+            page = context.pages[0] if context.pages else await context.new_page()
+            await page.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', { get: () => undefined });"
+            )
+
+            await send("🌐 Navigating to connections page...")
+            await page.goto(
+                "https://www.linkedin.com/mynetwork/invite-connect/connections/",
+                wait_until="domcontentloaded",
+            )
+            await asyncio.sleep(3)
+
+            # Scroll to load more cards
+            await send("📜 Loading connection cards...")
+            for _ in range(6):
+                await page.evaluate("window.scrollBy(0, 800)")
+                await asyncio.sleep(0.8)
+            await asyncio.sleep(1.5)
+
+            # Count cards with a connected date on or after ACCEPTED_BASELINE_DATE
+            new_count: int = await page.evaluate(
+                """
+                (cutoff) => {
+                    const cutoffDate = new Date(cutoff);
+                    // LinkedIn connection cards
+                    const cards = Array.from(document.querySelectorAll(
+                        'li.mn-connection-card, [data-view-name="connection-card"]'
+                    ));
+                    let count = 0;
+                    for (const card of cards) {
+                        // Look for "Connected on ..." text anywhere in the card
+                        const text = card.innerText || card.textContent || '';
+                        const match = text.match(/Connected on (.+)/i);
+                        if (!match) continue;
+                        const dateStr = match[1].trim().replace(/\\.$/, '');
+                        const d = new Date(dateStr);
+                        if (!isNaN(d.getTime()) && d >= cutoffDate) count++;
+                    }
+                    return count;
+                }
+                """,
+                ACCEPTED_BASELINE_DATE,
+            )
+
+            total = ACCEPTED_BASELINE + new_count
+            set_accepted_count(total)
+
+            await send(f"✅ Found {new_count} new connection(s) since {ACCEPTED_BASELINE_DATE}. Total accepted: {total}")
+            await context.close()
+
+        await websocket.send_json({"type": "done", "accepted": total})
+
     except Exception as e:
         try:
             await websocket.send_json({"type": "error", "message": str(e)})

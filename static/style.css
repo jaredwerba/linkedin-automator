@@ -162,6 +162,13 @@ main {
   position: relative;
 }
 
+/* Config (left) panel scrolls when content grows */
+.config-panel {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
 /* Corner bracket decoration */
 .panel::before,
 .panel::after {
@@ -487,6 +494,19 @@ code {
   white-space: nowrap;
 }
 
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+.th-sortable:hover { color: var(--cyan); }
+.th-sorted { color: var(--cyan); }
+
+.sort-indicator {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
 .results-table td {
   border-bottom: 1px solid var(--border);
   color: var(--text-dim);
@@ -602,7 +622,7 @@ code {
   filter: drop-shadow(0 0 4px currentColor);
 }
 
-.ring-arc-week  { stroke: #9b59b6; color: #9b59b6; }
+.ring-arc-week  { stroke: var(--cyan); color: var(--cyan); }
 .ring-arc-conn  { stroke: #00ff41; color: #00ff41; }
 .ring-arc-notes { stroke: #ffb000; color: #ffb000; }
 
@@ -613,7 +633,7 @@ code {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
-.ring-tag-week { fill: #9b59b6; }
+.ring-tag-week { fill: var(--cyan); }
 .ring-tag-conn { fill: #00ff41; }
 
 .ring-num {
@@ -622,7 +642,7 @@ code {
   font-weight: normal;
   letter-spacing: 1px;
 }
-.ring-num-week { fill: #9b59b6; }
+.ring-num-week { fill: var(--cyan); }
 .ring-num-conn { fill: #00ff41; }
 
 .ring-divider {
@@ -640,7 +660,7 @@ code {
   text-transform: uppercase;
   white-space: nowrap;
 }
-.ring-legend-week  { color: #9b59b6; }
+.ring-legend-week  { color: var(--cyan); }
 .ring-legend-week::before  { content: '■ '; font-size: 8px; }
 .ring-legend-conn  { color: #00ff41; }
 .ring-legend-conn::before  { content: '■ '; font-size: 8px; }
@@ -965,3 +985,97 @@ input[type="range"]::-moz-range-thumb {
 .pill-done        { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 
 .col-status { white-space: nowrap; }
+
+/* ── Analytics sections (left panel) ─────────────────────────────────────── */
+.analytics-section {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.analytics-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.analytics-subtitle {
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+
+/* ── Quarterly scorecard ──────────────────────────────────────────────────── */
+.quarterly-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.q-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 4px;
+  background: rgba(0, 255, 65, 0.04);
+  border: 1px solid rgba(0, 255, 65, 0.08);
+  border-radius: 2px;
+}
+
+.q-stat-wide { grid-column: 1 / -1; }
+
+.q-num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1;
+}
+
+.q-conv {
+  color: var(--cyan);
+  font-size: 20px;
+}
+
+.q-label {
+  font-size: 8px;
+  color: var(--text-dim);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ── Accepted-count refresh button ────────────────────────────────────────── */
+.btn-refresh-accepted {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 2px;
+  opacity: 0.4;
+  transition: opacity 0.2s, color 0.2s;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-refresh-accepted:hover  { opacity: 1; color: var(--cyan); }
+.btn-refresh-accepted:disabled { cursor: default; }
+.btn-refresh-accepted.spinning { opacity: 1; color: var(--cyan); animation: btn-spin 1s linear infinite; }
+
+@keyframes btn-spin { to { transform: rotate(360deg); } }
