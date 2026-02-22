@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -455,6 +456,16 @@ async def followup_websocket_endpoint(websocket: WebSocket):
 
 
 # ── Accepted-connections refresh ───────────────────────────────────────────────
+
+@app.get("/targets")
+async def get_targets():
+    """Return company names from targets.csv as a list."""
+    path = Path("targets.csv")
+    if not path.exists():
+        return {"companies": []}
+    companies = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return {"companies": companies}
+
 
 @app.get("/accepted-count")
 async def get_accepted_count():

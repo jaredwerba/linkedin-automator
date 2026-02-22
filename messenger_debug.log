@@ -589,3 +589,23 @@ playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context 
 2026-02-21 13:57:29    Clicked Send button
 2026-02-21 13:57:30    Follow-up sent and logged for Tomer Fuss Sanderovich
 2026-02-21 13:57:34  Browser closed.
+2026-02-21 19:03:10  
+============================================================
+2026-02-21 19:03:10  FOLLOWUP RUN START  2026-02-21T19:03:10.634620  cap=1 wait_days=0 speed=1.0
+2026-02-21 19:03:10  ============================================================
+2026-02-21 19:03:10  Candidates: 2
+2026-02-21 19:03:10  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-21 19:03:10  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-21 19:03:11  Processing Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960/
+2026-02-21 19:03:11    Reply check: navigating to https://www.linkedin.com/in/victoria-hargreaves-61733960/
+2026-02-21 19:03:15    Clicking Message button on profile page...
+2026-02-21 19:03:15    Found Message button via: main button:has-text('Message')
+2026-02-21 19:03:15    Clicked Message button — waiting for compose overlay...
+2026-02-21 19:03:17    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-21 19:03:18    Reply check: last_sender=unknown
+2026-02-21 19:03:18    Compose box found via .msg-form__contenteditable
+2026-02-21 19:03:31    AI follow-up full: Hi Victoria, I'm curious to know more about your work on small molecule-protein interactions and how it's progressing. Would love to hear any updates or insights you'd like to share.
+2026-02-21 19:03:42    Clicked Send button
+2026-02-21 19:03:44    Follow-up sent and logged for Victoria Hargreaves
+2026-02-21 19:03:44  FOLLOWUP RUN END — 1 sent
+2026-02-21 19:03:44  Browser closed.

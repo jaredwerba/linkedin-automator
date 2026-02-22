@@ -205,6 +205,12 @@ small {
   letter-spacing: 0.3px;
 }
 
+.field-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+}
+
 input[type="url"],
 textarea {
   background: var(--surface2);
@@ -454,6 +460,32 @@ code {
 
 .tab-pane.hidden { display: none; }
 
+/* ── Duck background ─────────────────────────────────────────────────────── */
+.duck-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.22;
+  pointer-events: none;
+  transition: filter 0.6s ease, opacity 0.6s ease;
+  filter: blur(0px);
+  z-index: 0;
+}
+.duck-bg.pixelate-out {
+  filter: blur(12px) brightness(0.2);
+  opacity: 0;
+}
+#pane-feed {
+  position: relative;
+}
+#log {
+  position: relative;
+  z-index: 1;
+}
+
 /* ── Results table ───────────────────────────────────────────────────────── */
 .results-empty {
   color: var(--text-muted);
@@ -622,7 +654,7 @@ code {
   filter: drop-shadow(0 0 4px currentColor);
 }
 
-.ring-arc-week  { stroke: var(--cyan); color: var(--cyan); }
+.ring-arc-week  { stroke: var(--amber); color: var(--amber); }
 .ring-arc-conn  { stroke: #00ff41; color: #00ff41; }
 .ring-arc-notes { stroke: #ffb000; color: #ffb000; }
 
@@ -633,7 +665,7 @@ code {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
-.ring-tag-week { fill: var(--cyan); }
+.ring-tag-week { fill: var(--amber); }
 .ring-tag-conn { fill: #00ff41; }
 
 .ring-num {
@@ -642,7 +674,7 @@ code {
   font-weight: normal;
   letter-spacing: 1px;
 }
-.ring-num-week { fill: var(--cyan); }
+.ring-num-week { fill: var(--amber); }
 .ring-num-conn { fill: #00ff41; }
 
 .ring-divider {
@@ -660,7 +692,7 @@ code {
   text-transform: uppercase;
   white-space: nowrap;
 }
-.ring-legend-week  { color: var(--cyan); }
+.ring-legend-week  { color: var(--amber); }
 .ring-legend-week::before  { content: '■ '; font-size: 8px; }
 .ring-legend-conn  { color: #00ff41; }
 .ring-legend-conn::before  { content: '■ '; font-size: 8px; }
@@ -1047,7 +1079,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .q-conv {
-  color: var(--cyan);
+  color: var(--amber);
   font-size: 20px;
 }
 
@@ -1074,8 +1106,8 @@ input[type="range"]::-moz-range-thumb {
   display: inline-flex;
   align-items: center;
 }
-.btn-refresh-accepted:hover  { opacity: 1; color: var(--cyan); }
+.btn-refresh-accepted:hover  { opacity: 1; color: var(--amber); }
 .btn-refresh-accepted:disabled { cursor: default; }
-.btn-refresh-accepted.spinning { opacity: 1; color: var(--cyan); animation: btn-spin 1s linear infinite; }
+.btn-refresh-accepted.spinning { opacity: 1; color: var(--amber); animation: btn-spin 1s linear infinite; }
 
 @keyframes btn-spin { to { transform: rotate(360deg); } }

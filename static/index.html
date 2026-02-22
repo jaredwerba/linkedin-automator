@@ -11,7 +11,7 @@
 <body>
   <div class="app">
     <header>
-      <h1>LinkedIn Automator</h1>
+      <h1>Pip Duck</h1>
       <div class="status-bar">
         <span id="status-badge" class="badge idle">Idle</span>
       </div>
@@ -31,6 +31,9 @@
               rows="10"
               placeholder="Montai&#10;Acme Corp&#10;Stripe&#10;OpenAI"
             ></textarea>
+            <div class="field-action">
+              <button class="btn ghost small" onclick="loadTargets()">⊕ Load Targets</button>
+            </div>
           </div>
 
           <!-- Action Delay slider -->
@@ -146,6 +149,7 @@
 
         <!-- Live Feed pane -->
         <div id="pane-feed" class="tab-pane">
+          <img id="duck-bg" src="/static/duck.png" class="duck-bg" alt="" />
           <div id="log" class="log"></div>
         </div>
 

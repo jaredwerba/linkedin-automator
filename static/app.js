@@ -561,6 +561,10 @@ async function msgPreflight(cap, presetName) {
 
 // ── Connection Run ─────────────────────────────────────────────────────────────
 async function startRun() {
+  // Pixelate out the duck when automation begins
+  const duck = document.getElementById('duck-bg');
+  if (duck) duck.classList.add('pixelate-out');
+
   const companiesRaw = document.getElementById('companies').value.trim();
 
   const companies = companiesRaw
@@ -766,6 +770,29 @@ async function testAI() {
     }
   } catch (e) {
     addLog(`AI test request failed: ${e}`, 'error');
+  }
+}
+
+// ── Load target companies ──────────────────────────────────────────────────────
+async function loadTargets() {
+  try {
+    const res  = await fetch('/targets');
+    const data = await res.json();
+    const companies = data.companies || [];
+    if (!companies.length) {
+      addLog('No targets found in targets.csv.', 'warning');
+      return;
+    }
+    const ta = document.getElementById('companies');
+    ta.style.transition = 'opacity 0.3s ease';
+    ta.style.opacity = '0';
+    setTimeout(() => {
+      ta.value = companies.join('\n');
+      ta.style.opacity = '1';
+      addLog(`Loaded ${companies.length} target companies.`, 'success');
+    }, 300);
+  } catch (e) {
+    addLog('Failed to load targets.', 'error');
   }
 }
 
