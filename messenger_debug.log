@@ -609,3 +609,325 @@ playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context 
 2026-02-21 19:03:44    Follow-up sent and logged for Victoria Hargreaves
 2026-02-21 19:03:44  FOLLOWUP RUN END — 1 sent
 2026-02-21 19:03:44  Browser closed.
+2026-02-23 18:12:32  
+============================================================
+2026-02-23 18:12:32  RUN START  2026-02-23T18:12:32.935630  cap=3 scan=20 speed=0.1
+2026-02-23 18:12:32  ============================================================
+2026-02-23 18:12:32  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-23 18:12:32  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-23 18:12:35  Navigating to connections page
+2026-02-23 18:12:43  Scrape result (20 cards):
+2026-02-23 18:12:43    name=Jennifer Sonne | profileUrl=https://www.linkedin.com/in/jennifer-sonne-283bb838/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Vlad Shingarey | profileUrl=https://www.linkedin.com/in/vladshingarey/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Camil Sayegh | profileUrl=https://www.linkedin.com/in/camil-sayegh-6986325/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Will Reddall | profileUrl=https://www.linkedin.com/in/willreddall/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Ran Dror | profileUrl=https://www.linkedin.com/in/ran-dror-940140162/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Sarthak Khandelwal | profileUrl=https://www.linkedin.com/in/sarthak-k/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Caleb Moore | profileUrl=https://www.linkedin.com/in/calebmoore2023/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Peter Somto Obi | profileUrl=https://www.linkedin.com/in/peter-somto-obi/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Akin Alawode | profileUrl=https://www.linkedin.com/in/akin-alawode-9218873a8/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Sarah McDonald | profileUrl=https://www.linkedin.com/in/sarahpatriciamcdonald/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Ana Silveira | profileUrl=https://www.linkedin.com/in/ana-silveira-35273220b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Dinesh Singh | profileUrl=https://www.linkedin.com/in/dineshsingh02030/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Thomas George Thomas | profileUrl=https://www.linkedin.com/in/thomasgeorgethomas/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Dousabel Tay | profileUrl=https://www.linkedin.com/in/dousabel-tay/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Dan Niewoehner | profileUrl=https://www.linkedin.com/in/danniewoehner/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43    name=Michael Cohen | profileUrl=https://www.linkedin.com/in/michael-cohen-15b014187/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 18:12:43  Loaded 3 messaged URLs, 3 messaged names
+2026-02-23 18:12:43    Check: Jennifer Sonne | url=https://www.linkedin.com/in/jennifer-sonne-283bb838
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Vlad Shingarey | url=https://www.linkedin.com/in/vladshingarey
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Camil Sayegh | url=https://www.linkedin.com/in/camil-sayegh-6986325
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Will Reddall | url=https://www.linkedin.com/in/willreddall
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Ran Dror | url=https://www.linkedin.com/in/ran-dror-940140162
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Sarthak Khandelwal | url=https://www.linkedin.com/in/sarthak-k
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Caleb Moore | url=https://www.linkedin.com/in/calebmoore2023
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Peter Somto Obi | url=https://www.linkedin.com/in/peter-somto-obi
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8
+2026-02-23 18:12:43      → SKIP (url match)
+2026-02-23 18:12:43    Check: Sarah McDonald | url=https://www.linkedin.com/in/sarahpatriciamcdonald
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Ana Silveira | url=https://www.linkedin.com/in/ana-silveira-35273220b
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Dinesh Singh | url=https://www.linkedin.com/in/dineshsingh02030
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-23 18:12:43      → SKIP (url match)
+2026-02-23 18:12:43    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-23 18:12:43      → SKIP (url match)
+2026-02-23 18:12:43    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Thomas George Thomas | url=https://www.linkedin.com/in/thomasgeorgethomas
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Dousabel Tay | url=https://www.linkedin.com/in/dousabel-tay
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Dan Niewoehner | url=https://www.linkedin.com/in/danniewoehner
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43    Check: Michael Cohen | url=https://www.linkedin.com/in/michael-cohen-15b014187
+2026-02-23 18:12:43      → QUEUE
+2026-02-23 18:12:43  --- Messaging Jennifer Sonne ---
+2026-02-23 18:12:43    role: A Focused, Detail-Oriented, Strategic, and Creative Proposal and Bid Manager with over 16 years of experience across multiple industries.
+2026-02-23 18:12:43    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAgCNoMBuhMV4W78410jpDypMtB8w16bMuc&recipient=ACoAAAgCNoMBuhMV4W78410jpDypMtB8w16bMuc&interop=msgOverlay
+2026-02-23 18:12:43    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-23 18:12:43    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAAgCNoMBuhMV4W78410jpDypMtB8w16bMuc&recipient=ACoAAAgCNoMBuhMV4W78410jpDypMtB8w16bMuc&interop=msgOverlay
+2026-02-23 18:12:46    Step 2: waiting for visible compose box
+2026-02-23 18:12:47    Step 2: found via .msg-form__contenteditable
+2026-02-23 18:12:47    Step 3: checking for AI prompt dismiss button
+2026-02-23 18:12:47    Step 4: generating message with Ollama
+2026-02-23 18:12:53    AI full message: Hi Jennifer, I'm glad we connected! As a Proposal and Bid Manager with such extensive experience, I'd love to hear about your approach to crafting compelling proposals that win over clients. What drives your creativity in developing successful bids?
+2026-02-23 18:12:53    Step 5: re-querying compose box before typing
+2026-02-23 18:12:53    Step 5: focusing compose box via JS
+2026-02-23 18:12:53    Step 5: typing message (249 chars)
+2026-02-23 18:12:55  EXCEPTION: Keyboard.type: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 509, in run_messaging
+    success, msg_text = await _send_message_to(page, conn, log)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 336, in _send_message_to
+    await page.keyboard.type(msg_text, delay=20)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1383, in type
+    await self._impl_obj.type(text=text, delay=delay)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 35, in type
+    await self._channel.send("keyboardType", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
+
+2026-02-23 18:13:16  
+============================================================
+2026-02-23 18:13:16  FOLLOWUP RUN START  2026-02-23T18:13:16.100510  cap=1 wait_days=0 speed=0.1
+2026-02-23 18:13:16  ============================================================
+2026-02-23 18:13:16  Candidates: 1
+2026-02-23 18:13:16  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-23 18:13:16  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-23 18:13:18  Processing Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8/
+2026-02-23 18:13:18    Reply check: navigating to https://www.linkedin.com/in/akin-alawode-9218873a8/
+2026-02-23 18:13:22    Clicking Message button on profile page...
+2026-02-23 18:13:22    Found Message button via: main button:has-text('Message')
+2026-02-23 18:13:22    Clicked Message button — waiting for compose overlay...
+2026-02-23 18:13:24    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-23 18:13:25    Reply check: last_sender=unknown
+2026-02-23 18:13:25    Compose box found via .msg-form__contenteditable
+2026-02-23 18:13:30    AI follow-up full: Hi Akin, hope you're doing well! I'd love to continue our conversation and see if there's anything newsworthy in your world that I can learn from.
+2026-02-23 18:13:40    Clicked Send button
+2026-02-23 18:13:42    Follow-up sent and logged for Akin Alawode
+2026-02-23 18:13:42  FOLLOWUP RUN END — 1 sent
+2026-02-23 18:13:43  Browser closed.
+2026-02-23 20:25:29  
+============================================================
+2026-02-23 20:25:29  RUN START  2026-02-23T20:25:29.572310  cap=2 scan=20 speed=0.1
+2026-02-23 20:25:29  ============================================================
+2026-02-23 20:25:29  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-23 20:25:29  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-23 20:25:32  Navigating to connections page
+2026-02-23 20:25:39  Scrape result (20 cards):
+2026-02-23 20:25:39    name=Evelyn Raspotnik | profileUrl=https://www.linkedin.com/in/evelynraspotnik/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Jess Collins, MBA | profileUrl=https://www.linkedin.com/in/jess-collins-mba-5914ba5b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Christian Mims | profileUrl=https://www.linkedin.com/in/christianamims/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Jaime Pauline | profileUrl=https://www.linkedin.com/in/jpauline/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Jennifer Sonne | profileUrl=https://www.linkedin.com/in/jennifer-sonne-283bb838/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Vlad Shingarey | profileUrl=https://www.linkedin.com/in/vladshingarey/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Camil Sayegh | profileUrl=https://www.linkedin.com/in/camil-sayegh-6986325/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Will Reddall | profileUrl=https://www.linkedin.com/in/willreddall/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Ran Dror | profileUrl=https://www.linkedin.com/in/ran-dror-940140162/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Sarthak Khandelwal | profileUrl=https://www.linkedin.com/in/sarthak-k/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Caleb Moore | profileUrl=https://www.linkedin.com/in/calebmoore2023/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Peter Somto Obi | profileUrl=https://www.linkedin.com/in/peter-somto-obi/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Akin Alawode | profileUrl=https://www.linkedin.com/in/akin-alawode-9218873a8/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Sarah McDonald | profileUrl=https://www.linkedin.com/in/sarahpatriciamcdonald/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Ana Silveira | profileUrl=https://www.linkedin.com/in/ana-silveira-35273220b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Dinesh Singh | profileUrl=https://www.linkedin.com/in/dineshsingh02030/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 20:25:39  Loaded 3 messaged URLs, 3 messaged names
+2026-02-23 20:25:39    Check: Evelyn Raspotnik | url=https://www.linkedin.com/in/evelynraspotnik
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Jess Collins, MBA | url=https://www.linkedin.com/in/jess-collins-mba-5914ba5b
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Christian Mims | url=https://www.linkedin.com/in/christianamims
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Jaime Pauline | url=https://www.linkedin.com/in/jpauline
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Jennifer Sonne | url=https://www.linkedin.com/in/jennifer-sonne-283bb838
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Vlad Shingarey | url=https://www.linkedin.com/in/vladshingarey
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Camil Sayegh | url=https://www.linkedin.com/in/camil-sayegh-6986325
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Will Reddall | url=https://www.linkedin.com/in/willreddall
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Ran Dror | url=https://www.linkedin.com/in/ran-dror-940140162
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Sarthak Khandelwal | url=https://www.linkedin.com/in/sarthak-k
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Caleb Moore | url=https://www.linkedin.com/in/calebmoore2023
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Peter Somto Obi | url=https://www.linkedin.com/in/peter-somto-obi
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8
+2026-02-23 20:25:39      → SKIP (url match)
+2026-02-23 20:25:39    Check: Sarah McDonald | url=https://www.linkedin.com/in/sarahpatriciamcdonald
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Ana Silveira | url=https://www.linkedin.com/in/ana-silveira-35273220b
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Dinesh Singh | url=https://www.linkedin.com/in/dineshsingh02030
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-23 20:25:39      → SKIP (url match)
+2026-02-23 20:25:39    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-23 20:25:39      → SKIP (url match)
+2026-02-23 20:25:39    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-23 20:25:39      → QUEUE
+2026-02-23 20:25:39  --- Messaging Evelyn Raspotnik ---
+2026-02-23 20:25:39    role: Enterprise Customer Success
+2026-02-23 20:25:39    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&recipient=ACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&interop=msgOverlay
+2026-02-23 20:25:39    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-23 20:25:39    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&recipient=ACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&interop=msgOverlay
+2026-02-23 20:25:43    Step 2: waiting for visible compose box
+2026-02-23 20:25:43    Step 2: found via .msg-form__contenteditable
+2026-02-23 20:25:43    Step 3: checking for AI prompt dismiss button
+2026-02-23 20:25:44    Step 4: generating message with Ollama
+2026-02-23 20:26:00    AI full message: Hi Evelyn, congratulations on reaching out to connect! I'm excited to expand my professional network. How's life as an Enterprise Customer Success pro treating you so far?
+2026-02-23 20:26:00    Step 5: re-querying compose box before typing
+2026-02-23 20:26:00    Step 5: focusing compose box via JS
+2026-02-23 20:26:00    Step 5: typing message (171 chars)
+2026-02-23 20:26:07    Step 5: compose box content after typing: 'Hi Evelyn, congratulations on reaching out to connect! I'm excited to expand my '
+2026-02-23 20:26:12    Step 7: finding Send button
+2026-02-23 20:26:12    Step 7: error checking button.msg-form__send-button: Page.query_selector: Target page, context or browser has been closed
+2026-02-23 20:26:12    Step 7: error checking button[aria-label='Send']: Page.query_selector: Target page, context or browser has been closed
+2026-02-23 20:26:12    Step 7: error checking button[aria-label*='Send' i]: Page.query_selector: Target page, context or browser has been closed
+2026-02-23 20:26:12    Step 7: error checking .msg-overlay-conversation-bubble button[type='submit']: Page.query_selector: Target page, context or browser has been closed
+2026-02-23 20:26:12    Step 7: error checking button[type='submit']: Page.query_selector: Target page, context or browser has been closed
+2026-02-23 20:26:12    Step 7: Send button not found — trying Ctrl+Enter
+2026-02-23 20:26:12  EXCEPTION: Keyboard.press: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 509, in run_messaging
+    success, msg_text = await _send_message_to(page, conn, log)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 383, in _send_message_to
+    await page.keyboard.press("Control+Enter")
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1435, in press
+    return mapping.from_maybe_impl(await self._impl_obj.press(key=key, delay=delay))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 38, in press
+    await self._channel.send("keyboardPress", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.press: Target page, context or browser has been closed
+
+2026-02-23 20:26:19  Browser closed.
+2026-02-23 20:26:31  
+============================================================
+2026-02-23 20:26:31  FOLLOWUP RUN START  2026-02-23T20:26:31.762835  cap=5 wait_days=1 speed=0.1
+2026-02-23 20:26:31  ============================================================
+2026-02-23 20:26:31  Candidates: 0
+2026-02-23 22:03:36  
+============================================================
+2026-02-23 22:03:36  RUN START  2026-02-23T22:03:36.877689  cap=5 scan=20 speed=1.0
+2026-02-23 22:03:36  ============================================================
+2026-02-23 22:03:36  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-23 22:03:36  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-23 22:03:38  Navigating to connections page
+2026-02-23 22:03:44  Scrape result (20 cards):
+2026-02-23 22:03:44    name=Evelyn Raspotnik | profileUrl=https://www.linkedin.com/in/evelynraspotnik/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Jess Collins, MBA | profileUrl=https://www.linkedin.com/in/jess-collins-mba-5914ba5b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Christian Mims | profileUrl=https://www.linkedin.com/in/christianamims/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Jaime Pauline | profileUrl=https://www.linkedin.com/in/jpauline/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Jennifer Sonne | profileUrl=https://www.linkedin.com/in/jennifer-sonne-283bb838/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Vlad Shingarey | profileUrl=https://www.linkedin.com/in/vladshingarey/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Camil Sayegh | profileUrl=https://www.linkedin.com/in/camil-sayegh-6986325/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Will Reddall | profileUrl=https://www.linkedin.com/in/willreddall/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Ran Dror | profileUrl=https://www.linkedin.com/in/ran-dror-940140162/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Sarthak Khandelwal | profileUrl=https://www.linkedin.com/in/sarthak-k/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Caleb Moore | profileUrl=https://www.linkedin.com/in/calebmoore2023/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Peter Somto Obi | profileUrl=https://www.linkedin.com/in/peter-somto-obi/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Akin Alawode | profileUrl=https://www.linkedin.com/in/akin-alawode-9218873a8/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Sarah McDonald | profileUrl=https://www.linkedin.com/in/sarahpatriciamcdonald/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Ana Silveira | profileUrl=https://www.linkedin.com/in/ana-silveira-35273220b/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Dinesh Singh | profileUrl=https://www.linkedin.com/in/dineshsingh02030/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Tomer Fuss Sanderovich | profileUrl=https://www.linkedin.com/in/tomer-fuss-sanderovich/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Victoria Hargreaves | profileUrl=https://www.linkedin.com/in/victoria-hargreaves-61733960/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Marisa Donnelly, PhD | profileUrl=https://www.linkedin.com/in/mapdonnelly/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44    name=Jeff Taylor | profileUrl=https://www.linkedin.com/in/jeffgtaylor/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-23 22:03:44  Loaded 3 messaged URLs, 3 messaged names
+2026-02-23 22:03:44    Check: Evelyn Raspotnik | url=https://www.linkedin.com/in/evelynraspotnik
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Jess Collins, MBA | url=https://www.linkedin.com/in/jess-collins-mba-5914ba5b
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Christian Mims | url=https://www.linkedin.com/in/christianamims
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Jaime Pauline | url=https://www.linkedin.com/in/jpauline
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Jennifer Sonne | url=https://www.linkedin.com/in/jennifer-sonne-283bb838
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Vlad Shingarey | url=https://www.linkedin.com/in/vladshingarey
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Camil Sayegh | url=https://www.linkedin.com/in/camil-sayegh-6986325
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Will Reddall | url=https://www.linkedin.com/in/willreddall
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Ran Dror | url=https://www.linkedin.com/in/ran-dror-940140162
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Sarthak Khandelwal | url=https://www.linkedin.com/in/sarthak-k
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Caleb Moore | url=https://www.linkedin.com/in/calebmoore2023
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Peter Somto Obi | url=https://www.linkedin.com/in/peter-somto-obi
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Akin Alawode | url=https://www.linkedin.com/in/akin-alawode-9218873a8
+2026-02-23 22:03:44      → SKIP (url match)
+2026-02-23 22:03:44    Check: Sarah McDonald | url=https://www.linkedin.com/in/sarahpatriciamcdonald
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Ana Silveira | url=https://www.linkedin.com/in/ana-silveira-35273220b
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Dinesh Singh | url=https://www.linkedin.com/in/dineshsingh02030
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Tomer Fuss Sanderovich | url=https://www.linkedin.com/in/tomer-fuss-sanderovich
+2026-02-23 22:03:44      → SKIP (url match)
+2026-02-23 22:03:44    Check: Victoria Hargreaves | url=https://www.linkedin.com/in/victoria-hargreaves-61733960
+2026-02-23 22:03:44      → SKIP (url match)
+2026-02-23 22:03:44    Check: Marisa Donnelly, PhD | url=https://www.linkedin.com/in/mapdonnelly
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44    Check: Jeff Taylor | url=https://www.linkedin.com/in/jeffgtaylor
+2026-02-23 22:03:44      → QUEUE
+2026-02-23 22:03:44  --- Messaging Evelyn Raspotnik ---
+2026-02-23 22:03:44    role: Enterprise Customer Success
+2026-02-23 22:03:44    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&recipient=ACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&interop=msgOverlay
+2026-02-23 22:03:44    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-23 22:03:44    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&recipient=ACoAABmFdFoBoQ1ui4j3_OJO-60mLuPWpUoJQlY&interop=msgOverlay
+2026-02-23 22:03:48    Step 2: waiting for visible compose box
+2026-02-23 22:03:48    Step 2: found via .msg-form__contenteditable
+2026-02-23 22:03:48    Step 3: checking for AI prompt dismiss button
+2026-02-23 22:03:48    Step 4: generating message with Ollama
+2026-02-23 22:04:02    AI full message: Hi Evelyn, nice to connect! I saw you're an Enterprise Customer Success pro - love that role! What's been the highlight of your week so far?
+2026-02-23 22:04:02    Step 5: re-querying compose box before typing
+2026-02-23 22:04:02  Browser closed.

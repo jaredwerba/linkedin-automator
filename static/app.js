@@ -2,12 +2,15 @@
 let ws = null;
 let msgWs = null;
 let followupWs = null;
+let creepWs = null;
 let isPaused = false;
 let isMsgPaused = false;
 let isFollowupPaused = false;
+let isCreepPaused = false;
 let isRunning = false;
 let isMsgRunning = false;
 let isFollowupRunning = false;
+let isCreepRunning = false;
 let activeTab = 'feed';
 
 // DOM refs
@@ -32,6 +35,7 @@ function switchTab(tab) {
   document.getElementById('history-refresh-btn').classList.toggle('hidden', tab !== 'history');
   document.getElementById('msg-refresh-btn').classList.toggle('hidden', tab !== 'msg');
   document.getElementById('followup-refresh-btn').classList.toggle('hidden', tab !== 'followup');
+  document.getElementById('creep-refresh-btn').classList.toggle('hidden', tab !== 'creep');
 
   if (tab === 'results') loadResults();
   if (tab === 'history') loadHistory();
@@ -42,6 +46,7 @@ function switchTab(tab) {
     updateFollowupDaysBubble(null);
     updateFollowupCapBubble(null);
   }
+  if (tab === 'creep') { loadCreepLog(); updateCreepCapBubble(null); initCreepFeed(); }
 }
 
 // ── Results table ─────────────────────────────────────────────────────────────
@@ -1092,3 +1097,235 @@ function refreshAccepted() {
     btn.disabled = false;
   };
 }
+
+
+// ── Creep Mode ────────────────────────────────────────────────────────────────
+
+async function initCreepFeed() {
+  // Only show init sequence if not currently running
+  if (isCreepRunning) return;
+  const feed = document.getElementById('creep-feed');
+  if (!feed) return;
+  feed.innerHTML = '';
+
+  const cap = getCreepCap();
+
+  // Fetch connections to preview which profiles will be visited
+  try {
+    const res  = await fetch('/results');
+    const data = await res.json();
+    const rows = (data.rows || []).filter(r => r.profile_url && r.profile_url.trim());
+
+    const total = rows.length;
+    const queued = Math.min(cap, total);
+
+    // Header banner
+    const banner = document.createElement('div');
+    banner.className = 'log-entry info';
+    banner.textContent = `▸ CREEP MODE — ${queued} profile(s) queued from ${total} connection(s)`;
+    feed.appendChild(banner);
+
+    if (!total) {
+      const empty = document.createElement('div');
+      empty.className = 'log-entry warning';
+      empty.textContent = '  No connections with profile URLs found. Run a connection search first.';
+      feed.appendChild(empty);
+      return;
+    }
+
+    // List the profiles that will be visited
+    const preview = document.createElement('div');
+    preview.className = 'log-entry info';
+    preview.textContent = '  Sequence:';
+    feed.appendChild(preview);
+
+    rows.slice(0, queued).forEach((r, i) => {
+      const name    = r.name || 'Unknown';
+      const company = r.company ? ` @ ${r.company}` : '';
+      const line = document.createElement('div');
+      line.className = 'log-entry';
+      line.textContent = `  ${i + 1}. ${name}${company}`;
+      feed.appendChild(line);
+    });
+
+    if (total > queued) {
+      const more = document.createElement('div');
+      more.className = 'log-entry info';
+      more.textContent = `  … and ${total - queued} more (adjust slider to include)`;
+      feed.appendChild(more);
+    }
+
+  } catch (e) {
+    const err = document.createElement('div');
+    err.className = 'log-entry warning';
+    err.textContent = '  Could not load connection preview.';
+    feed.appendChild(err);
+  }
+}
+
+function updateCreepCapBubble(input) {
+  const slider = input || document.getElementById('creep-cap-slider');
+  const bubble = document.getElementById('creep-cap-bubble');
+  if (!slider || !bubble) return;
+  bubble.textContent = slider.value;
+  const pct = (slider.value - slider.min) / (slider.max - slider.min);
+  bubble.style.left = `calc(${pct * 100}% + ${8 - pct * 16}px)`;
+}
+
+function getCreepCap() {
+  return parseInt(document.getElementById('creep-cap-slider').value, 10) || 5;
+}
+
+function setCreepRunning(running) {
+  isCreepRunning = running;
+  document.getElementById('btn-creep-run').disabled   = running;
+  document.getElementById('btn-creep-pause').disabled = !running;
+  document.getElementById('btn-creep-stop').disabled  = !running;
+  if (!running) {
+    isCreepPaused = false;
+    document.getElementById('btn-creep-pause').textContent = 'Pause';
+  }
+}
+
+function addCreepLog(message, level) {
+  const feed = document.getElementById('creep-feed');
+  if (!feed) return;
+  const div = document.createElement('div');
+  div.className = `log-entry ${level || ''}`;
+  div.textContent = message;
+  feed.appendChild(div);
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function startCreepRun() {
+  if (isCreepRunning) return;
+  const feed = document.getElementById('creep-feed');
+  if (feed) feed.innerHTML = '';
+
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  creepWs = new WebSocket(`${proto}://${location.host}/ws/creep`);
+
+  creepWs.onopen = () => {
+    creepWs.send(JSON.stringify({
+      action: 'creep_run',
+      profile_cap: getCreepCap(),
+      speed_multiplier: 1.0,
+    }));
+  };
+
+  creepWs.onmessage = (evt) => {
+    const data = JSON.parse(evt.data);
+    if (data.type === 'started') {
+      setCreepRunning(true);
+    } else if (data.type === 'log') {
+      const lvl = data.message.startsWith('✓') ? 'success'
+                : data.message.startsWith('✗') || data.message.includes('Error') ? 'error'
+                : data.message.startsWith('⚠') ? 'warning'
+                : 'info';
+      addCreepLog(data.message, lvl);
+    } else if (data.type === 'done' || data.type === 'error') {
+      setCreepRunning(false);
+      loadCreepLog();
+      if (data.type === 'error') addCreepLog('Error: ' + (data.message || ''), 'error');
+    }
+  };
+
+  creepWs.onerror = () => {
+    addCreepLog('WebSocket error — is the server running?', 'error');
+    setCreepRunning(false);
+  };
+
+  creepWs.onclose = () => {
+    setCreepRunning(false);
+  };
+}
+
+function toggleCreepPause() {
+  if (!creepWs || !isCreepRunning) return;
+  if (!isCreepPaused) {
+    creepWs.send(JSON.stringify({ action: 'creep_pause' }));
+    isCreepPaused = true;
+    document.getElementById('btn-creep-pause').textContent = 'Resume';
+  } else {
+    creepWs.send(JSON.stringify({ action: 'creep_resume' }));
+    isCreepPaused = false;
+    document.getElementById('btn-creep-pause').textContent = 'Pause';
+  }
+}
+
+function stopCreepRun() {
+  if (!creepWs || !isCreepRunning) return;
+  creepWs.send(JSON.stringify({ action: 'creep_stop' }));
+}
+
+async function loadCreepLog() {
+  try {
+    const res  = await fetch('/creep-log');
+    const data = await res.json();
+    renderCreepTable(data.rows || []);
+  } catch (e) {
+    console.error('loadCreepLog failed', e);
+  }
+}
+
+function renderCreepTable(rows) {
+  const tbody   = document.getElementById('creep-tbody');
+  const table   = document.getElementById('creep-table');
+  const empty   = document.getElementById('creep-empty');
+  if (!tbody || !table || !empty) return;
+
+  if (!rows.length) {
+    table.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  table.classList.remove('hidden');
+  empty.classList.add('hidden');
+  tbody.innerHTML = rows.map(r => {
+    const liked = r.post_liked === 'yes'
+      ? '<span class="creep-liked-yes">✓</span>'
+      : '<span class="creep-liked-no">—</span>';
+    const name = r.name || '—';
+    const url  = r.profile_url
+      ? `<a href="${r.profile_url}" target="_blank" rel="noopener">${name}</a>`
+      : name;
+    return `<tr>
+      <td>${r.creeped_at || ''}</td>
+      <td>${name}</td>
+      <td>${url}</td>
+      <td>${liked}</td>
+    </tr>`;
+  }).join('');
+}
+
+
+// ── Obsidian status dot ───────────────────────────────────────────────────────
+
+async function checkObsidianStatus() {
+  const dot = document.getElementById('obsidian-dot');
+  if (!dot) return;
+  dot.className = 'obsidian-dot checking';
+  dot.title = 'Obsidian: checking...';
+  try {
+    const res  = await fetch('/obsidian-status');
+    const data = await res.json();
+    if (data.connected) {
+      dot.className = 'obsidian-dot connected';
+      dot.title = 'Obsidian: connected';
+    } else if (data.configured) {
+      dot.className = 'obsidian-dot disconnected';
+      dot.title = 'Obsidian: configured but not running — open Obsidian with the Local REST API plugin enabled';
+    } else {
+      dot.className = 'obsidian-dot disconnected';
+      dot.title = 'Obsidian: not configured (set OBSIDIAN_API_KEY in .env)';
+    }
+  } catch {
+    dot.className = 'obsidian-dot disconnected';
+    dot.title = 'Obsidian: unreachable';
+  }
+}
+
+// Check on load, then every 30s
+checkObsidianStatus();
+setInterval(checkObsidianStatus, 30000);

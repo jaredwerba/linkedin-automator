@@ -828,15 +828,11 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
     if _sent_this_week >= WEEKLY_CAP:
         await log(f"Weekly cap of {WEEKLY_CAP} already reached. Try again next week.")
         return
-    if _sent_today >= DAILY_CAP:
-        await log(f"Daily cap of {DAILY_CAP} already reached. Try again tomorrow.")
-        return
-
     profile_path = _detect_chrome_profile()
     executable = _detect_chrome_executable()
 
     await log(f"Chrome profile: {profile_path}")
-    await log(f"Up to {DEMO_CAP} connections per company | Daily cap: {DAILY_CAP} | Weekly cap: {WEEKLY_CAP}")
+    await log(f"Up to {DEMO_CAP} connections per company | Weekly cap: {WEEKLY_CAP}")
 
     total_sent = 0
 
@@ -877,10 +873,6 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
                 if _sent_this_week >= WEEKLY_CAP:
                     await log(f"Weekly cap of {WEEKLY_CAP} reached. Stopping.")
                     break
-                if _sent_today >= DAILY_CAP:
-                    await log(f"Daily cap of {DAILY_CAP} reached. Stopping.")
-                    break
-
                 await log(f"━━ Company: {company} ━━")
 
                 company_url = await _find_company_page(page, company, log)
@@ -912,10 +904,6 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
                     if _sent_this_week >= WEEKLY_CAP:
                         await log(f"Weekly cap of {WEEKLY_CAP} reached. Stopping.")
                         break
-                    if _sent_today >= DAILY_CAP:
-                        await log(f"Daily cap of {DAILY_CAP} reached. Stopping.")
-                        break
-
                     # Handle pause
                     while _pause_requested and not _stop_requested:
                         await log("Paused — waiting to resume...")
@@ -944,14 +932,14 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
                         # Short human-like delay between requests
                         if company_sent < DEMO_CAP and not _stop_requested:
                             delay = random.uniform(8, 15) * _spd
-                            await log(f"Waiting {delay:.1f}s before next request ({_sent_today}/{DAILY_CAP} today · {_sent_this_week}/{WEEKLY_CAP} this week)...")
+                            await log(f"Waiting {delay:.1f}s before next request ({_sent_today} today · {_sent_this_week}/{WEEKLY_CAP} this week)...")
                             await asyncio.sleep(max(delay, 0.5))
 
                 await log(f"Sent {company_sent} connection(s) at {company}.")
 
             await log(
                 f"━━ Done. Sent {total_sent} connection request(s) this run. "
-                f"Today: {_sent_today}/{DAILY_CAP} · This week: {_sent_this_week}/{WEEKLY_CAP}. ━━"
+                f"Today: {_sent_today} · This week: {_sent_this_week}/{WEEKLY_CAP}. ━━"
             )
 
         except RuntimeError as e:

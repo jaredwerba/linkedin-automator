@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 import automator
+import creep
 import messenger
 from ai import test_ai_connection
 from logger import (
@@ -31,6 +32,7 @@ load_dotenv()
 _automation_task: Optional[asyncio.Task] = None
 _msg_task: Optional[asyncio.Task] = None
 _followup_task: Optional[asyncio.Task] = None
+_creep_task: Optional[asyncio.Task] = None
 _active_websocket: Optional[WebSocket] = None
 
 
@@ -43,6 +45,8 @@ async def lifespan(app: FastAPI):
         _msg_task.cancel()
     if _followup_task and not _followup_task.done():
         _followup_task.cancel()
+    if _creep_task and not _creep_task.done():
+        _creep_task.cancel()
 
 
 app = FastAPI(title="LinkedIn Automator", lifespan=lifespan)
@@ -238,7 +242,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
         await websocket.send_json({"type": "started"})
         await log(f"Starting automation for {len(company_list)} company/companies.")
-        await log(f"Daily cap: {os.getenv('DAILY_CAP', '20')} | {os.getenv('DEMO_CAP', '3')} connections per company")
+        await log(f"{os.getenv('DEMO_CAP', '3')} connections per company")
 
         async def run_with_ws():
             try:
@@ -455,6 +459,90 @@ async def followup_websocket_endpoint(websocket: WebSocket):
             pass
 
 
+# ── Creep Mode ────────────────────────────────────────────────────────────────
+
+@app.get("/creep-log")
+async def get_creep_log():
+    """Return all creep log entries, newest first."""
+    return {"rows": creep.read_creep_log()}
+
+
+@app.websocket("/ws/creep")
+async def creep_websocket_endpoint(websocket: WebSocket):
+    global _creep_task
+    await websocket.accept()
+
+    async def log(message: str):
+        try:
+            await websocket.send_json({"type": "log", "message": message})
+        except Exception:
+            pass
+
+    try:
+        data = await websocket.receive_text()
+        payload = json.loads(data)
+
+        if payload.get("action") != "creep_run":
+            await websocket.send_json({"type": "error", "message": "Expected action: creep_run"})
+            return
+
+        profile_cap      = max(1, min(20, int(payload.get("profile_cap", 5))))
+        speed_multiplier = float(payload.get("speed_multiplier", 1.0))
+        speed_multiplier = max(0.05, min(speed_multiplier, 2.0))
+
+        await websocket.send_json({"type": "started"})
+        await log(f"Starting Creep Mode — cap: {profile_cap} profile(s)")
+
+        async def run_creep():
+            try:
+                await creep.run_creep_mode(
+                    profile_cap=profile_cap,
+                    log=log,
+                    speed_multiplier=speed_multiplier,
+                )
+                await websocket.send_json({"type": "done"})
+            except asyncio.CancelledError:
+                await log("Creep Mode cancelled.")
+                await websocket.send_json({"type": "done"})
+            except Exception as e:
+                await log(f"Fatal error: {e}")
+                await websocket.send_json({"type": "error", "message": str(e)})
+
+        _creep_task = asyncio.create_task(run_creep())
+
+        while not _creep_task.done():
+            try:
+                msg = await asyncio.wait_for(websocket.receive_text(), timeout=2.0)
+                cmd = json.loads(msg)
+                action = cmd.get("action")
+                if action == "creep_pause":
+                    creep.request_creep_pause()
+                    await log("Paused by user.")
+                elif action == "creep_resume":
+                    creep.request_creep_resume()
+                    await log("Resumed by user.")
+                elif action == "creep_stop":
+                    creep.request_creep_stop()
+                    _creep_task.cancel()
+                    await log("Stop requested by user.")
+                    break
+            except asyncio.TimeoutError:
+                continue
+            except WebSocketDisconnect:
+                creep.request_creep_stop()
+                break
+
+        await _creep_task
+
+    except WebSocketDisconnect:
+        creep.request_creep_stop()
+    except Exception as e:
+        try:
+            await websocket.send_json({"type": "error", "message": str(e)})
+        except Exception:
+            pass
+
+
 # ── Accepted-connections refresh ───────────────────────────────────────────────
 
 @app.get("/targets")
@@ -471,6 +559,22 @@ async def get_targets():
 async def get_accepted_count():
     """Lightweight endpoint — returns persisted accepted count without launching a browser."""
     return {"accepted": quarterly_connections_accepted()}
+
+
+@app.get("/obsidian-status")
+async def get_obsidian_status():
+    """Returns whether the Obsidian Local REST API plugin is reachable."""
+    try:
+        import obsidian_logger as obs
+        enabled = obs.is_enabled()
+        return {
+            "connected": enabled,
+            "configured": obs._ENABLED,
+            "base_url": obs.OBSIDIAN_BASE_URL,
+            "vault_path": obs.OBSIDIAN_VAULT_PATH,
+        }
+    except ImportError:
+        return {"connected": False, "configured": False}
 
 
 @app.websocket("/ws/refresh-accepted")

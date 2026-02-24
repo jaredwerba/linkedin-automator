@@ -14,6 +14,7 @@
       <h1>PIPDuck</h1>
       <div class="status-bar">
         <span id="status-badge" class="badge idle">Idle</span>
+        <span id="obsidian-dot" class="obsidian-dot" title="Obsidian: checking..."></span>
       </div>
     </header>
 
@@ -137,6 +138,7 @@
           <button class="tab-btn" onclick="switchTab('followup')" id="tab-followup">
             Follow Up <span id="followup-count" class="tab-count"></span>
           </button>
+          <button class="tab-btn" onclick="switchTab('creep')" id="tab-creep">Creep Mode</button>
           <!-- Per-tab actions -->
           <div class="tab-actions">
             <button id="feed-clear-btn" class="btn ghost small" onclick="clearLog()">Clear</button>
@@ -144,6 +146,7 @@
             <button id="history-refresh-btn" class="btn ghost small hidden" onclick="loadHistory()">Refresh</button>
             <button id="msg-refresh-btn" class="btn ghost small hidden" onclick="loadMessages()">Refresh</button>
             <button id="followup-refresh-btn" class="btn ghost small hidden" onclick="loadFollowups()">Refresh</button>
+            <button id="creep-refresh-btn" class="btn ghost small hidden" onclick="loadCreepLog()">Refresh</button>
           </div>
         </div>
 
@@ -269,6 +272,52 @@
                   </tr>
                 </thead>
                 <tbody id="followup-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Creep Mode pane -->
+        <div id="pane-creep" class="tab-pane hidden">
+
+          <!-- Slider -->
+          <div class="msg-cap-section">
+            <label class="msg-cap-label-top">Profiles per Run <span class="cap-hint">(1–20)</span></label>
+            <div class="msg-cap-slider-wrap">
+              <input type="range" id="creep-cap-slider" min="1" max="20" step="1" value="5"
+                     oninput="updateCreepCapBubble(this); initCreepFeed();" />
+              <div id="creep-cap-bubble" class="msg-cap-bubble">5</div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="msg-controls">
+            <button id="btn-creep-run" class="btn execute" onclick="startCreepRun()">Creep Profiles</button>
+            <button id="btn-creep-pause" class="btn secondary" onclick="toggleCreepPause()" disabled>Pause</button>
+            <button id="btn-creep-stop" class="btn danger" onclick="stopCreepRun()" disabled>Stop</button>
+          </div>
+
+          <!-- Live feed -->
+          <div id="creep-feed" class="log msg-log"></div>
+
+          <!-- History table -->
+          <div class="msg-table-section">
+            <div class="msg-table-header">
+              <span class="msg-table-title">Creep Log</span>
+            </div>
+            <div id="creep-empty" class="results-empty hidden">No profiles visited yet.</div>
+            <div class="results-table-wrap">
+              <table id="creep-table" class="results-table hidden">
+                <thead>
+                  <tr>
+                    <th>When</th>
+                    <th>Name</th>
+                    <th>Profile</th>
+                    <th>Liked?</th>
+                  </tr>
+                </thead>
+                <tbody id="creep-tbody"></tbody>
               </table>
             </div>
           </div>

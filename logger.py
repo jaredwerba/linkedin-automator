@@ -8,6 +8,11 @@ import os
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+try:
+    import obsidian_logger as _obs
+except ImportError:
+    _obs = None
+
 LOG_PATH = Path(os.getenv("LOG_PATH", "connections.csv"))
 MSG_LOG_PATH = Path(os.getenv("MSG_LOG_PATH", "messages.csv"))
 
@@ -85,6 +90,16 @@ def log_connection(
     with open(LOG_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=FIELDS)
         writer.writerow(row)
+
+    if _obs:
+        try:
+            _obs.on_connection_sent(
+                name=name, role=role, company=company,
+                profile_url=profile_url, score=score,
+                scorer="AI" if ai_scored else "keywords", note=note,
+            )
+        except Exception:
+            pass
 
 
 def count_sent_today() -> int:
@@ -196,6 +211,15 @@ def log_message(name: str, role: str, profile_url: str, message: str):
     with open(MSG_LOG_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=MSG_FIELDS)
         writer.writerow(row)
+
+    if _obs:
+        try:
+            _obs.on_message_sent(
+                name=name, role=role,
+                profile_url=profile_url, message=message,
+            )
+        except Exception:
+            pass
 
 
 def count_messages_today() -> int:
@@ -320,6 +344,16 @@ def upsert_followup(profile_url: str, **kwargs):
         writer = csv.DictWriter(f, fieldnames=FOLLOWUP_FIELDS)
         writer.writeheader()
         writer.writerows(rows)
+
+    if _obs:
+        try:
+            name = kwargs.get("name", "")
+            if kwargs.get("follow_up_sent_at") or kwargs.get("status") == "followed_up":
+                _obs.on_followup_sent(name=name, profile_url=profile_url)
+            elif kwargs.get("status") == "replied" or kwargs.get("replied_at"):
+                _obs.on_replied(name=name, profile_url=profile_url)
+        except Exception:
+            pass
 
 
 def seed_followups_from_messages():

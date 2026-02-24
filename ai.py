@@ -84,6 +84,7 @@ Rules:
 - Write 1 sentence only for the ai_hook
 - Be specific to their role and company
 - Sound natural and human, not salesy
+- Do not send any message with brackets or curly braces Check for these at the end of message
 - Do not mention you are an AI
 - Do not include greetings or sign-offs
 - Return ONLY the ai_hook sentence, nothing else

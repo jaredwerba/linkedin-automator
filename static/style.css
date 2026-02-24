@@ -397,7 +397,8 @@ code {
 
 .tab-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
   gap: 0;
   padding: 10px 12px 0;
   border-bottom: 1px solid var(--border-bright);
@@ -411,16 +412,17 @@ code {
   color: var(--text-muted);
   cursor: pointer;
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   font-weight: normal;
-  padding: 5px 14px 8px;
+  padding: 5px 10px 8px;
   margin-bottom: -1px;
   transition: color 0.1s;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .tab-btn:hover { color: var(--text-dim); }
@@ -447,6 +449,7 @@ code {
 .tab-actions {
   margin-left: auto;
   padding-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .tab-pane {
@@ -1110,4 +1113,56 @@ input[type="range"]::-moz-range-thumb {
 .btn-refresh-accepted:disabled { cursor: default; }
 .btn-refresh-accepted.spinning { opacity: 1; color: var(--amber); animation: btn-spin 1s linear infinite; }
 
+/* ── Creep Mode pane ─────────────────────────────────────────────────────── */
+#pane-creep {
+  gap: 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#creep-feed {
+  min-height: 120px;
+  max-height: 220px;
+}
+
+#creep-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+#creep-table th {
+  text-align: left;
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+}
+#creep-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid rgba(0,255,65,0.06);
+  color: var(--text);
+  vertical-align: middle;
+}
+#creep-table tr:hover td { background: rgba(0,255,65,0.03); }
+.creep-liked-yes { color: var(--green); font-weight: 700; }
+.creep-liked-no  { color: var(--text-dim); }
+
 @keyframes btn-spin { to { transform: rotate(360deg); } }
+
+/* ── Obsidian status dot ─────────────────────────────────────────────────── */
+.obsidian-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  margin-left: 6px;
+  vertical-align: middle;
+  transition: background 0.4s ease;
+  cursor: default;
+}
+.obsidian-dot.connected    { background: #a78bfa; box-shadow: 0 0 6px #a78bfa88; }
+.obsidian-dot.disconnected { background: var(--text-dim); }
+.obsidian-dot.checking     { background: var(--green); opacity: 0.4; }
