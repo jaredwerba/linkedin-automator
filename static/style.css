@@ -1166,3 +1166,198 @@ input[type="range"]::-moz-range-thumb {
 .obsidian-dot.connected    { background: #a78bfa; box-shadow: 0 0 6px #a78bfa88; }
 .obsidian-dot.disconnected { background: var(--text-dim); }
 .obsidian-dot.checking     { background: var(--green); opacity: 0.4; }
+
+/* ── Config Button + Active Profile Label ────────────────────────────────── */
+.btn-config {
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-config:hover {
+  border-color: var(--text);
+  color: var(--text);
+  box-shadow: var(--glow-green);
+}
+.btn-config:active {
+  background: #00ff4110;
+}
+
+.active-profile-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.active-profile-label.updating {
+  animation: labelUpdate 0.3s ease-out forwards;
+}
+
+/* ── Profile Selection Overlay ───────────────────────────────────────────── */
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: translateY(-14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1);    }
+}
+@keyframes modalSlideOut {
+  from { opacity: 1; transform: translateY(0)     scale(1);    }
+  to   { opacity: 0; transform: translateY(-10px) scale(0.97); }
+}
+@keyframes cardSelectFlash {
+  0%   { background: #00ff4108; }
+  25%  { background: #00ff4132; box-shadow: inset 0 0 0 1px #00ff4160; }
+  65%  { background: #00ff4118; }
+  100% { background: #00ff4108; }
+}
+@keyframes labelUpdate {
+  from { opacity: 0.2; letter-spacing: 4px; }
+  to   { opacity: 1;   letter-spacing: 1px; }
+}
+
+.config-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8000;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlayFadeIn 0.2s ease-out forwards;
+}
+.config-overlay.hidden  { display: none; }
+.config-overlay.closing { animation: overlayFadeOut 0.18s ease-in forwards; }
+
+.config-modal {
+  width: 560px;
+  max-width: 94vw;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.08);
+  animation: modalSlideIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.config-overlay.closing .config-modal {
+  animation: modalSlideOut 0.16s ease-in forwards;
+}
+
+.config-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.config-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.config-close-btn:hover { color: var(--red); }
+
+.profile-cards {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  position: relative;
+}
+.profile-card:last-child { border-bottom: none; }
+.profile-card:hover { background: #00ff4108; }
+
+.profile-card-num {
+  font-size: 22px;
+  color: var(--text-muted);
+  min-width: 32px;
+  line-height: 1;
+  padding-top: 2px;
+  transition: color 0.15s;
+}
+
+.profile-card-body {
+  flex: 1;
+}
+
+.profile-card-name {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  transition: color 0.15s;
+}
+
+.profile-card-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.profile-card-angle {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.profile-card-check {
+  font-size: 14px;
+  color: transparent;
+  min-width: 20px;
+  text-align: right;
+  padding-top: 2px;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+
+/* Selecting flash */
+.profile-card.selecting {
+  animation: cardSelectFlash 0.35s ease-out forwards;
+}
+
+/* Active state */
+.profile-card.active {
+  background: #00ff4108;
+}
+.profile-card.active .profile-card-num {
+  color: var(--text);
+  text-shadow: var(--glow-green);
+}
+.profile-card.active .profile-card-name {
+  color: var(--text);
+  text-shadow: var(--glow-green);
+}
+.profile-card.active .profile-card-check {
+  color: var(--text);
+  text-shadow: var(--glow-green);
+}

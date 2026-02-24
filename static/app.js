@@ -13,6 +13,15 @@ let isFollowupRunning = false;
 let isCreepRunning = false;
 let activeTab = 'feed';
 
+// Active outreach profile (persisted in localStorage)
+let _activeProfile = parseInt(localStorage.getItem('activeProfile') || '1', 10);
+
+const _profileNames = {
+  1: 'CLOUD INFRA · GENERAL',
+  2: 'CLOUD INFRA · OCI SAVINGS',
+  3: 'VENTURE CAPITAL',
+};
+
 // DOM refs
 const logEl = document.getElementById('log');
 const statusBadge = document.getElementById('status-badge');
@@ -601,6 +610,7 @@ async function startRun() {
       action: 'run',
       companies: companies,
       speed_multiplier: speedMultiplier,
+      profile: _activeProfile,
     }));
   };
 
@@ -1329,3 +1339,76 @@ async function checkObsidianStatus() {
 // Check on load, then every 30s
 checkObsidianStatus();
 setInterval(checkObsidianStatus, 30000);
+
+// ── Outreach Profile Config ────────────────────────────────────────────────────
+
+function openConfig() {
+  _refreshProfileCards();
+  const overlay = document.getElementById('config-overlay');
+  overlay.classList.remove('closing');
+  overlay.classList.remove('hidden');
+}
+
+function closeConfig() {
+  const overlay = document.getElementById('config-overlay');
+  if (overlay.classList.contains('hidden')) return;
+  overlay.classList.add('closing');
+  overlay.addEventListener('animationend', () => {
+    overlay.classList.add('hidden');
+    overlay.classList.remove('closing');
+  }, { once: true });
+}
+
+function onOverlayClick(e) {
+  if (e.target === document.getElementById('config-overlay')) {
+    closeConfig();
+  }
+}
+
+function selectProfile(id) {
+  _activeProfile = id;
+  localStorage.setItem('activeProfile', String(id));
+
+  // Flash the selected card, then close after the flash completes
+  const card = document.getElementById(`profile-card-${id}`);
+  if (card) {
+    card.classList.add('selecting');
+    card.addEventListener('animationend', () => {
+      card.classList.remove('selecting');
+      _refreshProfileCards();
+      _updateProfileLabel();
+      closeConfig();
+    }, { once: true });
+  } else {
+    _refreshProfileCards();
+    _updateProfileLabel();
+    closeConfig();
+  }
+}
+
+function _refreshProfileCards() {
+  [1, 2, 3].forEach(id => {
+    const card = document.getElementById(`profile-card-${id}`);
+    if (!card) return;
+    if (id === _activeProfile) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
+}
+
+function _updateProfileLabel() {
+  const label = document.getElementById('active-profile-label');
+  if (!label) return;
+  label.textContent = _profileNames[_activeProfile] || `PROFILE ${_activeProfile}`;
+  // Restart animation to sweep in the new text
+  label.classList.remove('updating');
+  void label.offsetWidth; // force reflow
+  label.classList.add('updating');
+  label.addEventListener('animationend', () => label.classList.remove('updating'), { once: true });
+}
+
+// Init profile UI on page load
+_updateProfileLabel();
+_refreshProfileCards();

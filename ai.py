@@ -10,26 +10,21 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 
-# Cache scored titles within a run — many people share the same title
-_title_score_cache: dict[str, int] = {}
+# Cache scored titles within a run — key includes profile so different profiles
+# don't share scores (a "VP Engineering" scores differently for cloud vs VC).
+_title_score_cache: dict[tuple, int] = {}
 
+# ── Outreach Profiles ────────────────────────────────────────────────────────
 
-async def score_title_ai(role: str) -> int:
-    """
-    Use the AI to score a job title for relevance as a cloud infrastructure
-    decision maker. Returns an integer 0–10.
+PROFILE_NAMES = {
+    1: "CLOUD INFRA · GENERAL",
+    2: "CLOUD INFRA · OCI SAVINGS",
+    3: "VENTURE CAPITAL",
+}
 
-    Falls back to 0 (caller should use keyword scorer as fallback) if AI
-    is unavailable or returns an unparseable response.
-    """
-    if not role or not role.strip():
-        return 0
-
-    key = role.strip().lower()
-    if key in _title_score_cache:
-        return _title_score_cache[key]
-
-    prompt = f"""Rate this job title for how likely this person makes decisions about cloud infrastructure, DevOps, or platform engineering at their company.
+# Per-profile scoring prompts
+_SCORE_PROMPTS = {
+    1: """Rate this job title for how likely this person makes decisions about cloud infrastructure, DevOps, or platform engineering at their company.
 
 Job title: "{role}"
 
@@ -40,7 +35,61 @@ Scoring guide:
 1-3 = Tangential (Software Engineer, Product Manager, Designer, Sales, Marketing)
 0 = Not relevant (HR, Finance, Legal, Admin, Student, Intern)
 
-Reply with a single integer from 0 to 10. Nothing else."""
+Reply with a single integer from 0 to 10. Nothing else.""",
+
+    2: """Rate this job title for how likely this person makes decisions about cloud infrastructure, DevOps, or platform engineering at their company.
+
+Job title: "{role}"
+
+Scoring guide:
+10 = Clear decision maker (CTO, VP Engineering, VP Infrastructure, Head of Cloud)
+7-9 = Strong influencer (Director of Engineering, Director of Platform, Engineering Manager, Cloud Architect, Principal Engineer)
+4-6 = Relevant practitioner (DevOps Engineer, SRE, Platform Engineer, Staff Engineer, Solutions Architect)
+1-3 = Tangential (Software Engineer, Product Manager, Designer, Sales, Marketing)
+0 = Not relevant (HR, Finance, Legal, Admin, Student, Intern)
+
+Reply with a single integer from 0 to 10. Nothing else.""",
+
+    3: """Rate this job title for how likely this person is a venture capital investor, angel investor, or startup ecosystem participant who could provide funding or feedback to an early-stage SaaS startup.
+
+Job title: "{role}"
+
+Scoring guide:
+10 = GP, Managing Partner, General Partner, or Partner at a VC firm
+7-9 = Principal, Associate, Venture Partner, Angel Investor, Entrepreneur in Residence
+4-6 = Portfolio operations, Investor Relations, accelerator/incubator staff, Startup advisor
+1-3 = Corporate Innovation, M&A, Growth Equity, Private Equity — tangential
+0 = Not relevant (Software Engineer, HR, Finance, Legal, Admin, Student, Intern)
+
+Reply with a single integer from 0 to 10. Nothing else.""",
+}
+
+# Per-profile system context injected into the note-generation prompt
+_NOTE_PERSONAS = {
+    1: "You are helping a cloud infrastructure sales professional write a LinkedIn connection request note. The goal is a natural, role-specific opening line.",
+    2: "You are helping a cloud infrastructure sales professional specializing in Oracle Cloud Infrastructure (OCI) cost optimization write a LinkedIn connection request note. The ai_hook should angle toward infrastructure economics, cloud cost reduction, or OCI-specific value relevant to the prospect's role.",
+    3: "You are helping a bootstrapped, profitable AI-native SaaS founder write a LinkedIn connection request note to a venture capital investor. The founder is beginning the process of raising their first institutional round and wants to network, share early traction, and get VC perspective. The ai_hook should be genuine, founder-to-investor in tone — not a pitch, just an authentic reason to connect.",
+}
+
+
+async def score_title_ai(role: str, profile: int = 1) -> int:
+    """
+    Use the AI to score a job title for relevance.
+    Profile determines scoring criteria (cloud infra vs VC vs etc.).
+    Returns an integer 0–10.
+
+    Falls back to 0 (caller should use keyword scorer as fallback) if AI
+    is unavailable or returns an unparseable response.
+    """
+    if not role or not role.strip():
+        return 0
+
+    cache_key = (role.strip().lower(), profile)
+    if cache_key in _title_score_cache:
+        return _title_score_cache[cache_key]
+
+    score_template = _SCORE_PROMPTS.get(profile, _SCORE_PROMPTS[1])
+    prompt = score_template.replace('"{role}"', f'"{role}"')
 
     try:
         if AI_PROVIDER == "gemini":
@@ -52,12 +101,12 @@ Reply with a single integer from 0 to 10. Nothing else."""
         match = re.search(r'\b(\d{1,2})\b', raw)
         if match:
             score = min(10, max(0, int(match.group(1))))
-            _title_score_cache[key] = score
+            _title_score_cache[cache_key] = score
             return score
     except Exception:
         pass  # Silently fall back — keyword scorer will be used
 
-    _title_score_cache[key] = 0
+    _title_score_cache[cache_key] = 0
     return 0
 
 
@@ -66,9 +115,10 @@ def clear_title_score_cache():
     _title_score_cache.clear()
 
 
-def _build_prompt(template: str, first_name: str, company: str, role: str) -> str:
+def _build_prompt(template: str, first_name: str, company: str, role: str, profile: int = 1) -> str:
     """Build the prompt for the AI to fill in the {{ai_hook}} variable."""
-    return f"""You are helping write a LinkedIn connection request note.
+    persona = _NOTE_PERSONAS.get(profile, _NOTE_PERSONAS[1])
+    return f"""{persona}
 
 The note template is:
 {template}
@@ -101,9 +151,9 @@ def _fill_static_fields(template: str, first_name: str, company: str, role: str,
     return note
 
 
-async def generate_note(template: str, first_name: str, company: str, role: str) -> str:
+async def generate_note(template: str, first_name: str, company: str, role: str, profile: int = 1) -> str:
     """Generate a personalized connection note using the configured AI provider."""
-    prompt = _build_prompt(template, first_name, company, role)
+    prompt = _build_prompt(template, first_name, company, role, profile)
 
     if AI_PROVIDER == "gemini":
         ai_hook = await _generate_gemini(prompt)
@@ -119,10 +169,11 @@ _NOTE_TEMPLATE = "Hi {{first_name}}, {{ai_hook}} Would love to connect."
 MAX_NOTE_CHARS = 280  # LinkedIn hard limit is 300 — stay safely under
 
 
-async def generate_connection_note(first_name: str, company: str, role: str) -> str:
+async def generate_connection_note(first_name: str, company: str, role: str, profile: int = 1) -> str:
     """
     Generate a short, personalised LinkedIn connection request note.
     Uses the fixed template: "Hi {first_name}, {ai_hook} Would love to connect."
+    Profile controls the note persona/angle (cloud infra general, OCI savings, VC).
     Guaranteed to be under MAX_NOTE_CHARS. Falls back to a plain note on error.
     """
     try:
@@ -131,6 +182,7 @@ async def generate_connection_note(first_name: str, company: str, role: str) -> 
             first_name=first_name,
             company=company,
             role=role,
+            profile=profile,
         )
         # Hard trim — never exceed LinkedIn's 300-char limit
         if len(note) > MAX_NOTE_CHARS:

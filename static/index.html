@@ -13,6 +13,8 @@
     <header>
       <h1>PIPDuck</h1>
       <div class="status-bar">
+        <button id="btn-config" class="btn-config" onclick="openConfig()">CONFIG</button>
+        <span id="active-profile-label" class="active-profile-label">CLOUD INFRA · GENERAL</span>
         <span id="status-badge" class="badge idle">Idle</span>
         <span id="obsidian-dot" class="obsidian-dot" title="Obsidian: checking..."></span>
       </div>
@@ -326,6 +328,49 @@
 
       </section>
     </main>
+  </div>
+
+  <!-- ── Config / Profile Selection Overlay ── -->
+  <div id="config-overlay" class="config-overlay hidden" onclick="onOverlayClick(event)">
+    <div class="config-modal">
+      <div class="config-modal-header">
+        <span>SELECT OUTREACH PROFILE</span>
+        <button class="config-close-btn" onclick="closeConfig()">✕</button>
+      </div>
+      <div class="profile-cards">
+
+        <div id="profile-card-1" class="profile-card active" onclick="selectProfile(1)">
+          <div class="profile-card-num">01</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">CLOUD INFRA · GENERAL</div>
+            <div class="profile-card-desc">Targets cloud infrastructure, DevOps, and platform engineering decision-makers.</div>
+            <div class="profile-card-angle">General connection note — value prop left to conversation.</div>
+          </div>
+          <div class="profile-card-check">✓</div>
+        </div>
+
+        <div id="profile-card-2" class="profile-card" onclick="selectProfile(2)">
+          <div class="profile-card-num">02</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">CLOUD INFRA · OCI SAVINGS</div>
+            <div class="profile-card-desc">Targets cloud infrastructure, DevOps, and platform engineering decision-makers.</div>
+            <div class="profile-card-angle">OCI cost optimization angle — note angles toward infrastructure economics and cloud cost reduction.</div>
+          </div>
+          <div class="profile-card-check">✓</div>
+        </div>
+
+        <div id="profile-card-3" class="profile-card" onclick="selectProfile(3)">
+          <div class="profile-card-num">03</div>
+          <div class="profile-card-body">
+            <div class="profile-card-name">VENTURE CAPITAL</div>
+            <div class="profile-card-desc">Targets VC partners, principals, angel investors, and startup ecosystem participants.</div>
+            <div class="profile-card-angle">AI-native SaaS founder seeking VC network — bootstrapped, profitable, beginning fundraise.</div>
+          </div>
+          <div class="profile-card-check">✓</div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <script src="/static/app.js"></script>

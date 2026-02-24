@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Callable, Optional
 from dotenv import load_dotenv
 from playwright.async_api import async_playwright, Page, BrowserContext, TimeoutError as PlaywrightTimeout
-from ai import score_title_ai, clear_title_score_cache, generate_connection_note
+from ai import score_title_ai, clear_title_score_cache, generate_connection_note, PROFILE_NAMES
 from logger import log_connection, count_sent_today, count_sent_this_week
 
 load_dotenv()
@@ -249,7 +249,7 @@ async def _go_to_people_tab(page: Page, company_url: str, log: Callable):
     await _human_delay(1000, 2000)
 
 
-async def _scrape_people_cards(page: Page, log: Callable) -> list[dict]:
+async def _scrape_people_cards(page: Page, log: Callable, profile: int = 1) -> list[dict]:
     """
     Scrape profile cards from the company People tab using stable class names
     confirmed from DevTools inspection. Scores by title relevance, best first.
@@ -328,8 +328,8 @@ async def _scrape_people_cards(page: Page, log: Callable) -> list[dict]:
             # (stored element handles go stale after scrolling/DOM changes)
             connect_aria = await connect_btn.get_attribute("aria-label") if connect_btn else None
 
-            # AI scoring — fast call (num_predict=5), cached per unique title
-            ai_score = await score_title_ai(role)
+            # AI scoring — fast call (num_predict=5), cached per unique title+profile
+            ai_score = await score_title_ai(role, profile=profile)
             # Keyword score as fallback if AI returned 0 (unavailable/unparseable)
             kw_score = _score_title(role)
             score = ai_score if ai_score > 0 else kw_score
@@ -395,7 +395,7 @@ def _score_title(role: str) -> int:
     return score
 
 
-async def _send_connection(page: Page, prospect: dict, company: str, log: Callable, speed_multiplier: float = 1.0) -> bool:
+async def _send_connection(page: Page, prospect: dict, company: str, log: Callable, speed_multiplier: float = 1.0, profile: int = 1) -> bool:
     """
     Send a connection request, with an AI-generated note where possible.
     Strategy 1: click the Connect button on the People tab card.
@@ -464,7 +464,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
                         pass
 
                 if modal_detected:
-                    return await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
+                    return await _handle_connect_modal(page, name, role, company, log, speed_multiplier, profile)
 
                 # No modal — check for Pending state (direct send, no note possible)
                 try:
@@ -487,7 +487,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
                         timeout=3000
                     )
                     if btn:
-                        return await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
+                        return await _handle_connect_modal(page, name, role, company, log, speed_multiplier, profile)
                 except (PlaywrightTimeout, Exception):
                     pass
 
@@ -528,7 +528,7 @@ async def _send_connection(page: Page, prospect: dict, company: str, log: Callab
         return False, ""
 
     await _human_delay(1000, 2000)
-    result = await _handle_connect_modal(page, name, role, company, log, speed_multiplier)
+    result = await _handle_connect_modal(page, name, role, company, log, speed_multiplier, profile)
 
     # Navigate back to the People tab so the next prospect's Strategy 1 works
     if people_tab_url and people_tab_url not in page.url:
@@ -670,7 +670,7 @@ async def _is_in_aside(page: Page, element) -> bool:
         return False
 
 
-async def _handle_connect_modal(page: Page, name: str, role: str, company: str, log: Callable, speed_multiplier: float = 1.0) -> tuple[bool, str]:
+async def _handle_connect_modal(page: Page, name: str, role: str, company: str, log: Callable, speed_multiplier: float = 1.0, profile: int = 1) -> tuple[bool, str]:
     """
     After clicking Connect, handle the LinkedIn modal. Two variants exist:
 
@@ -734,6 +734,7 @@ async def _handle_connect_modal(page: Page, name: str, role: str, company: str, 
                 first_name=first_name,
                 company=company,
                 role=role,
+                profile=profile,
             )
             await log(f"Note: \"{note_text}\"")
 
@@ -798,13 +799,14 @@ async def _handle_connect_modal(page: Page, name: str, role: str, company: str, 
     return False, ""
 
 
-async def run_automation(company_list: list[str], log: Callable, speed_multiplier: float = 1.0):
+async def run_automation(company_list: list[str], log: Callable, speed_multiplier: float = 1.0, profile: int = 1):
     """
     Main entry point.
     For each company: find it, open People tab, send up to DEMO_CAP connection
     requests to the most relevant people, then move to the next company.
-    Hard ceiling: DAILY_CAP per day, WEEKLY_CAP per Mon–Sun week.
+    Hard ceiling: WEEKLY_CAP per Mon–Sun week.
     speed_multiplier: 1.0 = safe (default), 0.6 = normal, 0.35 = fast, 0.1 = demo
+    profile: 1=Cloud Infra General, 2=Cloud Infra OCI Savings, 3=Venture Capital
     """
     global _sent_today, _sent_this_week, _stop_requested
 
@@ -832,7 +834,8 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
     executable = _detect_chrome_executable()
 
     await log(f"Chrome profile: {profile_path}")
-    await log(f"Up to {DEMO_CAP} connections per company | Weekly cap: {WEEKLY_CAP}")
+    profile_name = PROFILE_NAMES.get(profile, f"Profile {profile}")
+    await log(f"Profile: {profile_name} | Up to {DEMO_CAP} connections per company | Weekly cap: {WEEKLY_CAP}")
 
     total_sent = 0
 
@@ -888,7 +891,7 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
                 if _stop_requested:
                     break
 
-                people = await _scrape_people_cards(page, log)
+                people = await _scrape_people_cards(page, log, profile=profile)
                 if not people:
                     await log(f"No connectable profiles found at {company} — moving on.")
                     continue
@@ -912,7 +915,7 @@ async def run_automation(company_list: list[str], log: Callable, speed_multiplie
                     if _stop_requested:
                         break
 
-                    success, note_sent = await _send_connection(page, prospect, company, log, _spd)
+                    success, note_sent = await _send_connection(page, prospect, company, log, _spd, profile=profile)
 
                     if success:
                         company_sent  += 1
