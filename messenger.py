@@ -26,6 +26,7 @@ from logger import (
     seed_followups_from_messages, read_followups, upsert_followup,
     count_followups_pending,
 )
+import re as _re
 from ai import _generate_ollama, _generate_gemini, AI_PROVIDER
 
 load_dotenv()
@@ -110,14 +111,36 @@ def _normalize_url(url: str) -> str:
     return url.split("?")[0].rstrip("/").lower()
 
 
+def _profile_slug(url: str) -> str:
+    """
+    Extract the /in/username slug — the canonical LinkedIn identity token.
+    Used as a format-agnostic fallback when full URL comparison might fail
+    due to protocol/subdomain/trailing-slash differences across scraping runs.
+    Returns "" if no /in/ path is found.
+    """
+    m = _re.search(r'/in/([^/?#]+)', _normalize_url(url))
+    return m.group(1).lower() if m else ""
+
+
 def _load_messaged_urls() -> set[str]:
-    """Return a set of normalized profile URLs already in messages.csv."""
+    """Return normalized profile URLs already in messages.csv."""
     rows = read_messages()
     return {_normalize_url(r.get("profile_url", "")) for r in rows if r.get("profile_url")}
 
 
+def _load_followup_urls() -> set[str]:
+    """
+    Return normalized profile URLs from followups.csv (any status).
+    Anyone in followups.csv has received a first message by definition —
+    this is the belt-and-suspenders guard against duplicate first messages
+    when messages.csv and followups.csv diverge.
+    """
+    rows = read_followups()
+    return {_normalize_url(r.get("profile_url", "")) for r in rows if r.get("profile_url")}
+
+
 def _load_messaged_names() -> set[str]:
-    """Return a set of lowercased names already in messages.csv (fallback when URL is missing)."""
+    """Return lowercased names already in messages.csv (last-resort fallback when URL is missing)."""
     rows = read_messages()
     return {r.get("name", "").strip().lower() for r in rows if r.get("name")}
 
@@ -336,12 +359,15 @@ async def _send_message_to(page: Page, conn: dict, log: Callable) -> tuple[bool,
     await page.keyboard.type(msg_text, delay=20)
     await asyncio.sleep(0.5)
 
-    # Verify something was typed
+    # Verify something was typed — if box is empty the DOM has gone stale.
+    # Proceeding to click Send with an empty box causes the element-detached
+    # crash seen in logs; abort this contact cleanly instead.
     typed = await page.evaluate(f"() => {{ const el = document.querySelector('{compose_sel}'); return el ? el.innerText : ''; }}")
     _fl(f"  Step 5: compose box content after typing: '{typed[:80]}'")
     if not typed.strip():
-        _fl("  Step 5: WARNING — compose box appears empty after typing")
-        await log("  ⚠ Compose box may be empty — check debug log.")
+        _fl("  Step 5: compose box empty after typing — DOM went stale. Aborting this contact.")
+        await log("  ✗ Compose box empty after typing — skipping (will retry next run).")
+        return False, ""
 
     # ── 6. 5-second preview countdown ────────────────────────────────────────
     await log("  Sending in 5s — click Stop to cancel...")
@@ -450,22 +476,38 @@ async def run_messaging(
                 return
 
             # ── Filter already-messaged ───────────────────────────────────────
+            # Three-layer guard — checked in order:
+            #   1. Full normalized URL match against messages.csv
+            #   2. /in/slug match — catches URL format variations across runs
+            #   3. Full normalized URL match against followups.csv (anyone in
+            #      followups.csv received a first message by definition)
+            #   4. Name match — last resort when profile URL is missing entirely
             messaged_urls  = _load_messaged_urls()
+            followup_urls  = _load_followup_urls()
+            all_sent_urls  = messaged_urls | followup_urls
+            all_sent_slugs = {_profile_slug(u) for u in all_sent_urls if _profile_slug(u)}
             messaged_names = _load_messaged_names()
-            _fl(f"Loaded {len(messaged_urls)} messaged URLs, {len(messaged_names)} messaged names")
-            await log(f"Already messaged: {len(messaged_urls)} profile(s) in log.")
+
+            _fl(f"Guard sets — messages.csv: {len(messaged_urls)} | followups.csv: {len(followup_urls)} | slugs: {len(all_sent_slugs)} | names: {len(messaged_names)}")
+            await log(f"Already messaged: {len(messaged_urls)} in messages log, {len(followup_urls)} in followup tracker.")
 
             filtered = []
             for c in connections:
                 url  = _normalize_url(c.get("profileUrl", ""))
+                slug = _profile_slug(url)
                 name = c.get("name", "").strip().lower()
-                _fl(f"  Check: {c.get('name')} | url={url}")
-                if url and url in messaged_urls:
-                    _fl(f"    → SKIP (url match)")
+                _fl(f"  Check: {c.get('name')} | url={url} | slug={slug}")
+
+                if url and url in all_sent_urls:
+                    _fl(f"    → SKIP (full URL match)")
+                    await log(f"  Skip (already messaged): {c.get('name')}")
+                    continue
+                if slug and slug in all_sent_slugs:
+                    _fl(f"    → SKIP (slug match — URL format variation)")
                     await log(f"  Skip (already messaged): {c.get('name')}")
                     continue
                 if not url and name in messaged_names:
-                    _fl(f"    → SKIP (name match)")
+                    _fl(f"    → SKIP (name match — no URL)")
                     await log(f"  Skip (name match): {c.get('name')}")
                     continue
                 _fl(f"    → QUEUE")
@@ -506,17 +548,37 @@ async def run_messaging(
                     )
                     await asyncio.sleep(2.5)
 
-                success, msg_text = await _send_message_to(page, conn, log)
+                try:
+                    success, msg_text = await _send_message_to(page, conn, log)
+                except Exception as send_exc:
+                    err_str = str(send_exc)
+                    _fl(f"Exception sending to {conn['name']}: {err_str[:200]}")
+                    # Browser-dead errors: re-raise so the outer handler closes
+                    # the context cleanly and the run ends.
+                    if any(k in err_str for k in ("Target page", "browser has been closed", "TargetClosed", "context or browser")):
+                        await log(f"  ✗ Browser closed unexpectedly — ending run.")
+                        raise
+                    # Per-contact DOM errors: log, skip, continue to next person.
+                    await log(f"  ✗ Send error for {conn['name']} — skipping (will retry next run).")
+                    success, msg_text = False, ""
 
                 if success:
                     total_sent += 1
+                    sent_url = conn.get("profileUrl", "")
                     log_message(
                         name=conn["name"],
                         role=conn.get("role", ""),
-                        profile_url=conn.get("profileUrl", ""),
+                        profile_url=sent_url,
                         message=msg_text,
                     )
-                    _fl(f"Logged message to CSV for {conn['name']}")
+                    # Update in-memory guard sets so a duplicate card in the
+                    # same scrape batch can never trigger a second send.
+                    norm = _normalize_url(sent_url)
+                    slug = _profile_slug(sent_url)
+                    all_sent_urls.add(norm)
+                    if slug:
+                        all_sent_slugs.add(slug)
+                    _fl(f"Logged message to CSV for {conn['name']} | added {norm} to in-run guard")
                     if total_sent < msg_cap and not _msg_stop_requested:
                         delay = max(8 * speed_multiplier, 1.0)
                         await log(f"  Waiting {delay:.0f}s before next message...")
