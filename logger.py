@@ -17,8 +17,8 @@ LOG_PATH = Path(os.getenv("LOG_PATH", "connections.csv"))
 MSG_LOG_PATH = Path(os.getenv("MSG_LOG_PATH", "messages.csv"))
 
 # ── Accepted-connections tracking ─────────────────────────────────────────────
-ACCEPTED_BASELINE      = 15          # confirmed accepted count before automated tracking
-ACCEPTED_BASELINE_DATE = "2026-02-21"  # scrape counts connections on/after this date
+ACCEPTED_BASELINE      = 0            # total connections before PIPDuck started
+ACCEPTED_BASELINE_DATE = "2026-02-19"  # PIPDuck start date
 _ACCEPTED_COUNT_PATH   = Path("accepted_count.txt")
 
 FIELDS = ["sent_at", "name", "role", "company", "profile_url", "score", "scorer", "note"]

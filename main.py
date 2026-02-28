@@ -582,20 +582,68 @@ async def get_obsidian_status():
 @app.websocket("/ws/refresh-accepted")
 async def refresh_accepted_ws(websocket: WebSocket):
     """
-    Opens a Playwright session, navigates to the LinkedIn connections page,
-    counts connections since ACCEPTED_BASELINE_DATE, adds ACCEPTED_BASELINE,
-    persists the result, and streams progress back to the client.
+    Navigates to the LinkedIn connections page and counts total accepted connections.
+
+    Strategy: scroll until no new cards appear (all connections loaded), then
+    subtract ACCEPTED_BASELINE (connections before PIPDuck started) to get the
+    PIPDuck-attributed count. Writes an Obsidian note per connection and saves
+    a timestamped log to disk.
     """
     from playwright.async_api import async_playwright, BrowserContext
     from automator import _detect_chrome_profile, _detect_chrome_executable
+    import obsidian_logger as obs
+    from datetime import datetime as _dt
 
     await websocket.accept()
 
+    log_lines: list[str] = []
+
     async def send(msg: str):
+        log_lines.append(msg)
         try:
             await websocket.send_json({"type": "log", "message": msg})
         except Exception:
             pass
+
+    def save_log():
+        ts    = _dt.now().strftime("%Y-%m-%d_%H-%M-%S")
+        path  = Path(f"refresh_accepted_{ts}.log")
+        path.write_text("\n".join(log_lines), encoding="utf-8")
+        return str(path)
+
+    # Extracts every visible connection card → list of dicts with name, occupation, profileUrl
+    EXTRACT_JS = """
+    () => Array.from(document.querySelectorAll(
+        'li.mn-connection-card, [data-view-name="connection-card"]'
+    )).map(card => {
+        const nameEl = card.querySelector(
+            '.mn-connection-card__name, .artdeco-entity-lockup__title');
+        const name = (nameEl?.innerText || '').trim();
+
+        const occEl = card.querySelector(
+            '.mn-connection-card__occupation, .artdeco-entity-lockup__subtitle');
+        const occupation = (occEl?.innerText || '').trim();
+
+        const linkEl = card.querySelector('a[href*="/in/"]');
+        const href   = linkEl?.getAttribute('href') || '';
+        const profileUrl = href
+            ? (href.startsWith('http') ? href.split('?')[0]
+               : 'https://www.linkedin.com' + href.split('?')[0])
+            : '';
+
+        // Best-effort date text (for the log only — not used for filtering)
+        const dateEl = card.querySelector(
+            '.mn-connection-card__connected-date, time[datetime]');
+        let dateRaw = (dateEl?.innerText || dateEl?.getAttribute('datetime') || '').trim();
+        if (!dateRaw) {
+            const m = (card.innerText || '').match(
+                /Connected\\s+(?:on\\s+)?(.+?)(?:\\n|$)/im);
+            dateRaw = m ? m[1].trim().replace(/\\.$/, '') : '';
+        }
+
+        return { name, occupation, profileUrl, dateRaw };
+    })
+    """
 
     try:
         await send("🔍 Launching browser...")
@@ -609,7 +657,7 @@ async def refresh_accepted_ws(websocket: WebSocket):
                 headless=False,
                 args=["--no-sandbox", "--disable-blink-features=AutomationControlled"],
                 ignore_default_args=["--enable-automation"],
-                viewport={"width": 1280, "height": 800},
+                viewport={"width": 1280, "height": 900},
             )
             page = context.pages[0] if context.pages else await context.new_page()
             await page.add_init_script(
@@ -623,47 +671,79 @@ async def refresh_accepted_ws(websocket: WebSocket):
             )
             await asyncio.sleep(3)
 
-            # Scroll to load more cards
-            await send("📜 Loading connection cards...")
-            for _ in range(6):
+            # Scroll until no new cards appear (all connections loaded)
+            await send("📜 Scrolling to load all connections...")
+            prev_count = 0
+            stable_rounds = 0
+            for scroll_n in range(60):
                 await page.evaluate("window.scrollBy(0, 800)")
-                await asyncio.sleep(0.8)
+                await asyncio.sleep(0.7)
+
+                if scroll_n % 4 == 3:
+                    cur_count = await page.evaluate(
+                        "() => document.querySelectorAll("
+                        "'li.mn-connection-card, [data-view-name=\"connection-card\"]'"
+                        ").length"
+                    )
+                    if cur_count == prev_count:
+                        stable_rounds += 1
+                        if stable_rounds >= 3:
+                            await send(f"✅ All {cur_count} connections loaded")
+                            break
+                    else:
+                        stable_rounds = 0
+                        prev_count = cur_count
+                        await send(f"   ...{cur_count} connections loaded so far")
+
             await asyncio.sleep(1.5)
 
-            # Count cards with a connected date on or after ACCEPTED_BASELINE_DATE
-            new_count: int = await page.evaluate(
-                """
-                (cutoff) => {
-                    const cutoffDate = new Date(cutoff);
-                    // LinkedIn connection cards
-                    const cards = Array.from(document.querySelectorAll(
-                        'li.mn-connection-card, [data-view-name="connection-card"]'
-                    ));
-                    let count = 0;
-                    for (const card of cards) {
-                        // Look for "Connected on ..." text anywhere in the card
-                        const text = card.innerText || card.textContent || '';
-                        const match = text.match(/Connected on (.+)/i);
-                        if (!match) continue;
-                        const dateStr = match[1].trim().replace(/\\.$/, '');
-                        const d = new Date(dateStr);
-                        if (!isNaN(d.getTime()) && d >= cutoffDate) count++;
-                    }
-                    return count;
-                }
-                """,
-                ACCEPTED_BASELINE_DATE,
-            )
+            cards_data = await page.evaluate(EXTRACT_JS)
+            total_on_page = len(cards_data)
+            await send(f"📊 {total_on_page} total connections on page")
 
-            total = ACCEPTED_BASELINE + new_count
-            set_accepted_count(total)
+            # PIPDuck count = total on page minus connections that existed before PIPDuck
+            pipduck_count = max(0, total_on_page - ACCEPTED_BASELINE)
+            await send(f"📈 {total_on_page} total  −  {ACCEPTED_BASELINE} baseline  =  {pipduck_count} via PIPDuck")
 
-            await send(f"✅ Found {new_count} new connection(s) since {ACCEPTED_BASELINE_DATE}. Total accepted: {total}")
+            # Write Obsidian note for each connection
+            await send("📝 Writing Obsidian notes...")
+            noted = 0
+            for card in cards_data:
+                name        = (card.get("name") or "").strip()
+                occupation  = (card.get("occupation") or "").strip()
+                profile_url = (card.get("profileUrl") or "").strip()
+                date_raw    = card.get("dateRaw") or ""
+
+                if not name:
+                    continue
+
+                role, company = occupation, ""
+                if " at " in occupation:
+                    parts = occupation.split(" at ", 1)
+                    role, company = parts[0].strip(), parts[1].strip()
+
+                obs.on_connection_accepted(
+                    name=name,
+                    role=role,
+                    company=company,
+                    profile_url=profile_url,
+                    connected_date=date_raw or ACCEPTED_BASELINE_DATE,
+                )
+                noted += 1
+                await send(f"   [{noted}] {name}  {('— ' + date_raw) if date_raw else ''}")
+
+            set_accepted_count(pipduck_count)
+            await send(f"🎉 Done — {pipduck_count} accepted via PIPDuck, {noted} Obsidian notes written")
+
+            log_path = save_log()
+            await send(f"💾 Log saved → {log_path}")
             await context.close()
 
-        await websocket.send_json({"type": "done", "accepted": total})
+        await websocket.send_json({"type": "done", "accepted": pipduck_count})
 
     except Exception as e:
+        await send(f"❌ Error: {e}")
+        save_log()
         try:
             await websocket.send_json({"type": "error", "message": str(e)})
         except Exception:

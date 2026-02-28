@@ -153,8 +153,20 @@ async def run_creep_mode(
         await log("No connections found in connections.csv.")
         return
 
+    # Filter out profiles already visited in any previous run
+    already_creeped: set[str] = {
+        row["profile_url"].strip()
+        for row in read_creep_log()
+        if row.get("profile_url", "").strip()
+    }
+    profiles = [p for p in profiles if p.get("profile_url", "").strip() not in already_creeped]
+
+    if not profiles:
+        await log("All connections have already been creeped. No new profiles to visit.")
+        return
+
     cap = min(profile_cap, len(profiles))
-    await log(f"Creeping {cap} profile(s) from {len(profiles)} connection(s)...")
+    await log(f"Creeping {cap} profile(s) — {len(profiles)} unvisited out of total connections...")
 
     profile_path = _detect_chrome_profile()
     executable   = _detect_chrome_executable()
@@ -308,7 +320,7 @@ async def run_creep_mode(
                 append_creep_entry(name, profile_url, False)
 
             await _human_delay(3.0, speed_multiplier)
-            await _check_for_captcha(page, log)
+            await _check_for_captcha(page)
 
         await context.close()
 

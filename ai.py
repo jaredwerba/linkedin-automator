@@ -64,11 +64,91 @@ Scoring guide:
 Reply with a single integer from 0 to 10. Nothing else.""",
 }
 
-# Per-profile system context injected into the note-generation prompt
-_NOTE_PERSONAS = {
-    1: "You are helping a cloud infrastructure sales professional write a LinkedIn connection request note. The goal is a natural, role-specific opening line.",
-    2: "You are helping a cloud infrastructure sales professional specializing in Oracle Cloud Infrastructure (OCI) cost optimization write a LinkedIn connection request note. The ai_hook should angle toward infrastructure economics, cloud cost reduction, or OCI-specific value relevant to the prospect's role.",
-    3: "You are helping a bootstrapped, profitable AI-native SaaS founder write a LinkedIn connection request note to a venture capital investor. The founder is beginning the process of raising their first institutional round and wants to network, share early traction, and get VC perspective. The ai_hook should be genuine, founder-to-investor in tone — not a pitch, just an authentic reason to connect.",
+# Phrases that signal an AI-written message — any output containing these is retried.
+_BAD_PHRASES = [
+    "i've seen", "i noticed", "i came across", "i've managed",
+    "i have seen", "i have noticed", "i have come across",
+    "our solutions", "your team's growth", "how our ", "explore how",
+    "support your", "i'd love to explore", "i would love to explore",
+    "i've been following", "i have been following",
+]
+
+# Safe fallback hooks used when all retries fail — profile-specific, never AI-sounding.
+_NOTE_FALLBACKS = {
+    1: "always expanding my network in the cloud and platform engineering space.",
+    2: "always expanding my network in the cloud infrastructure space.",
+    3: "expanding my network in the startup and VC ecosystem as I think about our first raise.",
+}
+
+# Per-profile few-shot prompts — no "sales professional" framing, examples drive the style.
+_NOTE_PROMPTS = {
+    1: """Write ONE short opening sentence for a LinkedIn connection note.
+
+Rules:
+- About their role or field only — never make any claim about their specific company
+- Do NOT start with "I've seen", "I noticed", "I came across", or "I've managed"
+- No sales language — no "solutions", "growth initiatives", "support your team"
+- Casual and direct, like a real person wrote it
+- Under 18 words
+
+Examples:
+Role: VP of Engineering → Always good to connect with engineering leaders navigating platform decisions.
+Role: DevOps Engineer → Fellow cloud infra person — always happy to expand the network.
+Role: CTO → Love connecting with CTOs who've had to make tough build-vs-buy calls in infra.
+Role: Cloud Architect → Platform architecture is such a rich space right now — good to connect.
+Role: Director of Platform → Always interesting to hear how different orgs are approaching platform ownership.
+Role: Principal Engineer → Principal engineers who work on infra at scale are exactly who I like to know.
+
+Now write one opener for this person:
+Role: {role}
+
+Output only the sentence. Nothing else.""",
+
+    2: """Write ONE short opening sentence for a LinkedIn connection note.
+
+Rules:
+- About their role or field only — never make any claim about their specific company
+- Do NOT start with "I've seen", "I noticed", "I came across", or "I've managed"
+- Angle naturally toward cloud costs or infra economics — no product pitches
+- No sales language — no "OCI", "Oracle", "solutions", "cost reduction offering"
+- Casual and direct, like a real person wrote it
+- Under 18 words
+
+Examples:
+Role: VP of Engineering → Cloud costs have a way of sneaking up on even well-run engineering orgs.
+Role: Cloud Architect → Always good to connect with architects thinking about cloud spend at scale.
+Role: CTO → Most CTOs I talk to have strong opinions on cloud economics — curious to hear yours.
+Role: DevOps Engineer → Fellow cloud infra person — always happy to expand the network.
+Role: Director of Infrastructure → Infrastructure economics is one of those topics that never gets old.
+Role: Principal Engineer → Engineers who've actually wrestled with cloud cost at scale are who I want to know.
+
+Now write one opener for this person:
+Role: {role}
+
+Output only the sentence. Nothing else.""",
+
+    3: """Write ONE short opening sentence for a LinkedIn connection note.
+
+Rules:
+- About their role in the VC or investor ecosystem only — no claims about their specific firm
+- Do NOT start with "I've seen", "I noticed", "I came across", or "I've managed"
+- Founder-to-investor tone: genuine curiosity, not a pitch
+- No sales language
+- Casual and direct, like a real person wrote it
+- Under 18 words
+
+Examples:
+Role: General Partner → Would love to connect and hear your perspective on the early-stage SaaS space.
+Role: Partner → Always looking to learn from investors who've seen a lot of early bets play out.
+Role: Principal → Early-stage is such an interesting vantage point — would love to hear your take.
+Role: Angel Investor → Angel investors with SaaS experience are exactly who I want to learn from.
+Role: Venture Partner → Expanding my network in the VC ecosystem as I think about our first raise.
+Role: Entrepreneur in Residence → EIRs have a really unique vantage point — always good to connect.
+
+Now write one opener for this person:
+Role: {role}
+
+Output only the sentence. Nothing else.""",
 }
 
 
@@ -115,82 +195,70 @@ def clear_title_score_cache():
     _title_score_cache.clear()
 
 
-def _build_prompt(template: str, first_name: str, company: str, role: str, profile: int = 1) -> str:
-    """Build the prompt for the AI to fill in the {{ai_hook}} variable."""
-    persona = _NOTE_PERSONAS.get(profile, _NOTE_PERSONAS[1])
-    return f"""{persona}
-
-The note template is:
-{template}
-
-Fill in ONLY the {{{{ai_hook}}}} field. The other fields will be filled separately.
-
-Prospect details:
-- First name: {first_name}
-- Company: {company}
-- Role: {role}
-
-Rules:
-- Write 1 sentence only for the ai_hook
-- Be specific to their role and company
-- Sound natural and human, not salesy
-- Do not send any message with brackets or curly braces Check for these at the end of message
-- Do not mention you are an AI
-- Do not include greetings or sign-offs
-- Return ONLY the ai_hook sentence, nothing else
-"""
-
-
-def _fill_static_fields(template: str, first_name: str, company: str, role: str, ai_hook: str) -> str:
-    """Replace all template variables with their values."""
-    note = template
-    note = note.replace("{{first_name}}", first_name)
-    note = note.replace("{{company}}", company)
-    note = note.replace("{{role}}", role)
-    note = note.replace("{{ai_hook}}", ai_hook.strip())
-    return note
-
-
-async def generate_note(template: str, first_name: str, company: str, role: str, profile: int = 1) -> str:
-    """Generate a personalized connection note using the configured AI provider."""
-    prompt = _build_prompt(template, first_name, company, role, profile)
-
-    if AI_PROVIDER == "gemini":
-        ai_hook = await _generate_gemini(prompt)
-    else:
-        ai_hook = await _generate_ollama(prompt)
-
-    return _fill_static_fields(template, first_name, company, role, ai_hook)
-
-
-# Fixed template used for all connection request notes (Option A)
-_NOTE_TEMPLATE = "Hi {{first_name}}, {{ai_hook}} Would love to connect."
-
 MAX_NOTE_CHARS = 280  # LinkedIn hard limit is 300 — stay safely under
+
+
+def _build_hook_prompt(role: str, profile: int = 1) -> str:
+    """
+    Build a few-shot prompt asking only for the hook sentence.
+    Uses concrete examples to drive the model toward natural, human-sounding output.
+    Role only — company name is intentionally excluded to prevent hallucination.
+    """
+    template = _NOTE_PROMPTS.get(profile, _NOTE_PROMPTS[1])
+    return template.replace("{role}", role.strip() if role else "professional")
+
+
+def _is_clean(hook: str) -> bool:
+    """Return True if the hook contains none of the AI-sounding banned phrases."""
+    lower = hook.lower()
+    return not any(p in lower for p in _BAD_PHRASES)
 
 
 async def generate_connection_note(first_name: str, company: str, role: str, profile: int = 1) -> str:
     """
     Generate a short, personalised LinkedIn connection request note.
-    Uses the fixed template: "Hi {first_name}, {ai_hook} Would love to connect."
-    Profile controls the note persona/angle (cloud infra general, OCI savings, VC).
-    Guaranteed to be under MAX_NOTE_CHARS. Falls back to a plain note on error.
+    Final format: "Hi {first_name}, {ai_hook} Would love to connect."
+    Retries up to 3 times if the hook contains banned phrases.
+    Falls back to a safe static hook if all retries fail or AI is unavailable.
+    Guaranteed to be under MAX_NOTE_CHARS.
     """
+    fallback_hook = _NOTE_FALLBACKS.get(profile, _NOTE_FALLBACKS[1])
+    fallback_note = f"Hi {first_name}, {fallback_hook} Would love to connect."
+
     try:
-        note = await generate_note(
-            template=_NOTE_TEMPLATE,
-            first_name=first_name,
-            company=company,
-            role=role,
-            profile=profile,
-        )
-        # Hard trim — never exceed LinkedIn's 300-char limit
+        prompt = _build_hook_prompt(role, profile)
+        ai_hook = None
+
+        for _ in range(3):
+            if AI_PROVIDER == "gemini":
+                raw = await _generate_gemini(prompt, max_tokens=50, temperature=0.4)
+            else:
+                raw = await _generate_ollama(prompt, max_tokens=50, temperature=0.4)
+
+            # Strip surrounding quotes / whitespace the model might add
+            raw = raw.strip().strip('"\'')
+
+            # Keep only the first sentence
+            if ". " in raw:
+                raw = raw.split(". ")[0] + "."
+
+            # Accept on first clean, long-enough result
+            if _is_clean(raw) and len(raw) > 10:
+                ai_hook = raw
+                break
+
+        if not ai_hook:
+            return fallback_note
+
+        note = f"Hi {first_name}, {ai_hook} Would love to connect."
+
         if len(note) > MAX_NOTE_CHARS:
             note = note[:MAX_NOTE_CHARS].rsplit(" ", 1)[0]
+
         return note
+
     except Exception:
-        # Graceful fallback — plain note with no AI hook
-        return f"Hi {first_name}, I came across your profile and would love to connect."
+        return fallback_note
 
 
 async def _generate_ollama(prompt: str, max_tokens: int = 100, temperature: float = 0.7) -> str:
@@ -231,11 +299,10 @@ async def _generate_gemini(prompt: str, max_tokens: int = 100, temperature: floa
 async def test_ai_connection() -> dict:
     """Test that the AI provider is reachable."""
     try:
-        result = await generate_note(
-            template="Hi {{first_name}}, {{ai_hook}} Would love to connect.",
+        result = await generate_connection_note(
             first_name="Alex",
             company="Acme Corp",
-            role="VP of Sales"
+            role="VP of Engineering",
         )
         return {"success": True, "provider": AI_PROVIDER, "sample": result}
     except Exception as e:

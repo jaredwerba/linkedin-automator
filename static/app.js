@@ -1093,8 +1093,10 @@ function refreshAccepted() {
         btn.classList.remove('spinning');
         btn.disabled = false;
         ws.close();
+      } else if (msg.type === 'log') {
+        addLog(msg.message);
       } else if (msg.type === 'error') {
-        console.error('refresh-accepted error:', msg.message);
+        addLog('⚠️ ' + msg.message);
         btn.classList.remove('spinning');
         btn.disabled = false;
         ws.close();
@@ -1120,25 +1122,39 @@ async function initCreepFeed() {
 
   const cap = getCreepCap();
 
-  // Fetch connections to preview which profiles will be visited
+  // Fetch connections and creep log to preview which unvisited profiles will be next
   try {
-    const res  = await fetch('/results');
-    const data = await res.json();
-    const rows = (data.rows || []).filter(r => r.profile_url && r.profile_url.trim());
+    const [connRes, creepRes] = await Promise.all([fetch('/results'), fetch('/creep-log')]);
+    const connData  = await connRes.json();
+    const creepData = await creepRes.json();
 
-    const total = rows.length;
-    const queued = Math.min(cap, total);
+    // Build set of already-creeped URLs
+    const creepedUrls = new Set(
+      (creepData.rows || [])
+        .map(r => (r.profile_url || '').trim())
+        .filter(Boolean)
+    );
+
+    // Only show connections that haven't been creeped yet
+    const allRows  = (connData.rows || []).filter(r => r.profile_url && r.profile_url.trim());
+    const rows     = allRows.filter(r => !creepedUrls.has(r.profile_url.trim()));
+
+    const total  = allRows.length;
+    const unseen = rows.length;
+    const queued = Math.min(cap, unseen);
 
     // Header banner
     const banner = document.createElement('div');
     banner.className = 'log-entry info';
-    banner.textContent = `▸ CREEP MODE — ${queued} profile(s) queued from ${total} connection(s)`;
+    banner.textContent = `▸ CREEP MODE — ${queued} profile(s) queued (${unseen} unvisited of ${total} total)`;
     feed.appendChild(banner);
 
-    if (!total) {
+    if (!unseen) {
       const empty = document.createElement('div');
       empty.className = 'log-entry warning';
-      empty.textContent = '  No connections with profile URLs found. Run a connection search first.';
+      empty.textContent = total
+        ? '  All connections have already been creeped.'
+        : '  No connections with profile URLs found. Run a connection search first.';
       feed.appendChild(empty);
       return;
     }
@@ -1158,10 +1174,10 @@ async function initCreepFeed() {
       feed.appendChild(line);
     });
 
-    if (total > queued) {
+    if (unseen > queued) {
       const more = document.createElement('div');
       more.className = 'log-entry info';
-      more.textContent = `  … and ${total - queued} more (adjust slider to include)`;
+      more.textContent = `  … and ${unseen - queued} more unvisited (adjust slider to include)`;
       feed.appendChild(more);
     }
 

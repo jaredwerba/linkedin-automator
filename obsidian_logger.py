@@ -254,6 +254,47 @@ def on_post_liked(name: str, profile_url: str, liked: bool) -> None:
         _put_note(path, updated)
 
 
+def on_connection_accepted(name: str, role: str, company: str,
+                           profile_url: str, connected_date: str = "") -> None:
+    """
+    Called during the LinkedIn connections scrape (refresh-accepted).
+    Creates a new Obsidian note tagged #pipeline/accepted, or updates an existing
+    note (created when the connection request was sent) to the accepted stage.
+    """
+    if not _ENABLED:
+        return
+    path     = _note_path(name)
+    existing = _get_note(path)
+    date_label = connected_date or _now()[:10]
+    if existing:
+        updated = _append_timeline(existing, f"Connection accepted ({date_label})")
+        updated = _update_tags(updated, "accepted")
+        _put_note(path, updated)
+    else:
+        company_link = f"[[{company}]]" if company else "—"
+        lines = [
+            f"# {name}",
+            f"",
+            f"**Company:** {company_link}  ",
+            f"**Role:** {role or '—'}  ",
+            f"**Profile:** {profile_url or '—'}  ",
+            f"",
+            f"---",
+            f"",
+            f"## Timeline",
+            f"",
+            f"- {date_label}  Connection accepted",
+            f"",
+            f"## Notes",
+            f"",
+            f"",
+            f"---",
+            f"",
+            f"Tags: #pipeline/accepted #{_tag(company)}",
+        ]
+        _put_note(path, "\n".join(lines))
+
+
 def is_enabled() -> bool:
     """Returns True if Obsidian integration is configured and reachable."""
     if not _ENABLED:
