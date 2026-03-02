@@ -1264,3 +1264,134 @@ Traceback (most recent call last):
 playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
 
 2026-02-24 21:20:29  Browser closed.
+2026-02-28 18:49:52  
+============================================================
+2026-02-28 18:49:52  FOLLOWUP RUN START  2026-02-28T18:49:52.787295  cap=5 wait_days=0 speed=1.0
+2026-02-28 18:49:52  ============================================================
+2026-02-28 18:49:52  Seeded 2 rows from messages.csv into followups.csv
+2026-02-28 18:49:52  Candidates: 2
+2026-02-28 18:49:52  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-28 18:49:52  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-28 18:49:53  Processing Antonio Andres | url=https://www.linkedin.com/in/antonioandres1215/
+2026-02-28 18:49:53    Reply check: navigating to https://www.linkedin.com/in/antonioandres1215/
+2026-02-28 18:49:57    Clicking Message button on profile page...
+2026-02-28 18:49:57    Found Message button via: main button:has-text('Message')
+2026-02-28 18:49:57    Clicked Message button — waiting for compose overlay...
+2026-02-28 18:49:59    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-28 18:50:00    Reply check: last_sender=other
+2026-02-28 18:50:00    Antonio Andres replied — updating status
+2026-02-28 18:50:00  Processing Oluwamayowa Alonge | url=https://www.linkedin.com/in/oluwamayowa-alonge-47b050328/
+2026-02-28 18:50:00    Reply check: navigating to https://www.linkedin.com/in/oluwamayowa-alonge-47b050328/
+2026-02-28 18:50:04    Clicking Message button on profile page...
+2026-02-28 18:50:04    Found Message button via: main button:has-text('Message')
+2026-02-28 18:50:04    Clicked Message button — waiting for compose overlay...
+2026-02-28 18:50:06    Compose overlay appeared (selector: .msg-form__contenteditable)
+2026-02-28 18:50:07    Reply check: last_sender=other
+2026-02-28 18:50:07    Oluwamayowa Alonge replied — updating status
+2026-02-28 18:50:07  FOLLOWUP RUN END — 0 sent
+2026-02-28 18:50:07  Browser closed.
+2026-02-28 18:50:22  
+============================================================
+2026-02-28 18:50:22  RUN START  2026-02-28T18:50:22.135850  cap=5 scan=20 speed=1.0
+2026-02-28 18:50:22  ============================================================
+2026-02-28 18:50:22  profile_path: /Users/jkw/Library/Application Support/Google/ChromeLinkedIn
+2026-02-28 18:50:22  executable:   /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+2026-02-28 18:50:23  Navigating to connections page
+2026-02-28 18:50:29  Scrape result (20 cards):
+2026-02-28 18:50:29    name=Chloe Fang | profileUrl=https://www.linkedin.com/in/chloefang95/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Kyriaki Mavropoulou | profileUrl=https://www.linkedin.com/in/kyriaki-mavropoulou-ds/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Theoktisti Makridou | profileUrl=https://www.linkedin.com/in/tmakridou/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Charles Ronan | profileUrl=https://www.linkedin.com/in/charles-ronan-0b55b1110/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Noam Ben-Asher | profileUrl=https://www.linkedin.com/in/nabash/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Daniel Fansler | profileUrl=https://www.linkedin.com/in/daniel-fansler/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Glenn Borgmann | profileUrl=https://www.linkedin.com/in/glenn-borgmann-4a17671/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=David Packer | profileUrl=https://www.linkedin.com/in/davepacker/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Adam Spaulding | profileUrl=https://www.linkedin.com/in/adamspaulding/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Ann Elizabeth Jeray | profileUrl=https://www.linkedin.com/in/annwrobleski/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Tyan Trinh | profileUrl=https://www.linkedin.com/in/tyan/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Joseph Grella | profileUrl=https://www.linkedin.com/in/joseph-grella-131a22a2/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Alex Vogt | profileUrl=https://www.linkedin.com/in/alex-vogt-33192562/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Luiz Eduardo Sampaio | profileUrl=https://www.linkedin.com/in/luiz-eduardo-sampaio-7196824/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=James Loughlin | profileUrl=https://www.linkedin.com/in/james-loughlin/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Rob Blaine | profileUrl=https://www.linkedin.com/in/rob-blaine/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Tom Croonenborghs | profileUrl=https://www.linkedin.com/in/tomcroonenborghs/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Julie Tran | profileUrl=https://www.linkedin.com/in/jptran06/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Brandon DeYoung | profileUrl=https://www.linkedin.com/in/brandon-deyoung/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29    name=Haoyuan Li | profileUrl=https://www.linkedin.com/in/haoyuanli1/ | msgHref=/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoA
+2026-02-28 18:50:29  Guard sets — messages.csv: 5 | followups.csv: 5 | slugs: 5 | names: 5
+2026-02-28 18:50:29    Check: Chloe Fang | url=https://www.linkedin.com/in/chloefang95 | slug=chloefang95
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Kyriaki Mavropoulou | url=https://www.linkedin.com/in/kyriaki-mavropoulou-ds | slug=kyriaki-mavropoulou-ds
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Theoktisti Makridou | url=https://www.linkedin.com/in/tmakridou | slug=tmakridou
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Charles Ronan | url=https://www.linkedin.com/in/charles-ronan-0b55b1110 | slug=charles-ronan-0b55b1110
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Noam Ben-Asher | url=https://www.linkedin.com/in/nabash | slug=nabash
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Daniel Fansler | url=https://www.linkedin.com/in/daniel-fansler | slug=daniel-fansler
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Glenn Borgmann | url=https://www.linkedin.com/in/glenn-borgmann-4a17671 | slug=glenn-borgmann-4a17671
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: David Packer | url=https://www.linkedin.com/in/davepacker | slug=davepacker
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Adam Spaulding | url=https://www.linkedin.com/in/adamspaulding | slug=adamspaulding
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Ann Elizabeth Jeray | url=https://www.linkedin.com/in/annwrobleski | slug=annwrobleski
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Tyan Trinh | url=https://www.linkedin.com/in/tyan | slug=tyan
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Joseph Grella | url=https://www.linkedin.com/in/joseph-grella-131a22a2 | slug=joseph-grella-131a22a2
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Alex Vogt | url=https://www.linkedin.com/in/alex-vogt-33192562 | slug=alex-vogt-33192562
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Luiz Eduardo Sampaio | url=https://www.linkedin.com/in/luiz-eduardo-sampaio-7196824 | slug=luiz-eduardo-sampaio-7196824
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: James Loughlin | url=https://www.linkedin.com/in/james-loughlin | slug=james-loughlin
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Rob Blaine | url=https://www.linkedin.com/in/rob-blaine | slug=rob-blaine
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Tom Croonenborghs | url=https://www.linkedin.com/in/tomcroonenborghs | slug=tomcroonenborghs
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Julie Tran | url=https://www.linkedin.com/in/jptran06 | slug=jptran06
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Brandon DeYoung | url=https://www.linkedin.com/in/brandon-deyoung | slug=brandon-deyoung
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29    Check: Haoyuan Li | url=https://www.linkedin.com/in/haoyuanli1 | slug=haoyuanli1
+2026-02-28 18:50:29      → QUEUE
+2026-02-28 18:50:29  --- Messaging Chloe Fang ---
+2026-02-28 18:50:29    role: AI @ MIT | President of the MIT AI Club | OpenArt | McKinsey | Goldman Sachs | Adobe
+2026-02-28 18:50:29    msgHref: /messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAA7_4TABQKoz7Edt1L7FStKkAX8ZuZGxZ6I&recipient=ACoAAA7_4TABQKoz7Edt1L7FStKkAX8ZuZGxZ6I&interop=msgOverlay
+2026-02-28 18:50:29    current page url: https://www.linkedin.com/mynetwork/invite-connect/connections/
+2026-02-28 18:50:29    Step 1: navigating to https://www.linkedin.com/messaging/compose/?profileUrn=urn%3Ali%3Afsd_profile%3AACoAAA7_4TABQKoz7Edt1L7FStKkAX8ZuZGxZ6I&recipient=ACoAAA7_4TABQKoz7Edt1L7FStKkAX8ZuZGxZ6I&interop=msgOverlay
+2026-02-28 18:50:32    Step 2: waiting for visible compose box
+2026-02-28 18:50:32    Step 2: found via .msg-form__contenteditable
+2026-02-28 18:50:32    Step 3: checking for AI prompt dismiss button
+2026-02-28 18:50:33    Step 4: generating message with Ollama
+2026-02-28 18:50:43    AI full message: Hi Chloe, great to connect! I noticed you're involved with the MIT AI Club - I've been following their work and think it's fantastic. What drives your interest in AI and its applications?
+2026-02-28 18:50:43    Step 5: re-querying compose box before typing
+2026-02-28 18:50:43    Step 5: focusing compose box via JS
+2026-02-28 18:50:43    Step 5: typing message (187 chars)
+2026-02-28 18:50:46  Exception sending to Chloe Fang: Keyboard.type: Target page, context or browser has been closed
+2026-02-28 18:50:46  EXCEPTION: Keyboard.type: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 552, in run_messaging
+    success, msg_text = await _send_message_to(page, conn, log)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jkw/LI/linkedin-automator/messenger.py", line 359, in _send_message_to
+    await page.keyboard.type(msg_text, delay=20)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/async_api/_generated.py", line 1383, in type
+    await self._impl_obj.type(text=text, delay=delay)
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_input.py", line 35, in type
+    await self._channel.send("keyboardType", locals_to_params(locals()))
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 61, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+    )
+    ^
+  File "/Users/jkw/LI/linkedin-automator/venv/lib/python3.14/site-packages/playwright/_impl/_connection.py", line 528, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Keyboard.type: Target page, context or browser has been closed
+
+2026-02-28 18:51:09  Browser closed.
