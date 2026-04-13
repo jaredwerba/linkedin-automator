@@ -17,52 +17,27 @@ _title_score_cache: dict[tuple, int] = {}
 # ── Outreach Profiles ────────────────────────────────────────────────────────
 
 PROFILE_NAMES = {
-    1: "CLOUD INFRA · GENERAL",
-    2: "CLOUD INFRA · OCI SAVINGS",
-    3: "VENTURE CAPITAL",
+    1: "GENERAL OUTREACH",
+    2: "SENIOR FOCUS",
+    3: "DECISION MAKERS",
 }
 
-# Per-profile scoring prompts
-_SCORE_PROMPTS = {
-    1: """Rate this job title for how likely this person makes decisions about cloud infrastructure, DevOps, or platform engineering at their company.
+# Seniority-based scoring prompt — works for any job title search
+_SCORE_PROMPT = """Rate this job title by seniority and decision-making authority.
 
 Job title: "{role}"
 
 Scoring guide:
-10 = Clear decision maker (CTO, VP Engineering, VP Infrastructure, Head of Cloud)
-7-9 = Strong influencer (Director of Engineering, Director of Platform, Engineering Manager, Cloud Architect, Principal Engineer)
-4-6 = Relevant practitioner (DevOps Engineer, SRE, Platform Engineer, Staff Engineer, Solutions Architect)
-1-3 = Tangential (Software Engineer, Product Manager, Designer, Sales, Marketing)
-0 = Not relevant (HR, Finance, Legal, Admin, Student, Intern)
+9-10 = C-suite (CEO, CTO, COO, CFO, CPO), President, Founder, Owner, Managing Partner, General Partner, VP
+7-8 = Director, Head of, Senior Director, Managing Director
+5-6 = Manager, Senior Manager, Principal, Partner, Lead
+3-4 = Associate, Analyst, Specialist, Coordinator, Consultant
+1-2 = Entry-level, Junior, Assistant, Intern
+0 = Student, unemployed, or clearly irrelevant
 
-Reply with a single integer from 0 to 10. Nothing else.""",
+Reply with a single integer from 0 to 10. Nothing else."""
 
-    2: """Rate this job title for how likely this person makes decisions about cloud infrastructure, DevOps, or platform engineering at their company.
-
-Job title: "{role}"
-
-Scoring guide:
-10 = Clear decision maker (CTO, VP Engineering, VP Infrastructure, Head of Cloud)
-7-9 = Strong influencer (Director of Engineering, Director of Platform, Engineering Manager, Cloud Architect, Principal Engineer)
-4-6 = Relevant practitioner (DevOps Engineer, SRE, Platform Engineer, Staff Engineer, Solutions Architect)
-1-3 = Tangential (Software Engineer, Product Manager, Designer, Sales, Marketing)
-0 = Not relevant (HR, Finance, Legal, Admin, Student, Intern)
-
-Reply with a single integer from 0 to 10. Nothing else.""",
-
-    3: """Rate this job title for how likely this person is a venture capital investor, angel investor, or startup ecosystem participant who could provide funding or feedback to an early-stage SaaS startup.
-
-Job title: "{role}"
-
-Scoring guide:
-10 = GP, Managing Partner, General Partner, or Partner at a VC firm
-7-9 = Principal, Associate, Venture Partner, Angel Investor, Entrepreneur in Residence
-4-6 = Portfolio operations, Investor Relations, accelerator/incubator staff, Startup advisor
-1-3 = Corporate Innovation, M&A, Growth Equity, Private Equity — tangential
-0 = Not relevant (Software Engineer, HR, Finance, Legal, Admin, Student, Intern)
-
-Reply with a single integer from 0 to 10. Nothing else.""",
-}
+_SCORE_PROMPTS = {1: _SCORE_PROMPT, 2: _SCORE_PROMPT, 3: _SCORE_PROMPT}
 
 # Phrases that signal an AI-written message — any output containing these is retried.
 _BAD_PHRASES = [
@@ -73,16 +48,13 @@ _BAD_PHRASES = [
     "i've been following", "i have been following",
 ]
 
-# Safe fallback hooks used when all retries fail — profile-specific, never AI-sounding.
-_NOTE_FALLBACKS = {
-    1: "always expanding my network in the cloud and platform engineering space.",
-    2: "always expanding my network in the cloud infrastructure space.",
-    3: "expanding my network in the startup and VC ecosystem as I think about our first raise.",
-}
+# Safe fallback hook used when all retries fail — generic, never AI-sounding.
+_NOTE_FALLBACK = "always looking to expand my professional network and connect with interesting people."
 
-# Per-profile few-shot prompts — no "sales professional" framing, examples drive the style.
-_NOTE_PROMPTS = {
-    1: """Write ONE short opening sentence for a LinkedIn connection note.
+_NOTE_FALLBACKS = {1: _NOTE_FALLBACK, 2: _NOTE_FALLBACK, 3: _NOTE_FALLBACK}
+
+# Few-shot note prompt — generic networking tone, works for any title
+_NOTE_PROMPT = """Write ONE short opening sentence for a LinkedIn connection note.
 
 Rules:
 - About their role or field only — never make any claim about their specific company
@@ -92,64 +64,19 @@ Rules:
 - Under 18 words
 
 Examples:
-Role: VP of Engineering → Always good to connect with engineering leaders navigating platform decisions.
-Role: DevOps Engineer → Fellow cloud infra person — always happy to expand the network.
-Role: CTO → Love connecting with CTOs who've had to make tough build-vs-buy calls in infra.
-Role: Cloud Architect → Platform architecture is such a rich space right now — good to connect.
-Role: Director of Platform → Always interesting to hear how different orgs are approaching platform ownership.
-Role: Principal Engineer → Principal engineers who work on infra at scale are exactly who I like to know.
+Role: Operations Manager → Always good to connect with people running the operational side of things.
+Role: Director of Sales → Sales leaders with real pipeline experience are exactly who I like to know.
+Role: Workspace Manager → Workplace and facilities folks have such an underrated view of how orgs actually work.
+Role: VP of Finance → Finance leaders who've scaled orgs are always interesting to learn from.
+Role: Product Manager → Love connecting with PMs who are deep in the weeds on what actually ships.
+Role: Founder → Always happy to connect with founders — the perspective is unlike anything else.
 
 Now write one opener for this person:
 Role: {role}
 
-Output only the sentence. Nothing else.""",
+Output only the sentence. Nothing else."""
 
-    2: """Write ONE short opening sentence for a LinkedIn connection note.
-
-Rules:
-- About their role or field only — never make any claim about their specific company
-- Do NOT start with "I've seen", "I noticed", "I came across", or "I've managed"
-- Angle naturally toward cloud costs or infra economics — no product pitches
-- No sales language — no "OCI", "Oracle", "solutions", "cost reduction offering"
-- Casual and direct, like a real person wrote it
-- Under 18 words
-
-Examples:
-Role: VP of Engineering → Cloud costs have a way of sneaking up on even well-run engineering orgs.
-Role: Cloud Architect → Always good to connect with architects thinking about cloud spend at scale.
-Role: CTO → Most CTOs I talk to have strong opinions on cloud economics — curious to hear yours.
-Role: DevOps Engineer → Fellow cloud infra person — always happy to expand the network.
-Role: Director of Infrastructure → Infrastructure economics is one of those topics that never gets old.
-Role: Principal Engineer → Engineers who've actually wrestled with cloud cost at scale are who I want to know.
-
-Now write one opener for this person:
-Role: {role}
-
-Output only the sentence. Nothing else.""",
-
-    3: """Write ONE short opening sentence for a LinkedIn connection note.
-
-Rules:
-- About their role in the VC or investor ecosystem only — no claims about their specific firm
-- Do NOT start with "I've seen", "I noticed", "I came across", or "I've managed"
-- Founder-to-investor tone: genuine curiosity, not a pitch
-- No sales language
-- Casual and direct, like a real person wrote it
-- Under 18 words
-
-Examples:
-Role: General Partner → Would love to connect and hear your perspective on the early-stage SaaS space.
-Role: Partner → Always looking to learn from investors who've seen a lot of early bets play out.
-Role: Principal → Early-stage is such an interesting vantage point — would love to hear your take.
-Role: Angel Investor → Angel investors with SaaS experience are exactly who I want to learn from.
-Role: Venture Partner → Expanding my network in the VC ecosystem as I think about our first raise.
-Role: Entrepreneur in Residence → EIRs have a really unique vantage point — always good to connect.
-
-Now write one opener for this person:
-Role: {role}
-
-Output only the sentence. Nothing else.""",
-}
+_NOTE_PROMPTS = {1: _NOTE_PROMPT, 2: _NOTE_PROMPT, 3: _NOTE_PROMPT}
 
 
 async def score_title_ai(role: str, profile: int = 1) -> int:

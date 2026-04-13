@@ -27,13 +27,13 @@ def _detect_level(message: str) -> str:
     return "info"
 
 
-def start_run(companies: list[str]) -> str:
+def start_run(title_query: str) -> str:
     """Create a new in-memory run record and return its run_id."""
     run_id = datetime.now().strftime("%Y%m%d-%H%M%S")
     _active_runs[run_id] = {
         "run_id": run_id,
         "started_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "companies": companies,
+        "title_query": title_query,
         "entries": [],
         "total_sent": 0,
         "finished_at": None,

@@ -14,7 +14,7 @@
       <h1>PIPDuck</h1>
       <div class="status-bar">
         <button id="btn-config" class="btn-config" onclick="openConfig()">CONFIG</button>
-        <span id="active-profile-label" class="active-profile-label">CLOUD INFRA · GENERAL</span>
+        <span id="active-profile-label" class="active-profile-label">GENERAL OUTREACH</span>
         <span id="status-badge" class="badge idle">Idle</span>
         <span id="obsidian-dot" class="obsidian-dot" title="Obsidian: checking..."></span>
       </div>
@@ -27,16 +27,14 @@
         <!-- ── Connection Panel ── -->
         <div id="config-connect">
           <div class="field">
-            <label for="companies">Target Companies</label>
-            <small>One per line. The automator finds decision makers at each company automatically.</small>
-            <textarea
-              id="companies"
-              rows="10"
-              placeholder="Montai&#10;Acme Corp&#10;Stripe&#10;OpenAI"
-            ></textarea>
-            <div class="field-action">
-              <button class="btn ghost small" onclick="loadTargets()">⊕ Load Targets</button>
-            </div>
+            <label for="jobTitle">Job Title Search</label>
+            <small>Enter a job title. The automator finds and connects with people holding that title on LinkedIn.</small>
+            <input
+              type="text"
+              id="jobTitle"
+              placeholder="e.g. Workspace Manager"
+              autocomplete="off"
+            />
           </div>
 
           <!-- Action Delay slider -->
@@ -339,9 +337,9 @@
         <div id="profile-card-1" class="profile-card active" onclick="selectProfile(1)">
           <div class="profile-card-num">01</div>
           <div class="profile-card-body">
-            <div class="profile-card-name">CLOUD INFRA · GENERAL</div>
-            <div class="profile-card-desc">Targets cloud infrastructure, DevOps, and platform engineering decision-makers.</div>
-            <div class="profile-card-angle">General connection note — value prop left to conversation.</div>
+            <div class="profile-card-name">GENERAL OUTREACH</div>
+            <div class="profile-card-desc">Scores all seniority levels. Best for broad title searches where any level is a good connect.</div>
+            <div class="profile-card-angle">Generic networking note — warm, casual, no angle.</div>
           </div>
           <div class="profile-card-check">✓</div>
         </div>
@@ -349,9 +347,9 @@
         <div id="profile-card-2" class="profile-card" onclick="selectProfile(2)">
           <div class="profile-card-num">02</div>
           <div class="profile-card-body">
-            <div class="profile-card-name">CLOUD INFRA · OCI SAVINGS</div>
-            <div class="profile-card-desc">Targets cloud infrastructure, DevOps, and platform engineering decision-makers.</div>
-            <div class="profile-card-angle">OCI cost optimization angle — note angles toward infrastructure economics and cloud cost reduction.</div>
+            <div class="profile-card-name">SENIOR FOCUS</div>
+            <div class="profile-card-desc">Prioritises senior, director, and VP-level results from the search. Skips junior profiles.</div>
+            <div class="profile-card-angle">Same seniority scorer — higher-ranked results connect first.</div>
           </div>
           <div class="profile-card-check">✓</div>
         </div>
@@ -359,9 +357,9 @@
         <div id="profile-card-3" class="profile-card" onclick="selectProfile(3)">
           <div class="profile-card-num">03</div>
           <div class="profile-card-body">
-            <div class="profile-card-name">VENTURE CAPITAL</div>
-            <div class="profile-card-desc">Targets VC partners, principals, angel investors, and startup ecosystem participants.</div>
-            <div class="profile-card-angle">AI-native SaaS founder seeking VC network — bootstrapped, profitable, beginning fundraise.</div>
+            <div class="profile-card-name">DECISION MAKERS</div>
+            <div class="profile-card-desc">Targets C-suite, VPs, and Directors. Scores 0 for coordinators, assistants, and entry-level.</div>
+            <div class="profile-card-angle">Focused on high-authority roles in the search results.</div>
           </div>
           <div class="profile-card-check">✓</div>
         </div>

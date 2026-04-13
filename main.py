@@ -221,34 +221,24 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({"type": "error", "message": "Expected action: run"})
             return
 
-        companies_raw = payload.get("companies", "")
+        title_query = payload.get("title", "").strip()
         speed_multiplier = float(payload.get("speed_multiplier", 1.0))
         speed_multiplier = max(0.05, min(speed_multiplier, 2.0))
         profile = int(payload.get("profile", 1))
 
-        if isinstance(companies_raw, list):
-            company_list = [c.strip() for c in companies_raw if c.strip()]
-        else:
-            company_list = [
-                c.strip()
-                for c in companies_raw.replace(",", "\n").splitlines()
-                if c.strip()
-            ]
-
-        if not company_list:
-            await websocket.send_json({"type": "error", "message": "Please enter at least one company."})
+        if not title_query:
+            await websocket.send_json({"type": "error", "message": "Please enter a job title to search."})
             return
 
-        run_id = start_run(company_list)
+        run_id = start_run(title_query)
 
         await websocket.send_json({"type": "started"})
-        await log(f"Starting automation for {len(company_list)} company/companies.")
-        await log(f"{os.getenv('DEMO_CAP', '3')} connections per company")
+        await log(f"Starting automation — searching for: {title_query}")
 
         async def run_with_ws():
             try:
                 await automator.run_automation(
-                    company_list=company_list,
+                    title_query=title_query,
                     log=log,
                     speed_multiplier=speed_multiplier,
                     profile=profile,

@@ -212,6 +212,7 @@ small {
 }
 
 input[type="url"],
+input[type="text"],
 textarea {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -226,6 +227,7 @@ textarea {
 }
 
 input[type="url"]:focus,
+input[type="text"]:focus,
 textarea:focus {
   outline: none;
   border-color: var(--border-bright);
@@ -233,6 +235,7 @@ textarea:focus {
 }
 
 input[type="url"]::placeholder,
+input[type="text"]::placeholder,
 textarea::placeholder {
   color: var(--text-muted);
 }

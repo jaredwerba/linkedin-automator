@@ -17,9 +17,9 @@ let activeTab = 'feed';
 let _activeProfile = parseInt(localStorage.getItem('activeProfile') || '1', 10);
 
 const _profileNames = {
-  1: 'CLOUD INFRA · GENERAL',
-  2: 'CLOUD INFRA · OCI SAVINGS',
-  3: 'VENTURE CAPITAL',
+  1: 'GENERAL OUTREACH',
+  2: 'SENIOR FOCUS',
+  3: 'DECISION MAKERS',
 };
 
 // DOM refs
@@ -204,7 +204,7 @@ function renderHistory(runs, total) {
   listEl.innerHTML = '';
 
   runs.forEach(run => {
-    const companies = (run.companies || []).join(', ') || '—';
+    const titleLabel = run.title_query || (run.companies || []).join(', ') || '—';
     const sent      = run.total_sent != null ? run.total_sent : '?';
     const startedAt = run.started_at || run.run_id || '';
     const finishedAt = run.finished_at || null;
@@ -231,7 +231,7 @@ function renderHistory(runs, total) {
     header.innerHTML = `
       <span class="run-chevron">›</span>
       <span class="run-date">${escapeHtml(startedAt)}</span>
-      <span class="run-companies">${escapeHtml(companies)}</span>
+      <span class="run-companies">${escapeHtml(titleLabel)}</span>
       <span class="run-meta">${escapeHtml(meta)}</span>
     `;
 
@@ -548,11 +548,10 @@ async function typewriterLog(message, level = 'info', charDelay = 28, targetEl =
   }
 }
 
-async function runPreflight(companies, presetName) {
-  const companyList = companies.join(', ');
+async function runPreflight(titleQuery, presetName) {
   await typewriterLog(`> INITIALISING SEQUENCE...`, 'info', 22);
   await new Promise(r => setTimeout(r, 180));
-  await typewriterLog(`> TARGETS: ${companyList}`, 'info', 18);
+  await typewriterLog(`> SEARCHING: ${titleQuery}`, 'info', 18);
   await new Promise(r => setTimeout(r, 140));
   await typewriterLog(`> SPEED: ${presetName}`, 'info', 22);
   await new Promise(r => setTimeout(r, 140));
@@ -579,15 +578,10 @@ async function startRun() {
   const duck = document.getElementById('duck-bg');
   if (duck) duck.classList.add('pixelate-out');
 
-  const companiesRaw = document.getElementById('companies').value.trim();
+  const titleQuery = document.getElementById('jobTitle').value.trim();
 
-  const companies = companiesRaw
-    .split('\n')
-    .map(c => c.trim())
-    .filter(Boolean);
-
-  if (companies.length === 0) {
-    addLog('Please enter at least one company name.', 'error');
+  if (!titleQuery) {
+    addLog('Please enter a job title to search.', 'error');
     return;
   }
 
@@ -598,7 +592,7 @@ async function startRun() {
   isPaused = false;
   btnPause.textContent = 'Pause';
 
-  await runPreflight(companies, getSpeedPresetName());
+  await runPreflight(titleQuery, getSpeedPresetName());
 
   const speedMultiplier = getSpeedMultiplier();
 
@@ -608,7 +602,7 @@ async function startRun() {
   ws.onopen = () => {
     ws.send(JSON.stringify({
       action: 'run',
-      companies: companies,
+      title: titleQuery,
       speed_multiplier: speedMultiplier,
       profile: _activeProfile,
     }));
