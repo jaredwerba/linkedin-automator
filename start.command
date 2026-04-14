@@ -30,8 +30,10 @@ source venv/bin/activate
 
 # ── 4. Install / update dependencies ─────────────────────────────────────────
 echo "Checking dependencies..."
+pip install -q --upgrade pip
 pip install -q -r requirements.txt
-playwright install chromium --quiet
+echo "Installing browser engine (first run may take a few minutes)..."
+playwright install chromium
 
 # ── 5. Copy .env if it doesn't exist ─────────────────────────────────────────
 if [ ! -f ".env" ]; then
@@ -48,22 +50,27 @@ if ! command -v ollama &>/dev/null; then
   exit 1
 fi
 
-# ── 7. Pull the AI model if not already downloaded ───────────────────────────
+# ── 7. Start Ollama if not already running ───────────────────────────────────
+if curl -s --connect-timeout 2 http://localhost:11434/api/tags &>/dev/null; then
+  echo "Ollama already running."
+else
+  echo "Starting Ollama..."
+  ollama serve &>/dev/null &
+  # Wait for the server to be ready
+  for i in {1..10}; do
+    if curl -s --connect-timeout 1 http://localhost:11434/api/tags &>/dev/null; then
+      break
+    fi
+    sleep 1
+  done
+fi
+
+# ── 8. Pull the AI model if not already downloaded ───────────────────────────
 MODEL="llama3.1:8b"
 if ! ollama list 2>/dev/null | grep -q "$MODEL"; then
   echo ""
   echo "Downloading AI model ($MODEL) — this takes 10–20 minutes on first run..."
   ollama pull "$MODEL"
-fi
-
-# ── 8. Start Ollama in the background ────────────────────────────────────────
-if ! pgrep -x "ollama" &>/dev/null; then
-  echo "Starting Ollama..."
-  ollama serve &>/dev/null &
-  OLLAMA_PID=$!
-  sleep 2
-else
-  echo "Ollama already running."
 fi
 
 # ── 9. LinkedIn login check + Chrome quit ────────────────────────────────────
@@ -75,7 +82,7 @@ echo ""
 read -p "Press Enter once Chrome is quit and you are logged into LinkedIn..."
 
 # Wait until Chrome is actually closed
-while pgrep -x "Google Chrome" &>/dev/null; do
+while pgrep -f "Google Chrome" &>/dev/null; do
   echo "Chrome is still running. Please quit it with Cmd+Q, then press Enter."
   read -p ""
 done
