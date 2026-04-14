@@ -3,32 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LinkedIn Automator</title>
+  <title>Inspace GTM AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <div class="app">
+
     <header>
-      <h1>PIPDuck</h1>
+      <div class="brand">
+        <img src="/static/inspace-logo.png" alt="Inspace" class="brand-logo" />
+        <span class="brand-name">Inspace GTM AI</span>
+      </div>
       <div class="status-bar">
-        <button id="btn-config" class="btn-config" onclick="openConfig()">CONFIG</button>
-        <span id="active-profile-label" class="active-profile-label">GENERAL OUTREACH</span>
         <span id="status-badge" class="badge idle">Idle</span>
-        <span id="obsidian-dot" class="obsidian-dot" title="Obsidian: checking..."></span>
       </div>
     </header>
 
     <main>
-      <!-- Left: Config Panel -->
+
+      <!-- ── Left Panel ── -->
       <section class="panel config-panel">
 
-        <!-- ── Connection Panel ── -->
-        <div id="config-connect">
+        <!-- Search -->
+        <div class="panel-section">
+          <div class="section-header">
+            <h2 class="section-title">Search</h2>
+            <p class="section-sub">Find people by job title on LinkedIn</p>
+          </div>
           <div class="field">
-            <label for="jobTitle">Job Title Search</label>
-            <small>Enter a job title. The automator finds and connects with people holding that title on LinkedIn.</small>
+            <label for="jobTitle">Job Title</label>
             <input
               type="text"
               id="jobTitle"
@@ -36,25 +42,34 @@
               autocomplete="off"
             />
           </div>
+        </div>
 
-          <!-- Action Delay slider -->
+        <div class="panel-divider"></div>
+
+        <!-- Speed -->
+        <div class="panel-section">
+          <div class="section-header">
+            <h2 class="section-title">Speed</h2>
+          </div>
           <div class="field speed-field">
-            <label for="speed-slider">Action Delay</label>
             <div class="speed-track-wrap">
               <input type="range" id="speed-slider" min="0" max="3" step="1" value="3"
                      oninput="updateSpeedLabel(this.value)" />
               <div class="speed-markers">
-                <span>DEMO</span>
-                <span>FAST</span>
-                <span>NORMAL</span>
-                <span>SAFE</span>
+                <span>Demo</span>
+                <span>Fast</span>
+                <span>Normal</span>
+                <span>Safe</span>
               </div>
             </div>
-            <div class="speed-status">
-              <span id="speed-label" class="speed-label safe">SAFE MODE — 8–15s between requests</span>
-            </div>
+            <span id="speed-label" class="speed-label safe">Safe mode — 8–15s between requests</span>
           </div>
+        </div>
 
+        <div class="panel-divider"></div>
+
+        <!-- Actions -->
+        <div class="panel-section">
           <div class="actions">
             <button id="btn-run" class="btn execute" onclick="startRun()">Execute</button>
             <button id="btn-pause" class="btn secondary" onclick="togglePause()" disabled>Pause</button>
@@ -63,98 +78,93 @@
           </div>
         </div>
 
-        <!-- Triple-ring progress widget -->
-        <div class="ring-widget" title="">
-          <svg id="ring-svg" viewBox="0 0 200 200" width="200" height="200">
-            <circle class="ring-track" cx="100" cy="100" r="88"/>
-            <circle id="ring-week" class="ring-arc ring-arc-week" cx="100" cy="100" r="88"/>
-            <circle class="ring-track" cx="100" cy="100" r="66"/>
-            <circle id="ring-conn" class="ring-arc ring-arc-conn" cx="100" cy="100" r="66"/>
-            <circle class="ring-track" cx="100" cy="100" r="44"/>
-            <circle id="ring-notes" class="ring-arc ring-arc-notes" cx="100" cy="100" r="44"/>
-            <text class="ring-label-tag ring-tag-week"  x="100" y="72"  text-anchor="middle" dominant-baseline="middle">WEEK</text>
-            <text id="ring-label-week"  class="ring-num ring-num-week"   x="100" y="87"  text-anchor="middle" dominant-baseline="middle">0/100</text>
-            <line class="ring-divider" x1="72" y1="100" x2="128" y2="100"/>
-            <text class="ring-label-tag ring-tag-conn"  x="100" y="113" text-anchor="middle" dominant-baseline="middle">TODAY</text>
-            <text id="ring-label-conn"  class="ring-num ring-num-conn"   x="100" y="128" text-anchor="middle" dominant-baseline="middle">0/30</text>
-          </svg>
-          <div class="ring-legend">
-            <span class="ring-legend-week">This week</span>
-            <span class="ring-legend-conn">Today</span>
-            <span class="ring-legend-notes">w/ Message</span>
+        <div class="panel-divider"></div>
+
+        <!-- Progress -->
+        <div class="panel-section">
+          <div class="section-header">
+            <h2 class="section-title">Progress</h2>
+          </div>
+          <div class="ring-widget">
+            <svg id="ring-svg" viewBox="0 0 180 180" width="160" height="160">
+              <circle class="ring-track" cx="90" cy="90" r="78"/>
+              <circle id="ring-week"  class="ring-arc ring-arc-week"  cx="90" cy="90" r="78"/>
+              <circle class="ring-track" cx="90" cy="90" r="58"/>
+              <circle id="ring-conn"  class="ring-arc ring-arc-conn"  cx="90" cy="90" r="58"/>
+              <circle class="ring-track" cx="90" cy="90" r="38"/>
+              <circle id="ring-notes" class="ring-arc ring-arc-notes" cx="90" cy="90" r="38"/>
+              <text class="ring-label-tag ring-tag-week" x="90" y="66"  text-anchor="middle" dominant-baseline="middle">WEEK</text>
+              <text id="ring-label-week" class="ring-num ring-num-week" x="90" y="79"  text-anchor="middle" dominant-baseline="middle">0/100</text>
+              <line class="ring-divider" x1="64" y1="90" x2="116" y2="90"/>
+              <text class="ring-label-tag ring-tag-conn" x="90" y="101" text-anchor="middle" dominant-baseline="middle">TODAY</text>
+              <text id="ring-label-conn" class="ring-num ring-num-conn" x="90" y="114" text-anchor="middle" dominant-baseline="middle">0/30</text>
+            </svg>
+            <div class="ring-legend">
+              <span class="ring-legend-week">This week</span>
+              <span class="ring-legend-conn">Today</span>
+            </div>
           </div>
         </div>
 
-        <!-- ── Quarterly Scorecard ── -->
-        <div class="analytics-section">
-          <div class="analytics-header">
-            <span class="analytics-title">THIS QUARTER</span>
-            <span id="quarter-label" class="analytics-subtitle"></span>
+        <div class="panel-divider"></div>
+
+        <!-- Quarterly Scorecard -->
+        <div class="panel-section">
+          <div class="section-header">
+            <h2 class="section-title">This Quarter</h2>
+            <span id="quarter-label" class="section-sub-right"></span>
           </div>
           <div class="quarterly-grid">
             <div class="q-stat">
               <span class="q-num" id="q-conn-sent">—</span>
-              <span class="q-label">Requests Sent</span>
+              <span class="q-label">Sent</span>
             </div>
             <div class="q-stat">
               <span class="q-num" id="q-conn-accepted">—</span>
               <span class="q-label">Accepted</span>
             </div>
-            <div class="q-stat">
-              <span class="q-num" id="q-msg-sent">—</span>
-              <span class="q-label">Messages Sent</span>
-            </div>
-            <div class="q-stat">
-              <span class="q-num" id="q-fu-sent">—</span>
-              <span class="q-label">Follow-ups Sent</span>
-            </div>
             <div class="q-stat q-stat-wide">
               <span class="q-num q-conv" id="q-conv-pct">—%</span>
-              <span class="q-label">Connect → Message Rate</span>
+              <span class="q-label">Acceptance Rate</span>
             </div>
           </div>
         </div>
 
       </section>
 
-      <!-- Right: Tabbed panel -->
+      <!-- ── Right Panel ── -->
       <section class="panel right-panel">
 
-        <!-- Tab bar -->
         <div class="tab-bar">
-          <button class="tab-btn active" onclick="switchTab('feed')" id="tab-feed">Live Feed</button>
-          <button class="tab-btn" onclick="switchTab('results')" id="tab-results">
+          <button class="tab-btn active" onclick="switchTab('feed')"    id="tab-feed">Live Feed</button>
+          <button class="tab-btn"         onclick="switchTab('results')" id="tab-results">
             Results <span id="results-count" class="tab-count"></span>
           </button>
-          <button class="tab-btn" onclick="switchTab('history')" id="tab-history">
+          <button class="tab-btn"         onclick="switchTab('history')" id="tab-history">
             History <span id="history-count" class="tab-count"></span>
           </button>
-          <button class="tab-btn" onclick="switchTab('msg')" id="tab-msg">
-            Msg Prospect <span id="msg-count" class="tab-count"></span>
-          </button>
-          <button class="tab-btn" onclick="switchTab('followup')" id="tab-followup">
-            Follow Up <span id="followup-count" class="tab-count"></span>
-          </button>
-          <button class="tab-btn" onclick="switchTab('creep')" id="tab-creep">Creep Mode</button>
-          <!-- Per-tab actions -->
           <div class="tab-actions">
-            <button id="feed-clear-btn" class="btn ghost small" onclick="clearLog()">Clear</button>
+            <button id="feed-clear-btn"      class="btn ghost small" onclick="clearLog()">Clear</button>
             <button id="results-refresh-btn" class="btn ghost small hidden" onclick="loadResults()">Refresh</button>
             <button id="history-refresh-btn" class="btn ghost small hidden" onclick="loadHistory()">Refresh</button>
-            <button id="msg-refresh-btn" class="btn ghost small hidden" onclick="loadMessages()">Refresh</button>
-            <button id="followup-refresh-btn" class="btn ghost small hidden" onclick="loadFollowups()">Refresh</button>
-            <button id="creep-refresh-btn" class="btn ghost small hidden" onclick="loadCreepLog()">Refresh</button>
           </div>
         </div>
 
-        <!-- Live Feed pane -->
+        <!-- Live Feed -->
         <div id="pane-feed" class="tab-pane">
-          <img id="duck-bg" src="/static/duck.png" class="duck-bg" alt="" />
+          <div class="pane-header">
+            <h3 class="pane-title">Live Feed</h3>
+            <p class="pane-sub">Real-time automation log</p>
+          </div>
           <div id="log" class="log"></div>
         </div>
 
-        <!-- Results pane -->
+        <!-- Results -->
         <div id="pane-results" class="tab-pane hidden">
+          <div class="pane-header">
+            <h3 class="pane-title">Connection Results</h3>
+            <p class="pane-sub">Everyone the automator has connected with</p>
+          </div>
           <div id="results-empty" class="results-empty hidden">No connections logged yet.</div>
           <div class="results-table-wrap">
             <table id="results-table" class="results-table hidden">
@@ -165,7 +175,7 @@
                   <th>Role</th>
                   <th>Company</th>
                   <th id="th-score" class="th-sortable" onclick="sortByScore()" title="Sort by score">Score <span id="sort-indicator" class="sort-indicator"></span></th>
-                  <th>Message Sent</th>
+                  <th>Note</th>
                 </tr>
               </thead>
               <tbody id="results-tbody"></tbody>
@@ -173,199 +183,18 @@
           </div>
         </div>
 
-        <!-- History pane -->
+        <!-- History -->
         <div id="pane-history" class="tab-pane hidden">
+          <div class="pane-header">
+            <h3 class="pane-title">Run History</h3>
+            <p class="pane-sub">Log of every automation session</p>
+          </div>
           <div id="history-empty" class="results-empty hidden">No runs yet — start an automation run to see history here.</div>
           <div id="history-list" class="history-list"></div>
         </div>
 
-        <!-- Msg Prospect pane -->
-        <div id="pane-msg" class="tab-pane hidden">
-
-          <div class="msg-cap-section">
-            <label class="msg-cap-label-top">Messages per Run <span class="cap-hint">(1–10)</span></label>
-            <div class="msg-cap-slider-wrap">
-              <input type="range" id="msg-cap-slider" min="1" max="10" step="1" value="5"
-                     oninput="updateMsgCapBubble(this)" />
-              <div id="msg-cap-bubble" class="msg-cap-bubble"></div>
-            </div>
-          </div>
-
-          <div class="msg-controls">
-            <button id="btn-msg-run" class="btn execute" onclick="startMsgRun()">Send Messages</button>
-            <button id="btn-msg-pause" class="btn secondary" onclick="toggleMsgPause()" disabled>Pause</button>
-            <button id="btn-msg-stop" class="btn danger" onclick="stopMsgRun()" disabled>Stop</button>
-          </div>
-
-          <div id="msg-feed" class="log msg-log"></div>
-
-          <div class="msg-table-section">
-            <div class="msg-table-header">
-              <span class="msg-table-title">Message Log</span>
-              <span id="msg-sent-today" class="msg-today-badge"></span>
-            </div>
-            <div id="msg-empty" class="results-empty hidden">No messages sent yet.</div>
-            <div class="results-table-wrap">
-              <table id="msg-table" class="results-table hidden">
-                <thead>
-                  <tr>
-                    <th>Sent</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Message</th>
-                  </tr>
-                </thead>
-                <tbody id="msg-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Follow Up pane -->
-        <div id="pane-followup" class="tab-pane hidden">
-
-          <div class="msg-cap-section">
-            <label class="msg-cap-label-top">Wait before follow-up <span class="cap-hint">(days)</span></label>
-            <div class="msg-cap-slider-wrap">
-              <input type="range" id="followup-days-slider" min="0" max="14" step="1" value="0"
-                     oninput="updateFollowupDaysBubble(this)" />
-              <div id="followup-days-bubble" class="msg-cap-bubble"></div>
-            </div>
-          </div>
-
-          <div class="msg-cap-section">
-            <label class="msg-cap-label-top">Follow-ups per Run <span class="cap-hint">(1–10)</span></label>
-            <div class="msg-cap-slider-wrap">
-              <input type="range" id="followup-cap-slider" min="1" max="10" step="1" value="5"
-                     oninput="updateFollowupCapBubble(this)" />
-              <div id="followup-cap-bubble" class="msg-cap-bubble"></div>
-            </div>
-          </div>
-
-          <div class="msg-controls">
-            <button id="btn-followup-run" class="btn execute" onclick="startFollowupRun()">Send Follow-Ups</button>
-            <button id="btn-followup-pause" class="btn secondary" onclick="toggleFollowupPause()" disabled>Pause</button>
-            <button id="btn-followup-stop" class="btn danger" onclick="stopFollowupRun()" disabled>Stop</button>
-          </div>
-
-          <div id="followup-feed" class="log msg-log"></div>
-
-          <div class="msg-table-section">
-            <div class="msg-table-header">
-              <span class="msg-table-title">Follow-Up Log</span>
-              <span id="followup-sent-today" class="msg-today-badge"></span>
-            </div>
-            <div id="followup-empty" class="results-empty hidden">No follow-ups sent yet.</div>
-            <div class="results-table-wrap">
-              <table id="followup-table" class="results-table hidden">
-                <thead>
-                  <tr>
-                    <th>First Message</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Follow-Up Sent</th>
-                  </tr>
-                </thead>
-                <tbody id="followup-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Creep Mode pane -->
-        <div id="pane-creep" class="tab-pane hidden">
-
-          <!-- Slider -->
-          <div class="msg-cap-section">
-            <label class="msg-cap-label-top">Profiles per Run <span class="cap-hint">(1–20)</span></label>
-            <div class="msg-cap-slider-wrap">
-              <input type="range" id="creep-cap-slider" min="1" max="20" step="1" value="5"
-                     oninput="updateCreepCapBubble(this); initCreepFeed();" />
-              <div id="creep-cap-bubble" class="msg-cap-bubble">5</div>
-            </div>
-          </div>
-
-          <!-- Action buttons -->
-          <div class="msg-controls">
-            <button id="btn-creep-run" class="btn execute" onclick="startCreepRun()">Creep Profiles</button>
-            <button id="btn-creep-pause" class="btn secondary" onclick="toggleCreepPause()" disabled>Pause</button>
-            <button id="btn-creep-stop" class="btn danger" onclick="stopCreepRun()" disabled>Stop</button>
-          </div>
-
-          <!-- Live feed -->
-          <div id="creep-feed" class="log msg-log"></div>
-
-          <!-- History table -->
-          <div class="msg-table-section">
-            <div class="msg-table-header">
-              <span class="msg-table-title">Creep Log</span>
-            </div>
-            <div id="creep-empty" class="results-empty hidden">No profiles visited yet.</div>
-            <div class="results-table-wrap">
-              <table id="creep-table" class="results-table hidden">
-                <thead>
-                  <tr>
-                    <th>When</th>
-                    <th>Name</th>
-                    <th>Profile</th>
-                    <th>Liked?</th>
-                  </tr>
-                </thead>
-                <tbody id="creep-tbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
-
       </section>
     </main>
-  </div>
-
-  <!-- ── Config / Profile Selection Overlay ── -->
-  <div id="config-overlay" class="config-overlay hidden" onclick="onOverlayClick(event)">
-    <div class="config-modal">
-      <div class="config-modal-header">
-        <span>SELECT OUTREACH PROFILE</span>
-        <button class="config-close-btn" onclick="closeConfig()">✕</button>
-      </div>
-      <div class="profile-cards">
-
-        <div id="profile-card-1" class="profile-card active" onclick="selectProfile(1)">
-          <div class="profile-card-num">01</div>
-          <div class="profile-card-body">
-            <div class="profile-card-name">GENERAL OUTREACH</div>
-            <div class="profile-card-desc">Scores all seniority levels. Best for broad title searches where any level is a good connect.</div>
-            <div class="profile-card-angle">Generic networking note — warm, casual, no angle.</div>
-          </div>
-          <div class="profile-card-check">✓</div>
-        </div>
-
-        <div id="profile-card-2" class="profile-card" onclick="selectProfile(2)">
-          <div class="profile-card-num">02</div>
-          <div class="profile-card-body">
-            <div class="profile-card-name">SENIOR FOCUS</div>
-            <div class="profile-card-desc">Prioritises senior, director, and VP-level results from the search. Skips junior profiles.</div>
-            <div class="profile-card-angle">Same seniority scorer — higher-ranked results connect first.</div>
-          </div>
-          <div class="profile-card-check">✓</div>
-        </div>
-
-        <div id="profile-card-3" class="profile-card" onclick="selectProfile(3)">
-          <div class="profile-card-num">03</div>
-          <div class="profile-card-body">
-            <div class="profile-card-name">DECISION MAKERS</div>
-            <div class="profile-card-desc">Targets C-suite, VPs, and Directors. Scores 0 for coordinators, assistants, and entry-level.</div>
-            <div class="profile-card-angle">Focused on high-authority roles in the search results.</div>
-          </div>
-          <div class="profile-card-check">✓</div>
-        </div>
-
-      </div>
-    </div>
   </div>
 
   <script src="/static/app.js"></script>
