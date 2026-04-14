@@ -66,13 +66,19 @@ else
   echo "Ollama already running."
 fi
 
-# ── 9. Check Chrome is quit ───────────────────────────────────────────────────
-if pgrep -x "Google Chrome" &>/dev/null; then
-  echo ""
-  echo "ACTION REQUIRED: Please quit Google Chrome completely (Cmd+Q),"
-  echo "then press Enter to continue."
+# ── 9. LinkedIn login check + Chrome quit ────────────────────────────────────
+echo ""
+echo "BEFORE CONTINUING:"
+echo "  1. Open Google Chrome and log into LinkedIn (https://www.linkedin.com)"
+echo "  2. Once logged in, quit Chrome completely (Cmd+Q — not just close the window)"
+echo ""
+read -p "Press Enter once Chrome is quit and you are logged into LinkedIn..."
+
+# Wait until Chrome is actually closed
+while pgrep -x "Google Chrome" &>/dev/null; do
+  echo "Chrome is still running. Please quit it with Cmd+Q, then press Enter."
   read -p ""
-fi
+done
 
 # ── 10. Open the app in the browser ──────────────────────────────────────────
 echo ""
